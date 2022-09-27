@@ -1,0 +1,140 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/models/media_playlist.dart';
+import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/main.dart';
+import 'package:songtube/providers/playlist_provider.dart';
+import 'package:songtube/ui/animations/mini_music_visualizer.dart';
+import 'package:songtube/ui/playlist_artwork.dart';
+import 'package:songtube/ui/sheets/song_options.dart';
+import 'package:songtube/ui/text_styles.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
+
+class SongTile extends StatefulWidget {
+  const SongTile({
+    required this.song,
+    this.onPlay,
+    this.disablePlayingBackground = false,
+    this.disablePlayingVisualizer = false,
+    Key? key }) : super(key: key);
+  final SongItem song;
+  final Function()? onPlay;
+  final bool disablePlayingBackground;
+  final bool disablePlayingVisualizer;
+  @override
+  State<SongTile> createState() => _SongTileState();
+}
+
+class _SongTileState extends State<SongTile> {
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<MediaItem?>(
+      stream: audioHandler.mediaItem,
+      builder: (context, media) {
+        bool isPlaying = media.data?.id == widget.song.id;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 4, left: 8, right: 8),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+              color: widget.disablePlayingBackground ? Colors.transparent : isPlaying ? widget.song.palette!.dominant!.withOpacity(0.1) : Colors.transparent,
+              borderRadius: BorderRadius.circular(20)
+            ),
+            child: ListTile(
+              onTap: widget.onPlay,
+              onLongPress: () {
+                if (widget.onPlay != null) {
+                  showModalBottomSheet(
+                    context: internalNavigatorKey.currentContext!,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => SongOptionsSheet(song: widget.song));
+                }
+              },
+              leading: _leading(),
+              title: Text(
+                widget.song.title,
+                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
+                maxLines: 1,
+              ),
+              subtitle: Text(
+                widget.song.artist!,
+                style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
+                maxLines: 1,
+              ),
+              trailing: _trailing(media)
+            ),
+          ),
+        );
+      }
+    );
+  }
+
+  Widget _leading() {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 12,
+              offset: const Offset(0,0),
+              color: Theme.of(context).shadowColor.withOpacity(0.1)
+            )
+          ],
+        ), 
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: FadeInImage(
+            fadeInDuration: const Duration(milliseconds: 200),
+            image: FileImage(widget.song.thumbnailPath!),
+            placeholder: MemoryImage(kTransparentImage),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _trailing(AsyncSnapshot<MediaItem?> media) {
+    PlaylistProvider playlistProvider = Provider.of(context);
+    bool isFavorite = playlistProvider.favorites.songs.any((element) => element.id == widget.song.id);
+    bool isPlaying = media.data?.id == widget.song.id;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      child: isPlaying && !widget.disablePlayingVisualizer
+        ? Container(
+            margin: const EdgeInsets.only(left: 16, right: 8),
+            height: 20, width: 20,
+            child: StreamBuilder<PlaybackState>(
+              stream: audioHandler.playbackState,
+              builder: (context, state) {
+                bool isPaused = !(state.data?.playing ?? true);
+                return MiniMusicVisualizer(color: MediaQuery.of(context).platformBrightness == Brightness.dark && (widget.song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
+                  ? widget.song.palette?.text ?? accentColor : widget.song.palette?.vibrant ?? accentColor, width: 2, height: 12, pause: isPaused);
+              }
+            ))
+        : Bounce(
+            duration: const Duration(milliseconds: 150),
+            onPressed: () {
+              playlistProvider.addToFavorites(widget.song);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0).copyWith(right: 8),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: Icon(
+                  isFavorite ? Ionicons.heart : Ionicons.heart_outline,
+                  key: ValueKey(widget.song.id+isFavorite.toString()),
+                  color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color!.withOpacity(0.2), size: 18)),
+            ),
+          ),
+    );
+  }
+}
