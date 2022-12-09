@@ -10,7 +10,7 @@ class StreamSegmentTrack {
   });
 
   final StreamSegment segment;
-  final AudioTags audioTags;
-  final bool enabled;
+  AudioTags audioTags;
+  bool enabled;
 
 }
