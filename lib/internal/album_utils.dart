@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/media_utils.dart';
 
 class AlbumUtils {
@@ -9,7 +9,7 @@ class AlbumUtils {
     if (await artworkFile(modelId).exists()) {
       return artworkFile(modelId);
     } else {
-      await MediaUtils.writeDefaultArtwork(path, modelId);
+      await ArtworkManager.writeDefaultThumbnail(path);
       return artworkFile(modelId);
     }
   }

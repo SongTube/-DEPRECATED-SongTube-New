@@ -8,11 +8,14 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/enums/download_type.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
+import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/internal/models/music_brainz_record.dart';
 import 'package:songtube/internal/models/stream_segment_track.dart';
 import 'package:songtube/languages/languages.dart';
 import 'package:songtube/pages/music_brainz_search.dart';
+import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/services/music_brainz_service.dart';
 import 'package:songtube/ui/animations/blue_page_route.dart';
 import 'package:songtube/ui/animations/fade_in.dart';
@@ -84,7 +87,16 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
 
   // Process all information and run this music by the downloader
   void onDownload() {
-    
+    final downloadInfo = DownloadInfo(
+      url: widget.video.videoInfo.url!,
+      duration: widget.video.videoInfo.length!,
+      downloadType: DownloadType.audio,
+      audioStream: selectedAudio,
+      tags: mainTags
+    );
+    final downloadProvider = Provider.of<DownloadProvider>(context, listen: false);
+    downloadProvider.handleDownloadItem(info: downloadInfo);
+    Navigator.pop(context);
   }
 
   @override

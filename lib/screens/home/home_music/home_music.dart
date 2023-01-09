@@ -27,12 +27,6 @@ class _HomeMusicState extends State<HomeMusic> with TickerProviderStateMixin {
   // TabBar Controller
   late TabController tabController = TabController(length: 5, vsync: this);
 
-  // TitleBar AnimationController
-  late AnimationController titleBarAnimationController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 300),
-    value: 0.0);
-
   MediaItem? latestEvent;
 
   @override

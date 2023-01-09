@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/media_playlist.dart';
@@ -34,7 +35,7 @@ class PlaylistArtwork extends StatefulWidget {
 class _PlaylistArtworkState extends State<PlaylistArtwork> {
 
   void extractArtwork() async {
-    await MediaUtils.writeDefaultArtwork(widget.playlist.songs.first.id, widget.playlist.songs.first.modelId);
+    await ArtworkManager.writeArtwork(widget.playlist.songs.first.id);
     setState(() {});
   }
 

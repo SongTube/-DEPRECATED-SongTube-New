@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/song_item.dart';
@@ -31,12 +32,8 @@ class _SongCardTileState extends State<SongCardTile> {
 
   // Image Getter
   Future<File> getArtwork() async {
-    if (await artworkFile(widget.song.id).exists()) {
-      return artworkFile(widget.song.id);
-    } else {
-      await MediaUtils.writeDefaultArtwork(widget.song.id, widget.song.modelId);
-      return artworkFile(widget.song.modelId);
-    }
+    await ArtworkManager.writeArtwork(widget.song.id, forceRefresh: true);
+    return artworkFile(widget.song.id);
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/languages/languages.dart';
 import 'package:songtube/providers/content_provider.dart';
+import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/providers/playlist_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
@@ -69,6 +70,9 @@ class _SongTubeState extends State<SongTube> {
         ),
         ChangeNotifierProvider<ContentProvider>(
           create: (context) => ContentProvider()
+        ),
+        ChangeNotifierProvider<DownloadProvider>(
+          create: (context) => DownloadProvider()
         ),
       ],
       child: Builder(

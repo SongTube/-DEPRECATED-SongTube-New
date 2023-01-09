@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/providers/playlist_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
@@ -28,16 +29,30 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
 
   // MediaProvider
   MediaProvider get mediaProvider => Provider.of<MediaProvider>(context, listen: false);
+  // DownloadProvider
+  DownloadProvider get downloadProvider => Provider.of<DownloadProvider>(context, listen: false);
 
   // UiProvider
   UiProvider get uiProvider => Provider.of(context, listen: false);
 
   // Current Song
-  SongItem get song => mediaProvider.songs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id);
+  SongItem get song => mediaProvider.currentPlaylistName == 'Downloads'
+    ? downloadProvider.downloadedSongs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id)
+    : mediaProvider.songs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id);
 
   // Drag Value for song Seek
   double? dragValue;
   bool dragging = false;
+
+  @override
+  void initState() {
+    audioHandler.mediaItem.listen((event) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +93,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                       child: AspectRatio(
                         aspectRatio: 1,
                         child: ArtworkCarousel(
+                          song: song,
                           animationController: uiProvider.fwController.animationController,
                           onSwitchSong: (index) async {
                             if (uiProvider.fwController.isPanelClosed) {

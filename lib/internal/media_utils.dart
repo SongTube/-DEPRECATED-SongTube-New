@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_tagger/audio_tagger.dart';
@@ -7,10 +8,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:http/http.dart';
+import 'package:newpipeextractor_dart/utils/httpClient.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/cache_utils.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/colors_palette.dart';
+import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/internal/models/song_item.dart';
 
 class MediaUtils {
@@ -31,7 +36,7 @@ class MediaUtils {
     // Build Thumbnails
     Stopwatch thumbnailsStopwatch = Stopwatch()..start();
     for (final song in userSongs) {
-      await writeDefaultThumbnail(song.filePath, song.id);
+      await ArtworkManager.writeThumbnail(song.filePath!);
     }
     thumbnailsStopwatch.stop();
     if (kDebugMode) {
@@ -50,58 +55,6 @@ class MediaUtils {
       }
     }
     CacheUtils.cacheSongs = fetchCachedSongsAsSongItems()..addAll(songs);
-  }
-
-  // Writes the default Artwork image to the given song id
-  // path for the file is needed to check if it exists before processing the image
-  static Future<void> writeDefaultArtwork(String? path, String modelId) async {
-    try {
-      if (!(await artworkFile(modelId).exists())) {
-        if (path != null) {
-          final artwork = await AudioTagger.extractArtwork(path);
-          if (artwork != null && artwork.isNotEmpty) {
-            await artworkFile(modelId).writeAsBytes(artwork);
-          } else {
-            await writeDefaultImage(modelId);
-          }
-        } else {
-          await writeDefaultImage(modelId);
-        }
-      }
-    } catch (e) {
-      await writeDefaultImage(modelId);
-    }
-  }
-
-  // Writes the default Thumbnail image to the given song id
-  // path for the file is needed to check if it exists before processing the image
-  static Future<void> writeDefaultThumbnail(String? path, String modelId) async {
-    try {
-      if (!(await thumbnailFile(modelId).exists())) {
-        if (path != null) {
-          final thumbnail = await AudioTagger.extractThumbnail(path);
-          if (thumbnail != null && thumbnail.isNotEmpty) {
-            await thumbnailFile(modelId).writeAsBytes(thumbnail);
-          } else {
-            await writeDefaultImage(modelId, isArtwork: false);
-          }
-        } else {
-          await writeDefaultImage(modelId, isArtwork: false);
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      await writeDefaultImage(modelId, isArtwork: false);
-    }
-  }
-
-  // Writes the default asset image to the given song id
-  static Future<void> writeDefaultImage(String modelId, {bool isArtwork = true}) async {
-    final file = isArtwork ? artworkFile(modelId) : thumbnailFile(modelId);
-    final byteData = await rootBundle.load('assets/images/artworkPlaceholder_big.png');
-    await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
   }
 
   static MediaItem fromMap(Map<String, dynamic> map) {
@@ -174,10 +127,10 @@ class MediaUtils {
     FileStat stats = await FileStat.stat(element.filePath!);
     PaletteGenerator palette;
     try {
-      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(element.id)));
+      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(element.filePath!)));
     } catch (e) {
-      await MediaUtils.writeDefaultImage(element.id, isArtwork: false);
-      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(element.id)));
+      await ArtworkManager.writeDefaultThumbnail(element.filePath!);
+      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(element.filePath!)));
     }
     return SongItem(
       id: element.filePath!,
@@ -185,8 +138,38 @@ class MediaUtils {
       title: element.title!,
       album: element.album,
       artist: element.artist,
-      artworkPath: artworkFile(element.id),
-      thumbnailPath: thumbnailFile(element.id),
+      artworkPath: artworkFile(element.filePath!),
+      thumbnailPath: thumbnailFile(element.filePath!),
+      duration: duration,
+      lastModified: stats.changed,
+      palette: ColorsPalette(
+        dominant: palette.dominantColor?.color,
+        vibrant: palette.vibrantColor?.color,
+      )
+    );
+  }
+
+  static Future<SongItem> downloadToSongItem(DownloadInfo info, String path) async {
+    Duration duration = Duration(
+      seconds: info.duration
+    );
+    FileStat stats = await FileStat.stat(path);
+    PaletteGenerator palette;
+    await ArtworkManager.writeThumbnail(path);
+    try {
+      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(path)));
+    } catch (e) {
+      await ArtworkManager.writeDefaultThumbnail(path);
+      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(path)));
+    }
+    return SongItem(
+      id: path,
+      modelId: info.tags.titleController.text,
+      title: info.tags.titleController.text,
+      album: info.tags.albumController.text,
+      artist: info.tags.artistController.text,
+      artworkPath: artworkFile(path),
+      thumbnailPath: thumbnailFile(path),
       duration: duration,
       lastModified: stats.changed,
       palette: ColorsPalette(
@@ -213,5 +196,38 @@ class MediaUtils {
     final items = fetchCachedSongsAsSongItems();
     return List<MediaItem>.generate(items.length, (index) => items[index].mediaItem);
   }
+
+  static String removeToxicSymbols(String string) {
+    return string
+      .replaceAll('Container.', '')
+      .replaceAll(r'\', '')
+      .replaceAll('/', '')
+      .replaceAll('*', '')
+      .replaceAll('?', '')
+      .replaceAll('"', '')
+      .replaceAll('<', '')
+      .replaceAll('>', '')
+      .replaceAll('|', '');
+  }
+
+  static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  static const _letters = 'qwertyuiopasdfghjlcvbnm';
+  static String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+      length, (_) => _chars.codeUnitAt(Random().nextInt(_chars.length))));
+  static String getRandomLetter() => String.fromCharCodes(Iterable.generate(
+    1, (_) => _letters
+    .codeUnitAt(Random().nextInt(_letters.length))
+  ));
+
+  static Future<int?> getContentSize(String url) async {
+    try {
+      var response = await head(Uri.parse(url), headers: const {}).timeout(const Duration(seconds: 3));
+      final size = int.tryParse(response.headers['content-length']!);
+      return size;
+    } catch (_) {}
+    return null;
+  }
+
+  
 
 }

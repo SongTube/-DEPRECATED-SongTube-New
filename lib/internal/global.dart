@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 
 import '../services/audio_service.dart';
 
@@ -31,15 +30,6 @@ String get initialRoute => sharedPreferences.getString('initialRoute') ?? 'intro
 set initialRoute(String route) {
   sharedPreferences.setString('initialRoute', route);
 }
-
-// Song Thumnnails Directory
-late Directory songArtworkPath;
-
-// ArtorkFile Getter
-File artworkFile(String modelId) => File('${songArtworkPath.path}/$modelId-hq');
-
-// Thumbnail Getter
-File thumbnailFile(String songId) => File('${songArtworkPath.path}/$songId-bq');
 
 // Audio Handler Singleton
 late AudioHandler audioHandler;

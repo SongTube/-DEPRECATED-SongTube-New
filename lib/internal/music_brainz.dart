@@ -84,7 +84,11 @@ class MusicBrainzAPI {
 
   static String getDate(Map<String, dynamic>parsedJson) {
     if (parsedJson.containsKey('releases') && parsedJson['releases'].isNotEmpty) {
-      return parsedJson["releases"][0]["date"];
+      if (parsedJson["releases"][0].containsKey('date')) {
+        return parsedJson["releases"][0]["date"];
+      } else {
+        return 'Unknown';
+      }
     } else {
       return 'Unknown';
     }

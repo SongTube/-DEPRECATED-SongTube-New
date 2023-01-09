@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/song_item.dart';
@@ -13,9 +14,11 @@ class ArtworkCarousel extends StatefulWidget {
   const ArtworkCarousel({
     required this.onSwitchSong,
     required this.animationController,
+    required this.song,
     Key? key }) : super(key: key);
   final Function(int) onSwitchSong;
   final AnimationController animationController;
+  final SongItem song;
 
   @override
   State<ArtworkCarousel> createState() => _ArtworkCarouselState();
@@ -23,27 +26,10 @@ class ArtworkCarousel extends StatefulWidget {
 
 class _ArtworkCarouselState extends State<ArtworkCarousel> {
 
-  MediaProvider get mediaProvider => Provider.of(context, listen: false);
-  SongItem get song => mediaProvider.songs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id);
-
-  @override
-  void initState() {
-    audioHandler.mediaItem.listen((event) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    super.initState();
-  }
-
   // Image Getter
   Future<File> getAlbumImage() async {
-    if (await artworkFile(song.id).exists()) {
-      return artworkFile(song.id);
-    } else {
-      await MediaUtils.writeDefaultArtwork(song.id, song.modelId);
-      return artworkFile(song.modelId);
-    }
+    await ArtworkManager.writeArtwork(widget.song.id);
+    return artworkFile(widget.song.id);
   }
 
   @override

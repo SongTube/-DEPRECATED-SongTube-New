@@ -7,9 +7,11 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/models/infoItems/video.dart';
 import 'package:newpipeextractor_dart/models/videoInfo.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/main.dart';
+import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/components/text_icon_button.dart';
@@ -25,7 +27,10 @@ class VideoPlayerContent extends StatelessWidget {
   final ContentWrapper content;
   @override
   Widget build(BuildContext context) {
+    DownloadProvider downloadProvider = Provider.of(context);
     VideoInfo? videoInfo = content.videoDetails?.videoInfo;
+    final views = videoInfo != null ? "${NumberFormat.compact().format(videoInfo.viewCount)} views" : '-1';
+    final date = content.videoDetails?.videoInfo.uploadDate ?? "";
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -36,7 +41,15 @@ class VideoPlayerContent extends StatelessWidget {
             children: [
               const SizedBox(width: 16),
               Expanded(
-                child: Text(content.infoItem.name ?? 'Unknown', style: bigTextStyle(context).copyWith(fontSize: 20), maxLines: 2, overflow: TextOverflow.ellipsis),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(content.infoItem.name ?? 'Unknown', style: bigTextStyle(context).copyWith(fontSize: 20), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text((views.contains('-1') ? "" : ("$views • ${date.replaceAll('-', '/')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               ),
               IconButton(
                 onPressed: () {
@@ -89,16 +102,21 @@ class VideoPlayerContent extends StatelessWidget {
                 },
               ),
               // Like Button
-              TextIconButton(
-                icon: const Icon(LineIcons.download),
-                text: 'Download',
-                onTap: () {
-                  showModalBottomSheet(
-                    context: internalNavigatorKey.currentContext!,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => DownloadContentMenu(content: content));
-                },
+              Builder(
+                builder: (context) {
+                  final downloading = downloadProvider.queue.any((element) => element.downloadInfo.url == videoInfo?.url);
+                  return TextIconButton(
+                    icon: Icon(LineIcons.download, color: downloading ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color),
+                    text: downloading ? 'Downloading...' : 'Download',
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: internalNavigatorKey.currentContext!,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => DownloadContentMenu(content: content));
+                    },
+                  );
+                }
               ),
             ],
           ),
@@ -154,9 +172,9 @@ class VideoPlayerContent extends StatelessWidget {
                 const SizedBox(width: 12),
                 IconButton(
                   onPressed: () {
-          
+                    
                   },
-                  icon: const Icon(Icons.expand_more)
+                  icon: Icon(Icons.expand_more, color: Theme.of(context).primaryColor)
                 ),
                 const SizedBox(width: 12),
               ],

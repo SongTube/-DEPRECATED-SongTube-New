@@ -5,6 +5,7 @@ import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:songtube/internal/album_utils.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/media_item_models.dart';
@@ -34,12 +35,8 @@ class _AlbumCardTileState extends State<AlbumCardTile> {
 
   // Image Getter
   Future<File> getAlbumImage() async {
-    if (await artworkFile(widget.album.mediaItems.first.id).exists()) {
-      return artworkFile(widget.album.mediaItems.first.id);
-    } else {
-      await MediaUtils.writeDefaultArtwork(widget.album.mediaItems.first.id, widget.album.mediaItems.first.modelId);
-      return artworkFile(widget.album.mediaItems.first.modelId);
-    }
+    await ArtworkManager.writeArtwork(widget.album.mediaItems.first.id);
+    return artworkFile(widget.album.mediaItems.first.id);
   }
 
   @override

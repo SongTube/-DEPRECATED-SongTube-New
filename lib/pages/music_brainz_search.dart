@@ -436,9 +436,9 @@ class __DataItemState extends State<_DataItem> {
                   Material(
                     color: Colors.transparent,
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context, widget.record..artwork = artwork);
-                      },
+                      onTap: widget.image.connectionState == ConnectionState.done ? () {
+                        Navigator.pop(context, widget.record..artwork = artwork ?? widget.image.data);
+                      } : null,
                       child: Container(
                         color: Colors.transparent,
                         padding: const EdgeInsets.all(8),
@@ -447,12 +447,18 @@ class __DataItemState extends State<_DataItem> {
                           children: [
                             const Spacer(),
                             Text(
-                              "Apply",
+                              widget.image.connectionState == ConnectionState.done
+                                ? "Apply"
+                                : "Loading",
                               style: subtitleTextStyle(context)
                             ),
                             const SizedBox(width: 8),
-                            Icon(EvaIcons.checkmark,
-                              color: Theme.of(context).primaryColor),
+                            widget.image.connectionState == ConnectionState.done
+                              ? Icon(EvaIcons.checkmark,
+                                  color: Theme.of(context).primaryColor)
+                              : SizedBox(
+                                  width: 20, height: 20,
+                                  child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor))),
                           ],
                         ),
                       ),
