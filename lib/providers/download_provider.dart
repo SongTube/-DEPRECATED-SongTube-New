@@ -15,7 +15,10 @@ import 'package:songtube/internal/models/song_item.dart';
 class DownloadProvider extends ChangeNotifier {
 
   DownloadProvider() {
-    downloadedSongs = fetchDownloads();
+    fetchDownloads().then((value) {
+      downloadedSongs = value;
+      notifyListeners();
+    });
   } 
 
   // Queued/Cancelled Downloads
@@ -149,7 +152,7 @@ class DownloadProvider extends ChangeNotifier {
   }
 
   // Fetch Downloaded Songs
-  List<SongItem> fetchDownloads() {
+  Future<List<SongItem>> fetchDownloads() async {
     final json = sharedPreferences.getString('user-downloads');
     if (json == null) {
       return [];
@@ -157,8 +160,12 @@ class DownloadProvider extends ChangeNotifier {
       final List<SongItem> downloadList = [];
       final List<dynamic> mapList = jsonDecode(json);
       for (final element in mapList) {
-        downloadList.add(SongItem.fromMap(element));
+        final item = SongItem.fromMap(element);
+        if (await File(item.id).exists()) {
+          downloadList.add(SongItem.fromMap(element));
+        }
       }
+      saveDownloads(downloadList);
       return downloadList;
     }
   }
@@ -173,8 +180,17 @@ class DownloadProvider extends ChangeNotifier {
     } else {
       final List<dynamic> mapList = jsonDecode(json);
       mapList.add(map);
-      sharedPreferences.setString('user-downloads', jsonEncode(mapList));
+      await sharedPreferences.setString('user-downloads', jsonEncode(mapList));
     }
+  }
+
+  // Save list of songs to downloads
+  Future<void> saveDownloads(List<SongItem> songs) async {
+    final mapList = List.generate(songs.length , (index) {
+      return songs[index].toMap();
+    });
+    final json = jsonEncode(mapList);
+    await sharedPreferences.setString('user-downloads', json);
   }
 
 }
