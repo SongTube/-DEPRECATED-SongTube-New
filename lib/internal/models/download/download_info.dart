@@ -3,6 +3,8 @@ import 'package:newpipeextractor_dart/extractors/videos.dart';
 import 'package:newpipeextractor_dart/models/streams/audioOnlyStream.dart';
 import 'package:newpipeextractor_dart/models/streams/videoOnlyStream.dart';
 import 'package:songtube/internal/enums/download_type.dart';
+import 'package:songtube/internal/ffmpeg/converter.dart';
+import 'package:songtube/internal/ffmpeg/filters.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/stream_segment_track.dart';
 
@@ -15,7 +17,8 @@ class DownloadInfo {
     required this.audioStream,
     required this.tags,
     this.segmentTracks,
-    this.videoStream
+    this.videoStream,
+    this.conversionTask
   });
 
   final String url;
@@ -24,7 +27,10 @@ class DownloadInfo {
   final AudioOnlyStream audioStream;
   final VideoOnlyStream? videoStream;
   final List<StreamSegmentTrack>? segmentTracks;
+  final FFmpegTask? conversionTask;
   AudioTags tags;
+  AudioFilters filters = AudioFilters();
+  
 
   static Future<DownloadInfo> initializeFromUrl(String url, DownloadType downloadType) async {
     final data = await VideoExtractor.getStream(url);

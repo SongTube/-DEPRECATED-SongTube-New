@@ -55,6 +55,7 @@ class _DownloadsCompletedPageState extends State<DownloadsCompletedPage> {
             final song = downloadProvider.downloadedSongs[index];
             return SongTile(
               song: song,
+              isDownload: true,
               onPlay: () async {
                 mediaProvider.currentPlaylistName = 'Downloads';
                 final queue = List<MediaItem>.generate(downloadProvider.downloadedSongs.length, (index) {

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:audio_tagger/audio_tagger.dart' as tagger;
 import 'package:audio_tagger/audio_tags.dart' as tags;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:newpipeextractor_dart/utils/httpClient.dart';
@@ -12,6 +13,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/enums/download_status.dart';
 import 'package:songtube/internal/enums/download_type.dart';
+import 'package:songtube/internal/ffmpeg/converter.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
@@ -52,7 +54,7 @@ class DownloadItem {
 
   // File path & Name
   final Directory downloadPath;
-  final File downloadFile;
+  File downloadFile;
 
   // Download Callbacks
   Function(String id, SongItem song) onDownloadCompleted;
@@ -111,9 +113,25 @@ class DownloadItem {
         onDownloadCancelled(id);
         return;
       }
+      // Clean up download file
+      downloadStatus.add('Clearing tags...');
+      downloadFile = await FFmpegConverter.clearFileMetadata(downloadFile.path);
+      // Apply Filters
+      if (downloadInfo.filters.normalizeAudio) {
+        downloadStatus.add('Reencoding (Normalize)...');
+        downloadFile = await FFmpegConverter.normalizeAudio(downloadFile.path);
+      }
+      if (downloadInfo.filters.conversionRequired) {  
+        downloadStatus.add('Reencoding (Filters)...');
+        downloadFile = await FFmpegConverter.applyAudioModifiers(downloadFile.path, downloadInfo.filters);
+      }
+      // Convert Audio File
+      if (downloadInfo.conversionTask != null) { 
+        downloadStatus.add('Reencoding (Conversion)...');
+        downloadFile = await FFmpegConverter.convertAudio(audioFile: downloadFile.path, task: downloadInfo.conversionTask!);
+      }
       // Write all Tags to this Song
       await writeAllMetadata(downloadFile.path, downloadInfo.tags);
-      // TODO: CONVERSION
       // Deem this download as completed
       downloadStatus.add('Saving download...');
       onDownloadCompleted(id, await toSongItem());
@@ -234,7 +252,11 @@ class DownloadItem {
         await ArtworkManager.writeThumbnail(filePath, forceRefresh: true, artwork: croppedImage);
         
       }
-    } on Exception catch (_) {}
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 
 }

@@ -8,7 +8,10 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/enums/download_type.dart';
+import 'package:songtube/internal/ffmpeg/converter.dart';
+import 'package:songtube/internal/ffmpeg/filters.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/internal/models/music_brainz_record.dart';
@@ -51,10 +54,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
 
   // Audio Features
   bool showAudioFeatures = false;
-  double volumeModifier = 0;
-  int bassGain = 0;
-  int trebleGain = 0;
-  bool normalizeAudio = false;
+  AudioFilters filters = AudioFilters();
 
   // Current Tags
   bool showTags = false;
@@ -92,8 +92,8 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
       duration: widget.video.videoInfo.length!,
       downloadType: DownloadType.audio,
       audioStream: selectedAudio,
-      tags: mainTags
-    );
+      tags: mainTags,
+    )..filters = filters;
     final downloadProvider = Provider.of<DownloadProvider>(context, listen: false);
     downloadProvider.handleDownloadItem(info: downloadInfo);
     Navigator.pop(context);
@@ -556,10 +556,10 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                     min: 0, max: 100,
                     limitsSuffix: "%",
                     onChanged: (double value) {
-                      setState(() => volumeModifier = value/100);
+                      setState(() => filters.volume = value/100);
                     },
-                    value: volumeModifier*100,
-                    tooltip: "${(volumeModifier*100).round()}%"
+                    value: filters.volume*100,
+                    tooltip: "${(filters.volume*100).round()}%"
                   ),
                   //
                   // Bass Gain
@@ -577,9 +577,9 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                     limitsSuffix: "",
                     tooltip: 'Bass Gain',
                     onChanged: (double value) {
-                      setState(() => bassGain = value.round());
+                      setState(() => filters.bassGain = value.round());
                     },
-                    value: bassGain.toDouble()
+                    value: filters.bassGain.toDouble()
                   ),
                   //
                   // Treble Gain
@@ -597,9 +597,9 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                     limitsSuffix: "",
                     tooltip: 'Treble Gain',
                     onChanged: (double value) {
-                      setState(() => trebleGain = value.round());
+                      setState(() => filters.trebleGain = value.round());
                     },
-                    value: trebleGain.toDouble()
+                    value: filters.trebleGain.toDouble()
                   ),
                   // Audio Normalization
                   InkWell(
@@ -608,10 +608,10 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                       child: Row(
                         children: [
                           Icon(
-                            normalizeAudio
+                            filters.normalizeAudio
                               ? Icons.check_box
                               : Icons.check_box_outline_blank,
-                            color: normalizeAudio
+                            color: filters.normalizeAudio
                               ? Theme.of(context).primaryColor
                               : Theme.of(context).iconTheme.color
                           ),
@@ -625,7 +625,77 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                         ],
                       ),
                     ),
-                    onTap: () => setState(() => normalizeAudio = !normalizeAudio),
+                    onTap: () => setState(() => filters.normalizeAudio = !filters.normalizeAudio),
+                  ),
+                  InkWell(
+                    onTap: () => setState(() => enableConversion = !enableConversion),
+                    child: Ink(
+                      height: 48,
+                      padding: const EdgeInsets.only(top: 8, bottom: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            enableConversion
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                            color: enableConversion
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(context).iconTheme.color
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Enable Audio Conversion',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).iconTheme.color,
+                              fontFamily: "Product Sans",
+                              fontWeight: FontWeight.w600
+                            ),
+                          ),
+                          const Spacer(),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: enableConversion ? DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                icon: const Icon(Icons.expand_more_rounded),
+                                items: [
+                                  DropdownMenuItem<String>(
+                                    value: 'AAC',
+                                    child: Text('AAC', style: smallTextStyle(context, bold: true)),
+                                  ),
+                                  DropdownMenuItem<String>(
+                                    value: 'OGG',
+                                    child: Text('OGG', style: smallTextStyle(context, bold: true)),
+                                  ),
+                                  DropdownMenuItem<String>(
+                                    value: 'MP3',
+                                    child: Text('MP3', style: smallTextStyle(context, bold: true)),
+                                  ),
+                                ],
+                                onChanged: (String? value) {
+                                  FFmpegTask task;
+                                  if (value == 'AAC') {
+                                    task = FFmpegTask.convertToAAC;
+                                  } else if (value == 'OGG') {
+                                    task = FFmpegTask.convertToOGG;
+                                  } else {
+                                    task = FFmpegTask.convertToMP3;
+                                  }
+                                  AppSettings.defaultFfmpegTask = task;
+                                  setState(() {});
+                                },
+                                value: AppSettings.defaultFfmpegTask.toString().split('.').last.split('convertTo').last.toUpperCase(),
+                                elevation: 1,
+                                dropdownColor: Theme.of(context).cardColor,
+                              ),
+                            ) : Container()
+                          ),
+                          const SizedBox(width: 12)
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

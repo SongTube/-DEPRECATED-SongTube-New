@@ -1,8 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:audio_tagger/audio_tagger.dart';
 import 'package:flutter/material.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/models/colors_palette.dart';
 import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/internal/models/download/download_item.dart';
 import 'package:songtube/internal/models/song_item.dart';
@@ -22,6 +27,43 @@ class DownloadProvider extends ChangeNotifier {
 
   // Max simultaneous downloads
   int maxSimultaneousDownloads = 2;
+
+  // Refresh metadata of given song
+  Future<void> refreshSong(String id) async {
+    final index = downloadedSongs.indexWhere((element) => element.id == id);
+    if (index == -1) {
+      return;
+    }
+    final metadata = await AudioTagger.extractAllTags(id);
+    if (metadata != null) {
+      final palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(id))); 
+      final stats = await FileStat.stat(id);
+      final SongItem oldSong = downloadedSongs[index];
+      final SongItem newSong = SongItem(
+        album: metadata.album,
+        artist: metadata.artist,
+        genre: metadata.genre,
+        artworkPath: artworkFile(id),
+        thumbnailPath: thumbnailFile(id),
+        duration: oldSong.duration,
+        id: id,
+        modelId: metadata.title,
+        title: metadata.title,
+        palette: ColorsPalette(
+          dominant: palette.dominantColor?.color,
+          vibrant: palette.vibrantColor?.color,
+        ),
+        lastModified: stats.changed);
+      downloadedSongs.removeAt(index);
+      downloadedSongs.insert(index, newSong);
+      // Save to cache
+      final mapList = List<Map>.generate(downloadedSongs.length, (index) {
+        return downloadedSongs[index].toMap();
+      });
+      sharedPreferences.setString('user-downloads', jsonEncode(mapList));
+      notifyListeners();
+    }
+  }
 
   // Handle Single Video Download
   Future<void> handleDownloadItem({required DownloadInfo info}) async {

@@ -20,11 +20,13 @@ class SongTile extends StatefulWidget {
     this.onPlay,
     this.disablePlayingBackground = false,
     this.disablePlayingVisualizer = false,
+    this.isDownload = false,
     Key? key }) : super(key: key);
   final SongItem song;
   final Function()? onPlay;
   final bool disablePlayingBackground;
   final bool disablePlayingVisualizer;
+  final bool isDownload;
   @override
   State<SongTile> createState() => _SongTileState();
 }
@@ -53,7 +55,7 @@ class _SongTileState extends State<SongTile> {
                     context: internalNavigatorKey.currentContext!,
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
-                    builder: (context) => SongOptionsSheet(song: widget.song));
+                    builder: (context) => SongOptionsSheet(song: widget.song, isDownload: widget.isDownload));
                 }
               },
               leading: _leading(),

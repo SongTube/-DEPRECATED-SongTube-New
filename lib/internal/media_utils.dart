@@ -3,22 +3,65 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:audio_tagger/audio_tagger.dart';
+import 'package:audio_tagger/audio_tagger.dart' as tagger;
+import 'package:audio_tagger/audio_tags.dart' as tags;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:http/http.dart';
-import 'package:newpipeextractor_dart/utils/httpClient.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/cache_utils.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/colors_palette.dart';
 import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:validators/validators.dart';
 
 class MediaUtils {
+
+  // Apply Tags and Metadata to a Song
+  static Future<String?> writeMetadata(String path, AudioTags userTags) async {
+    try {
+      // Check if audio file is AAC format TODO
+      // Apply all Tags
+      await tagger.AudioTagger.writeAllTags(
+        songPath: path,
+        tags: tags.AudioTags(
+          title: userTags.titleController.text,
+          album: userTags.albumController.text,
+          artist: userTags.artistController.text,
+          genre: userTags.genreController.text,
+          year: userTags.dateController.text,
+          disc: userTags.discController.text,
+          track: userTags.trackController.text
+        )
+      );
+      // Apply Artwork if non null
+      if (userTags.artwork != null) {
+        File image = File("${(await getExternalStorageDirectory())!.path}/${MediaUtils.getRandomString(5)}");
+        if (userTags.artwork is File || userTags.artwork is String) {
+          image.writeAsBytes((await tagger.AudioTagger.cropToSquare(userTags.artwork is File ? userTags.artwork : File(userTags.artwork)))!.toList());
+        } else if (userTags.artwork is Uint8List) {
+          image.writeAsBytes(userTags.artwork);
+        } else if (userTags.artwork is String && isURL(userTags.artwork)) {
+          final response = await get(Uri.parse(userTags.artwork));
+          image.writeAsBytes(response.bodyBytes);
+        }
+        await ArtworkManager.writeArtwork(path, artwork: image, forceRefresh: true, embedToSong: true);
+        await ArtworkManager.writeThumbnail(path, artwork: image, forceRefresh: true);
+        imageCache.clear();
+        imageCache.clearLiveImages();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    return null;
+  }
 
   static Future<void> fetchDeviceSongs(Function(SongItem) onUpdateTrigger) async {
     // New songs found on device

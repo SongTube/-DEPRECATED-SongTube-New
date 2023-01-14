@@ -1,17 +1,24 @@
+import 'package:provider/provider.dart';
 import 'package:songtube/internal/models/song_item.dart';
 import 'package:songtube/main.dart';
+import 'package:songtube/providers/download_provider.dart';
+import 'package:songtube/providers/media_provider.dart';
+import 'package:songtube/screens/id3_editor.dart';
 import 'package:songtube/ui/sheet_phill.dart';
 import 'package:songtube/ui/sheets/add_to_playlist.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/tiles/song_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:songtube/ui/ui_utils.dart';
 
 class SongOptionsSheet extends StatelessWidget {
   const SongOptionsSheet({
     required this.song,
+    this.isDownload = false,
     Key? key}) : super(key: key);
   final SongItem song;
+  final bool isDownload;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -65,7 +72,16 @@ class SongOptionsSheet extends StatelessWidget {
             subtitle: 'Open ID3 tags and artwork editor',
             icon: LineIcons.tags,
             onTap: () {
-
+              Navigator.pop(context);
+              // Open ID3 Tags Editor
+              UiUtils.pushRouteAsync(context, ID3Editor(song: song.mediaItem)).then((value) {
+                // Refresh the song
+                if (isDownload) {
+                  Provider.of<DownloadProvider>(navigatorKey.currentState!.context, listen: false).refreshSong(song.id);
+                } else {
+                  Provider.of<MediaProvider>(navigatorKey.currentState!.context, listen: false).refreshSong(song.id);
+                }
+              });
             }
           ),
         ],

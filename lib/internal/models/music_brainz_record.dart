@@ -28,7 +28,7 @@ class MusicBrainzRecord {
   static MusicBrainzRecord fromMap(Map<String, dynamic> map) {
     return MusicBrainzRecord(
       id: map.containsKey('releases')
-        ? map['releases'].isNotEmpty ? map['releases'][0]['id'] : null : null,
+        ? map['releases'].isNotEmpty ? map['releases'][0]['id'] : null : map['id'],
       title: MusicBrainzAPI.getTitle(map),
       artist: MusicBrainzAPI.getArtist(map),
       album: MusicBrainzAPI.getAlbum(map),
