@@ -3,6 +3,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/languages/languages.dart';
 import 'package:songtube/providers/content_provider.dart';
@@ -28,6 +29,9 @@ void main() async {
 
   // Initialize Global Variables
   await initGlobals();
+
+  // Initialize App Settings
+  await AppSettings.initSettings();
 
   // Run App
   runApp(const SongTube());
