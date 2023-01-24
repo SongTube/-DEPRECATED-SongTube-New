@@ -93,6 +93,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
       downloadType: DownloadType.audio,
       audioStream: selectedAudio,
       tags: mainTags,
+      conversionTask: enableConversion ? AppSettings.defaultFfmpegTask : null
     )..filters = filters;
     final downloadProvider = Provider.of<DownloadProvider>(context, listen: false);
     downloadProvider.handleDownloadItem(info: downloadInfo);

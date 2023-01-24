@@ -16,6 +16,7 @@ class ShimmerContainer extends StatelessWidget {
   final double? aspectRatio;
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6);
     return aspectRatio != null
       ? AspectRatio(
           aspectRatio: aspectRatio!,
@@ -25,7 +26,7 @@ class ShimmerContainer extends StatelessWidget {
             margin: margin ?? EdgeInsets.zero,
             decoration: BoxDecoration(
               borderRadius: borderRadius ?? BorderRadius.zero,
-              color: Theme.of(context).scaffoldBackgroundColor
+              color: color
             ),
           ),
         )
@@ -35,7 +36,7 @@ class ShimmerContainer extends StatelessWidget {
           margin: margin ?? EdgeInsets.zero,
           decoration: BoxDecoration(
             borderRadius: borderRadius ?? BorderRadius.zero,
-            color: Theme.of(context).scaffoldBackgroundColor
+            color: color
           ),
         );
   }

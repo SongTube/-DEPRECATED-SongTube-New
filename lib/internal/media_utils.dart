@@ -24,11 +24,12 @@ class MediaUtils {
 
   // Apply Tags and Metadata to a Song
   static Future<String?> writeMetadata(String path, AudioTags userTags) async {
-    try {
+      // Create a temporal file from the original one
+      final tmp = await File(path).copy("${(await getExternalStorageDirectory())!.path}/${path.split('/').last}");
       // Check if audio file is AAC format TODO
       // Apply all Tags
       await tagger.AudioTagger.writeAllTags(
-        songPath: path,
+        songPath: tmp.path,
         tags: tags.AudioTags(
           title: userTags.titleController.text,
           album: userTags.albumController.text,
@@ -42,7 +43,7 @@ class MediaUtils {
       // Apply Artwork if non null
       if (userTags.artwork != null) {
         File image = File("${(await getExternalStorageDirectory())!.path}/${MediaUtils.getRandomString(5)}");
-        if (userTags.artwork is File || userTags.artwork is String) {
+        if (userTags.artwork is File || (userTags.artwork is String && !isURL(userTags.artwork))) {
           image.writeAsBytes((await tagger.AudioTagger.cropToSquare(userTags.artwork is File ? userTags.artwork : File(userTags.artwork)))!.toList());
         } else if (userTags.artwork is Uint8List) {
           image.writeAsBytes(userTags.artwork);
@@ -50,16 +51,17 @@ class MediaUtils {
           final response = await get(Uri.parse(userTags.artwork));
           image.writeAsBytes(response.bodyBytes);
         }
-        await ArtworkManager.writeArtwork(path, artwork: image, forceRefresh: true, embedToSong: true);
-        await ArtworkManager.writeThumbnail(path, artwork: image, forceRefresh: true);
+        await ArtworkManager.writeArtwork(tmp.path, artwork: image, forceRefresh: true, embedToSong: true);
+        await ArtworkManager.writeThumbnail(tmp.path, artwork: image, forceRefresh: true);
+        // Delete the original file and copy the new (modified) one
+        await File(path).delete();
+        await tmp.copy(path);
+        // Delete temporal file
+        await tmp.delete();
+        // Clear images cache
         imageCache.clear();
         imageCache.clearLiveImages();
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
     return null;
   }
 

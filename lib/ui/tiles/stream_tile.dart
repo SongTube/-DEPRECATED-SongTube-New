@@ -145,7 +145,7 @@ class StreamTileExpanded extends StatelessWidget {
         CachedNetworkImage(
           fadeInDuration: const Duration(milliseconds: 300),
           placeholder: (context, _) {
-            return Container(color: Theme.of(context).cardColor);
+            return Container(color: Theme.of(context).cardColor.withOpacity(0.6));
           },
           imageUrl: stream.thumbnails?.maxresdefault ?? '',
           fit: BoxFit.cover,

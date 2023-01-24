@@ -140,8 +140,6 @@ class DownloadItem {
       onDownloadCompleted(id, await toSongItem());
     }
   }
-  
-  
 
   // Start Downloading our Stream
   Future<File?> _downloadStream(dynamic stream, {required String context, File? output}) async {
@@ -264,8 +262,8 @@ class DownloadItem {
 
   Future<File?> copyDownload({File? file}) async {
     try {
-      final name = (file ?? downloadFile).path.split('/').last;
-      final result = await (file ?? downloadFile).copy('${AppSettings.musicDirectory.path}/$name');
+      final format = (file ?? downloadFile).path.split('/').last.split('.').last;
+      final result = await (file ?? downloadFile).copy('${AppSettings.musicDirectory.path}/${downloadInfo.tags.titleController.text}.$format');
       await (file ?? downloadFile).delete();
       return result;
     } catch (e) {
