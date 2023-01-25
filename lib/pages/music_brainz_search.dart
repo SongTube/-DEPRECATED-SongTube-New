@@ -4,6 +4,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:songtube/internal/models/music_brainz_record.dart';
 import 'package:songtube/services/music_brainz_service.dart';
 import 'package:songtube/ui/animations/blue_page_route.dart';
@@ -52,10 +53,11 @@ class _TagsResultsPageState extends State<MusicBrainzSearch> {
       appBar: AppBar(
         title: Text(
           "MusicBrainz",
-          style: bigTextStyle(context)
+          style: textStyle(context)
         ),
+        titleSpacing: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: Theme.of(context).iconTheme.color),
+          icon: Icon(Iconsax.arrow_left, color: Theme.of(context).iconTheme.color),
           onPressed: () {
             Navigator.pop(context);
           },

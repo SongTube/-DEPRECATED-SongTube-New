@@ -6,11 +6,13 @@ class TextFieldTile extends StatelessWidget {
   final String labelText;
   final IconData icon;
   final TextInputType inputType;
+  final Color? fillColor;
   const TextFieldTile({
     required this.textController,
     required this.labelText,
     required this.icon,
     required this.inputType,
+    this.fillColor,
     Key? key,
   }) : super(key: key);
   @override
@@ -26,7 +28,7 @@ class TextFieldTile extends StatelessWidget {
             color: Theme.of(context).primaryColor
           ),
           filled: true,
-          fillColor: Theme.of(context).scaffoldBackgroundColor,
+          fillColor: fillColor ?? Theme.of(context).scaffoldBackgroundColor,
           border: const UnderlineInputBorder(
             borderSide: BorderSide(
               width: 0, 

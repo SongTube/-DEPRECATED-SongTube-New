@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_fade/image_fade.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/media_utils.dart';
@@ -17,6 +18,7 @@ import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/services/music_brainz_service.dart';
 import 'package:songtube/ui/animations/blue_page_route.dart';
 import 'package:songtube/ui/components/custom_snackbar.dart';
+import 'package:songtube/ui/components/text_icon_button.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/tiles/text_field_tile.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -36,7 +38,7 @@ class ID3Editor extends StatefulWidget {
 class _ID3EditorState extends State<ID3Editor> {
 
   AudioTags tags = AudioTags();
-  String? originalArtwork;
+  AudioTags originalTags = AudioTags();
 
   // Writting Tags Status
   bool processingTags = false;
@@ -57,73 +59,60 @@ class _ID3EditorState extends State<ID3Editor> {
     );
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           AspectRatio(
-            aspectRatio: 4/3,
+            aspectRatio: (16/9),
             child: Stack(
               fit: StackFit.expand,
               children: [
-                _artworkImage(),
-                Container(
-                  color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.2),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: _artworkImage()
                 ),
-                AppBar(
-                  backgroundColor: Colors.transparent,
-                  title: const Text(
-                    'Tags Editor',
-                    style: TextStyle(
-                      fontFamily: 'Product Sans',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 24,
-                      color: Colors.white
-                    ),
-                  ),
-                  leading: IconButton(
-                    icon: Icon(Icons.arrow_back_ios_new_rounded, color: Theme.of(context).iconTheme.color),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  actions: [
-                    GestureDetector(
-                      onTap: () async {
-                        final path = (await FilePicker.platform
-                          .pickFiles(type: FileType.image))?.paths[0];
-                        if (path == null) return;
-                        tags.artwork = path;
-                        setState(() {});
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(16),
-                        child: const Icon(EvaIcons.brushOutline,
-                          color: Colors.white),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 12, right: 12, top: MediaQuery.of(context).padding.top),
+                      height: kToolbarHeight,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Iconsax.arrow_left, color: Theme.of(context).iconTheme.color)
+                          ), 
+                          Text('Tags Editor', style: textStyle(context)),
+                          const Spacer(),
+                          IconButton(
+                            onPressed: () {
+                              manualWriteTags();
+                            },
+                            icon: Icon(Iconsax.search_normal, color: Theme.of(context).iconTheme.color),
+                          ), 
+                        ],
                       ),
                     ),
                   ],
-                ),
+                )
               ],
-            ),
+            )
           ),
           Expanded(
-            child: Transform.translate(
-              offset: const Offset(0, -60),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15)
-                  )
-                ),
-                child: _textfields(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
               ),
+              child: _textfields(),
             ),
           ),
+          _floatingButtons()
         ],
       ),
-      floatingActionButton: _floatingButtons(),
     );
   }
 
@@ -143,139 +132,155 @@ class _ID3EditorState extends State<ID3Editor> {
             placeholder: MemoryImage(kTransparentImage),
             fit: BoxFit.cover,
           ),
+          Container(
+            color: Theme.of(context).cardColor.withOpacity(0.7),
+          )
         ],
       ),
     );
   }
 
   Widget _textfields() {
+    final fillColor = Theme.of(context).scaffoldBackgroundColor;
     return ListView(
-      padding: const EdgeInsets.all(16).copyWith(top: 20, bottom: 50),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(16).copyWith(top: 12, bottom: 12),
       children: [
         // Title TextField
         TextFieldTile(
+          fillColor: fillColor,
           textController: tags.titleController,
           inputType: TextInputType.text,
           labelText: 'Title',
-          icon: EvaIcons.textOutline,
+          icon: Iconsax.text,
         ),
         const SizedBox(height: 16),
         // Album & Artist TextField Row
         TextFieldTile(
+          fillColor: fillColor,
           textController: tags.albumController,
           inputType: TextInputType.text,
           labelText: 'Album',
-          icon: EvaIcons.bookOpenOutline,
+          icon: Iconsax.book,
         ),
         const SizedBox(height: 16),
         // Artist TextField
         TextFieldTile(
+          fillColor: fillColor,
           textController: tags.artistController,
           inputType: TextInputType.text,
           labelText: 'Artist',
-          icon: EvaIcons.personOutline,
+          icon: Iconsax.user,
         ),
         const SizedBox(height: 16),
         // Gender & Date TextField Row
         TextFieldTile(
+          fillColor: fillColor,
           textController: tags.genreController,
           inputType: TextInputType.text,
           labelText: 'Genre',
-          icon: EvaIcons.bookOutline,
+          icon: Iconsax.musicnote,
         ),
         const SizedBox(height: 16),
         // Date TextField
         TextFieldTile(
+          fillColor: fillColor,
           textController: tags.dateController,
           inputType: TextInputType.datetime,
           labelText: 'Date',
-          icon: EvaIcons.calendarOutline,
+          icon: Iconsax.calendar,
         ),
         const SizedBox(height: 16),
         // Disk & Track TextField Row
         TextFieldTile(
+          fillColor: fillColor,
           textController: tags.discController,
           inputType: TextInputType.number,
           labelText: 'Disc',
-          icon: EvaIcons.playCircleOutline
+          icon: Iconsax.happyemoji4
         ),
         const SizedBox(height: 16),
         // Track TextField
         TextFieldTile(
+          fillColor: fillColor,
           textController: tags.trackController,
           inputType: TextInputType.number,
           labelText: 'Track',
-          icon: EvaIcons.musicOutline,
+          icon: Iconsax.sound4,
         ),
         const Divider(color: Colors.transparent),
-        ListTile(
-          onTap: () {
-            setState(() {
-              tags.artwork = originalArtwork;
-            });
-          },
-          title: Text(
-            "Restore Artwork",
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.w800
-            ),
-          ),
-        ),
       ],
     );
   }
 
   Widget _floatingButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        // Search on MusicBrainz
-        FloatingActionButton(
-          heroTag: 'fabSearch',
-          backgroundColor: Theme.of(context).cardColor,
-          foregroundColor: Colors.white,
-          child: Icon(Icons.search,
-            color: Theme.of(context).primaryColor),
-          onPressed: () async {
-            manualWriteTags();
-          },
-        ),
-        const SizedBox(width: 16),
-        // Save Audio Information
-        FloatingActionButton.extended(
-          heroTag: 'fabSave',
-          backgroundColor: Theme.of(context).primaryColor,
-          foregroundColor: Colors.white,
-          label: Row(
-            children: [
-              const Icon(Icons.save_outlined,
-                color: Colors.white),
-              const SizedBox(width: 8),
-              Text(
-                processingTags ? 'Applying...' : 'Apply',
-                style: textStyle(context)
-              )
-            ],
+    return Container(
+      padding: const EdgeInsets.only(bottom: 24, top: 24, left: 12, right: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Search on MusicBrainz
+          FloatingActionButton.extended(
+            heroTag: 'fabSearch',
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            foregroundColor: Colors.white,
+            label: Row(
+              children: [
+                Icon(Iconsax.undo,
+                  color: Theme.of(context).primaryColor),
+                const SizedBox(width: 12),
+                Text(
+                  'Restore Tags',
+                  style: subtitleTextStyle(context, bold: true),
+                )
+              ],
+            ),
+            onPressed: () {
+              setState(() {
+                tags = originalTags;
+              });
+            },
           ),
-          onPressed: () async {
-            setState(() {
-              processingTags = true;
-            });
-            final status = await MediaUtils.writeMetadata(widget.song.id, tags);
-            if (status != null) {
-              CustomSnackbar.showSnackBar(
-                icon: Iconsax.warning_2,
-                title: 'Audio format not compatible',
-                duration: const Duration(seconds: 2),
-                context: context,
-              );
-            }
-            // ignore: use_build_context_synchronously
-            Navigator.pop(context);
-          },
-        ),
-      ],
+          const SizedBox(width: 16),
+          // Save Audio Information
+          FloatingActionButton.extended(
+            heroTag: 'fabSave',
+            backgroundColor: Theme.of(context).primaryColor,
+            foregroundColor: Colors.white,
+            label: Row(
+              children: [
+                const Icon(Iconsax.save_2,
+                  color: Colors.white),
+                const SizedBox(width: 12),
+                Text(
+                  processingTags ? 'Applying...' : 'Apply',
+                  style: subtitleTextStyle(context, bold: true)
+                )
+              ],
+            ),
+            onPressed: () async {
+              setState(() {
+                processingTags = true;
+              });
+              final status = await MediaUtils.writeMetadata(widget.song.id, tags);
+              if (status != null) {
+                CustomSnackbar.showSnackBar(
+                  icon: Iconsax.warning_2,
+                  title: 'Audio format not compatible',
+                  duration: const Duration(seconds: 2),
+                  context: context,
+                );
+              }
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -290,7 +295,7 @@ class _ID3EditorState extends State<ID3Editor> {
     tags.trackController.text = audioTags?.track ?? '';
     setState(() {});
     tags.artwork = widget.song.extras?['artwork'];
-    originalArtwork = tags.artwork;
+    originalTags = tags;
     setState(() {});
   }
 
