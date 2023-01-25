@@ -4,9 +4,17 @@ import 'package:android_path_provider/android_path_provider.dart';
 import 'package:songtube/internal/ffmpeg/converter.dart';
 import 'package:songtube/internal/global.dart';
 
+// FFmpeg Related Keys
 const defaultFfmpegTaskKey = 'defaultFfmpegTask';
+
+// App Save Directories Keys
 const musicDirectoryKey = 'music_directory';
 const videoDirectoryKey = 'video_directory';
+
+// Music Player Keys
+const enableMusicPlayerBlurKey = 'enablePlayerBlurKey';
+const musicPlayerBackdropOpacityKey = 'musicPlayerBlurOpacity';
+const musicPlayerBlurStrenghtKey = 'musicPlayerBlurStrenght';
 
 class AppSettings {
 
@@ -67,4 +75,23 @@ class AppSettings {
     sharedPreferences.setString(videoDirectoryKey, path);
   }
 
+  // MusicPlayer Settings
+  static bool get enableMusicPlayerBlur {
+    return sharedPreferences.getBool(enableMusicPlayerBlurKey) ?? true;
+  }
+  static set enableMusicPlayerBlur(bool value) {
+    sharedPreferences.setBool(enableMusicPlayerBlurKey, value);
+  }
+  static double get musicPlayerBackdropOpacity {
+    return sharedPreferences.getDouble(musicPlayerBackdropOpacityKey) ?? 0.5;
+  }
+  static set musicPlayerBackdropOpacity(double value) {
+    sharedPreferences.setDouble(musicPlayerBackdropOpacityKey, value);
+  }
+  static double get musicPlayerBlurStrenght {
+    return sharedPreferences.getDouble(musicPlayerBlurStrenghtKey) ?? 30;
+  }
+  static set musicPlayerBlurStrenght(double value) {
+    sharedPreferences.setDouble(musicPlayerBlurStrenghtKey, value);
+  }
 }

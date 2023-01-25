@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/players/music_player/background_carousel.dart';
@@ -21,12 +24,25 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
 
   // MediaProvider
   MediaProvider get mediaProvider => Provider.of<MediaProvider>(context, listen: false);
-
+  // DownloadProvider
+  DownloadProvider get downloadProvider => Provider.of<DownloadProvider>(context, listen: false);
   // UiProvider
   UiProvider get uiProvider => Provider.of(context, listen: false);
 
   // Current Song
-  SongItem get song => mediaProvider.songs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id);
+  SongItem get song => mediaProvider.currentPlaylistName == 'Downloads'
+    ? downloadProvider.downloadedSongs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id)
+    : mediaProvider.songs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id);
+
+  @override
+  void initState() {
+    audioHandler.mediaItem.listen((event) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +52,27 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
       child: AnimatedBuilder(
         animation: uiProvider.fwController.animationController,
         builder: (context, child) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: Theme.of(context).cardColor.withOpacity(
-                Tween<double>(begin: 1.0, end: 0.95).animate(uiProvider.fwController.animationController).value
+          return Stack(
+            children: [
+              // Blurred Background
+              BackgroundCarousel(
+                enabled: AppSettings.enableMusicPlayerBlur,
+                backgroundImage: File(song.thumbnailUri!.path),
+                backdropColor: song.palette!.vibrant ?? Theme.of(context).cardColor,
+                backdropOpacity: AppSettings.musicPlayerBackdropOpacity,
+                blurIntensity: AppSettings.musicPlayerBlurStrenght,
+                transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
               ),
-            ),
-            padding: EdgeInsets.only(top: Tween<double>(begin: 0, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value),
-            child: child
+              // Player UI
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Colors.transparent,
+                ),
+                padding: EdgeInsets.only(top: Tween<double>(begin: 0, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value),
+                child: child
+              ),
+            ],
           );
         },
         child: Column(
