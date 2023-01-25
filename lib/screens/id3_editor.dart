@@ -9,6 +9,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/music_brainz_record.dart';
@@ -59,7 +60,7 @@ class _ID3EditorState extends State<ID3Editor> {
     );
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).cardColor,
       body: Column(
         children: [
           AspectRatio(
@@ -105,12 +106,22 @@ class _ID3EditorState extends State<ID3Editor> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Theme.of(context).cardColor,
               ),
               child: _textfields(),
             ),
           ),
-          _floatingButtons()
+          StreamBuilder<MediaItem?>(
+            stream: audioHandler.mediaItem,
+            builder: (context, snapshot) {
+              final playerOpened = snapshot.data != null;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.ease,
+                margin: EdgeInsets.only(bottom: playerOpened ? (kToolbarHeight * 1.6)+24 : 0),
+                child: _floatingButtons());
+            }
+          )
         ],
       ),
     );
@@ -133,7 +144,7 @@ class _ID3EditorState extends State<ID3Editor> {
             fit: BoxFit.cover,
           ),
           Container(
-            color: Theme.of(context).cardColor.withOpacity(0.7),
+            color: Theme.of(context).cardColor.withOpacity(0.5),
           )
         ],
       ),
@@ -141,7 +152,7 @@ class _ID3EditorState extends State<ID3Editor> {
   }
 
   Widget _textfields() {
-    final fillColor = Theme.of(context).scaffoldBackgroundColor;
+    final fillColor = Theme.of(context).cardColor;
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16).copyWith(top: 12, bottom: 12),
@@ -215,11 +226,7 @@ class _ID3EditorState extends State<ID3Editor> {
 
   Widget _floatingButtons() {
     return Container(
-      padding: const EdgeInsets.only(bottom: 24, top: 24, left: 12, right: 12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
-      ),
+      padding: const EdgeInsets.only(left: 12, right: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

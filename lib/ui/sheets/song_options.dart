@@ -74,7 +74,7 @@ class SongOptionsSheet extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               // Open ID3 Tags Editor
-              UiUtils.pushRouteAsync(context, ID3Editor(song: song.mediaItem)).then((value) {
+              UiUtils.pushRouteAsync(navigatorKey.currentState!.context, ID3Editor(song: song.mediaItem)).then((value) {
                 // Refresh the song
                 if (isDownload) {
                   Provider.of<DownloadProvider>(navigatorKey.currentState!.context, listen: false).refreshSong(song.id);

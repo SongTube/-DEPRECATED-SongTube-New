@@ -18,6 +18,7 @@ class UiUtils {
     // Previous values for the FancyScaffold position variables
     final navbarAnimationValue = uiProvider.fwController.navbarAnimationController.value;
     final navbarScrollStatus = uiProvider.fwController.navbarScrolledDown;
+    uiProvider.fwController.lockNotificationListener = true;
     // Set FancyScaffold position variables so that the MediaPlayer
     // removes the bottom padding with animation
     uiProvider.fwController.navbarAnimationController.animateTo(0);
@@ -31,6 +32,7 @@ class UiUtils {
     // so that we restore the MediaPlayer bottom padding with animation
     uiProvider.fwController.navbarScrolledDown = navbarScrollStatus;
     uiProvider.fwController.navbarAnimationController.animateTo(navbarAnimationValue);
+    uiProvider.fwController.lockNotificationListener = false;
     return result;
   }
 

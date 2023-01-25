@@ -8,6 +8,7 @@ import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/animations/show_up.dart';
@@ -232,6 +233,9 @@ class FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateMi
             },
             child: NotificationListener<ScrollUpdateNotification>(
               onNotification: (ScrollUpdateNotification details) {
+                if (widget.floatingWidgetController?.lockNotificationListener ?? false) {
+                  return false;
+                }
                 if (details.metrics.axis == Axis.horizontal) return false;
                 pixelsScrolled = (pixelsScrolled + (details.scrollDelta ?? 0).abs()).clamp(0, 100)/100;
                 if ((details.scrollDelta ?? 0) > 0.0 && details.metrics.axis == Axis.vertical) {
@@ -572,6 +576,10 @@ class FloatingWidgetController{
 
   /// Navigator Key
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  // Determine if we have to listen for scrolling notifications to turn up/down
+  // the floating widget based on the navigation bar visibility
+  bool lockNotificationListener = false;
 
   /// Determine if the panelController is attached to an instance
   /// of the SlidingUpPanel (this property must return true before any other
