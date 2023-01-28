@@ -118,7 +118,7 @@ class _ID3EditorState extends State<ID3Editor> {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 400),
                 curve: Curves.ease,
-                margin: EdgeInsets.only(bottom: playerOpened ? (kToolbarHeight * 1.6)+24 : 0),
+                margin: EdgeInsets.only(bottom: playerOpened ? (kToolbarHeight * 1.6)+34 : 0),
                 child: _floatingButtons());
             }
           )

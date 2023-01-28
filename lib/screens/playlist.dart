@@ -117,8 +117,8 @@ class PlaylistScreen extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 16)
                           .copyWith(bottom: playerOpened
-                            ? (kToolbarHeight * 1.6)+(kToolbarHeight)+48
-                            : (kToolbarHeight * 1.6)+24),
+                            ? (kToolbarHeight * 1.6)+(kToolbarHeight)+34
+                            : (kToolbarHeight * 1.6)),
                       ),
                     )
                   ],
@@ -136,7 +136,7 @@ class PlaylistScreen extends StatelessWidget {
             color: Colors.transparent,
             duration: const Duration(milliseconds: 400),
             curve: Curves.ease,
-            margin: EdgeInsets.only(bottom: playerOpened ? (kToolbarHeight * 1.6)+24 : 0),
+            margin: EdgeInsets.only(bottom: playerOpened ? (kToolbarHeight * 1.6)+14 : 0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

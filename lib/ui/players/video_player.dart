@@ -41,11 +41,18 @@ class _VideoPlayerState extends State<VideoPlayer> {
           );
         },
         child: Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30)
             ),
+            boxShadow: uiProvider.fwController.lockNotificationListener
+              ? [BoxShadow(
+                  blurRadius: 12,
+                  offset: const Offset(0,0),
+                  color: Theme.of(context).shadowColor.withOpacity(0.2)
+                )]
+              : null,
           ),
           child: GestureDetector(
             onTap: () {

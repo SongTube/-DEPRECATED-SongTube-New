@@ -50,27 +50,40 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
       child: AnimatedBuilder(
         animation: uiProvider.fwController.animationController,
         builder: (context, child) {
-          return Stack(
-            children: [
-              // Blurred Background
-              BackgroundCarousel(
-                enabled: AppSettings.enableMusicPlayerBlur,
-                backgroundImage: File(song.thumbnailUri!.path),
-                backdropColor: song.palette!.vibrant ?? Theme.of(context).cardColor,
-                backdropOpacity: AppSettings.musicPlayerBackdropOpacity,
-                blurIntensity: AppSettings.musicPlayerBlurStrenght,
-                transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
-              ),
-              // Player UI
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Colors.transparent,
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              color: Theme.of(context).cardColor,
+              boxShadow: uiProvider.fwController.lockNotificationListener
+              ? [BoxShadow(
+                  blurRadius: 12,
+                  offset: const Offset(0,0),
+                  color: Theme.of(context).shadowColor.withOpacity(0.2)
+                )]
+              : null,
+            ),
+            child: Stack(
+              children: [
+                // Blurred Background
+                BackgroundCarousel(
+                  enabled: AppSettings.enableMusicPlayerBlur,
+                  backgroundImage: File(song.thumbnailUri!.path),
+                  backdropColor: song.palette!.vibrant ?? Theme.of(context).cardColor,
+                  backdropOpacity: AppSettings.musicPlayerBackdropOpacity,
+                  blurIntensity: AppSettings.musicPlayerBlurStrenght,
+                  transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
                 ),
-                padding: EdgeInsets.only(top: Tween<double>(begin: 0, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value),
-                child: child
-              ),
-            ],
+                // Player UI
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.transparent,
+                  ),
+                  padding: EdgeInsets.only(top: Tween<double>(begin: 0, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value),
+                  child: child
+                ),
+              ],
+            ),
           );
         },
         child: Column(
