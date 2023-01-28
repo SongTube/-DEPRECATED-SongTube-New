@@ -43,6 +43,8 @@ class _PlaylistArtworkState extends State<PlaylistArtwork> {
   void extractArtwork() async {
     extractArtworkProcess = false;
     await ArtworkManager.writeArtwork(widget.mediaSet.songs.first.id);
+    imageCache.clear();
+    imageCache.clearLiveImages();
     setState(() {});
   }
 
@@ -91,7 +93,7 @@ class _PlaylistArtworkState extends State<PlaylistArtwork> {
   }
 
   Widget _image() {
-    final artwork = widget.mediaSet.artwork;
+    final artwork = widget.mediaSet.artwork ?? artworkFile(widget.mediaSet.songs.first.id);
     const fit = BoxFit.cover;
     if (artwork is File) {
       return Image.file(artwork, fit: fit, width: double.infinity, height: double.infinity);

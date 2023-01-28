@@ -15,6 +15,10 @@ class PlaylistsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     PlaylistProvider playlistProvider = Provider.of(context);
     final globalPlaylists = playlistProvider.globalPlaylists;
+    // Inject liked songs as Playlist
+    if (playlistProvider.favorites.songs.isNotEmpty) {
+      globalPlaylists.insert(0, playlistProvider.favorites);
+    }
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: globalPlaylists.isNotEmpty ? GridView.builder(
