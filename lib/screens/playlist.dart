@@ -91,31 +91,41 @@ class PlaylistScreen extends StatelessWidget {
               stream: audioHandler.mediaItem,
               builder: (context, snapshot) {
                 final playerOpened = snapshot.data != null;
-                return ListView.builder(
-                  padding: const EdgeInsets.only(top: 16)
-                    .copyWith(bottom: playerOpened
-                      ? (kToolbarHeight * 1.6)+(kToolbarHeight)+48
-                      : (kToolbarHeight * 1.6)+24),
+                return CustomScrollView(
                   physics: const BouncingScrollPhysics(),
-                  itemCount: mediaSet.songs.length,
-                  itemBuilder: (context, index) {
-                    final song = mediaSet.songs[index];
-                    return SongTile(
-                      song: song,
-                      onPlay: () async {
-                        mediaProvider.currentPlaylistName = mediaSet.name;
-                        final queue = List<MediaItem>.generate(mediaSet.songs.length, (index) {
-                          return mediaSet.songs[index].mediaItem;
-                        });
-                        uiProvider.currentPlayer = CurrentPlayer.music;
-                        mediaProvider.playSong(queue, index);
-                      }
-                    );
-                  }
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 12),
+                    ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final song = mediaSet.songs[index];
+                        return SongTile(
+                          song: song,
+                          onPlay: () async {
+                            mediaProvider.currentPlaylistName = mediaSet.name;
+                            final queue = List<MediaItem>.generate(mediaSet.songs.length, (index) {
+                              return mediaSet.songs[index].mediaItem;
+                            });
+                            uiProvider.currentPlayer = CurrentPlayer.music;
+                            mediaProvider.playSong(queue, index);
+                          }
+                        );
+                      }, childCount: mediaSet.songs.length),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 16)
+                          .copyWith(bottom: playerOpened
+                            ? (kToolbarHeight * 1.6)+(kToolbarHeight)+48
+                            : (kToolbarHeight * 1.6)+24),
+                      ),
+                    )
+                  ],
                 );
               }
             ),
-          ),
+          )
         ],
       ),
       floatingActionButton: StreamBuilder<MediaItem?>(
