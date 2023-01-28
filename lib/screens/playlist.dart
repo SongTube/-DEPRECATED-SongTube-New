@@ -49,6 +49,7 @@ class PlaylistScreen extends StatelessWidget {
                             icon: Icon(Iconsax.arrow_left, color: Theme.of(context).iconTheme.color)
                           ), 
                           const Spacer(),
+                          if (mediaSet.id != null)
                           IconButton(
                             onPressed: () {
                               Navigator.pop(context);
