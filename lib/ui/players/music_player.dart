@@ -30,9 +30,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
   UiProvider get uiProvider => Provider.of(context, listen: false);
 
   // Current Song
-  SongItem get song => mediaProvider.currentPlaylistName == 'Downloads'
-    ? downloadProvider.downloadedSongs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id)
-    : mediaProvider.songs.firstWhere((element) => element.id == audioHandler.mediaItem.value!.id);
+  SongItem get song => SongItem.fromMediaItem(audioHandler.mediaItem.value!);
 
   @override
   void initState() {

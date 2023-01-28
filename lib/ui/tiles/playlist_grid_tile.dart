@@ -25,7 +25,7 @@ class PlaylistGridTile extends StatelessWidget {
               height: 100,
               width: 100,
               margin: const EdgeInsets.only(left: 8, bottom: 8, right: 8),
-              child: PlaylistArtwork(playlist: playlist)),
+              child: PlaylistArtwork(mediaSet: playlist.toMediaSet())),
             // Album Details
             Padding(
               padding: const EdgeInsets.all(4.0),

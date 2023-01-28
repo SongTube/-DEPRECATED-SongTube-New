@@ -24,7 +24,7 @@ class PlaylistsPage extends StatelessWidget {
           child: PlaylistGridTile(
             playlist: globalPlaylists[index],
             onTap: () {
-              UiUtils.pushRouteAsync(context, PlaylistScreen(playlistId: globalPlaylists[index].id));
+              UiUtils.pushRouteAsync(context, PlaylistScreen(mediaSet: globalPlaylists[index].toMediaSet()));
             },
           ),
         );

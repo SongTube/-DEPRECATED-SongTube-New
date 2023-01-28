@@ -1,3 +1,4 @@
+import 'package:songtube/internal/models/media_set.dart';
 import 'package:songtube/internal/models/song_item.dart';
 
 class MediaItemAlbum {
@@ -11,6 +12,15 @@ class MediaItemAlbum {
     required this.albumTitle,
     required this.mediaItems
   });
+
+  MediaSet toMediaSet() {
+    return MediaSet(
+      artwork: mediaItems.first.artworkPath,
+      name: albumTitle,
+      author: albumAuthor,
+      songs: mediaItems
+    );
+  }
 
   // Retrieve a list of MediaItemAlbum from a List of MediaItem
   static List<MediaItemAlbum> fetchAlbums(List<SongItem> songs) {
@@ -46,6 +56,14 @@ class MediaItemArtist {
     required this.mediaItems
   });
 
+  MediaSet toMediaSet() {
+    return MediaSet(
+      artwork: mediaItems.first.artworkPath,
+      name: artistName,
+      songs: mediaItems
+    );
+  }
+
   static List<MediaItemArtist> fetchArtists(List<SongItem> songs) {
     List<MediaItemArtist> _artists = [];
     for (final song in songs) {
@@ -72,6 +90,14 @@ class MediaItemGenre {
 
   String genreName;
   List<SongItem> mediaItems;
+
+  MediaSet toMediaSet() {
+    return MediaSet(
+      artwork: mediaItems.first.artworkPath,
+      name: genreName,
+      songs: mediaItems
+    );
+  }
 
   MediaItemGenre({
     required this.genreName,

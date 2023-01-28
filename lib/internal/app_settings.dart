@@ -83,13 +83,13 @@ class AppSettings {
     sharedPreferences.setBool(enableMusicPlayerBlurKey, value);
   }
   static double get musicPlayerBackdropOpacity {
-    return sharedPreferences.getDouble(musicPlayerBackdropOpacityKey) ?? 0.5;
+    return sharedPreferences.getDouble(musicPlayerBackdropOpacityKey) ?? 0.2;
   }
   static set musicPlayerBackdropOpacity(double value) {
     sharedPreferences.setDouble(musicPlayerBackdropOpacityKey, value);
   }
   static double get musicPlayerBlurStrenght {
-    return sharedPreferences.getDouble(musicPlayerBlurStrenghtKey) ?? 30;
+    return sharedPreferences.getDouble(musicPlayerBlurStrenghtKey) ?? 34;
   }
   static set musicPlayerBlurStrenght(double value) {
     sharedPreferences.setDouble(musicPlayerBlurStrenghtKey, value);

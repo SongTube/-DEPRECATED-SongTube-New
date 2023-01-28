@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/models/media_set.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/providers/playlist_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
@@ -14,15 +15,14 @@ import 'package:songtube/ui/tiles/song_tile.dart';
 
 class PlaylistScreen extends StatelessWidget {
   const PlaylistScreen({
-    required this.playlistId,
+    required this.mediaSet,
     Key? key}) : super(key: key);
-  final String playlistId;
+  final MediaSet mediaSet;
   @override
   Widget build(BuildContext context) {
     MediaProvider mediaProvider = Provider.of(context);
     PlaylistProvider playlistProvider = Provider.of(context);
     UiProvider uiProvider = Provider.of(context);
-    final playlist = playlistProvider.globalPlaylists.firstWhere((element) => element.id == playlistId);
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       body: Column(
@@ -32,7 +32,7 @@ class PlaylistScreen extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                PlaylistArtwork(playlist: playlist, color: Theme.of(context).cardColor, opacity: 0.7, shadowIntensity: 0.2, shadowSpread: 24, enableHeroAnimation: false),
+                PlaylistArtwork(mediaSet: mediaSet, color: Theme.of(context).cardColor, opacity: 0.7, shadowIntensity: 0.2, shadowSpread: 24, enableHeroAnimation: false),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,16 +67,16 @@ class PlaylistScreen extends StatelessWidget {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(playlist.name, style: bigTextStyle(context)),
+                              Text(mediaSet.name, style: bigTextStyle(context)),
                               const SizedBox(width: 2),
-                              playlist.favorite
+                              mediaSet.favorite ?? false
                                 ? const FadeInTransition(
                                     duration: Duration(milliseconds: 500),
                                     child: Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 18))
                                 : const SizedBox()
                             ],
                           ),
-                          Text(playlist.songs.isEmpty ? 'Empty' : '${playlist.songs.length} songs', style: smallTextStyle(context))
+                          Text(mediaSet.songs.isEmpty ? 'Empty' : '${mediaSet.songs.length} songs', style: smallTextStyle(context))
                         ],
                       ),
                     ),
@@ -96,15 +96,15 @@ class PlaylistScreen extends StatelessWidget {
                       ? (kToolbarHeight * 1.6)+(kToolbarHeight)+48
                       : (kToolbarHeight * 1.6)+24),
                   physics: const BouncingScrollPhysics(),
-                  itemCount: playlist.songs.length,
+                  itemCount: mediaSet.songs.length,
                   itemBuilder: (context, index) {
-                    final song = playlist.songs[index];
+                    final song = mediaSet.songs[index];
                     return SongTile(
                       song: song,
                       onPlay: () async {
-                        mediaProvider.currentPlaylistName = playlist.name;
-                        final queue = List<MediaItem>.generate(playlist.songs.length, (index) {
-                          return playlist.songs[index].mediaItem;
+                        mediaProvider.currentPlaylistName = mediaSet.name;
+                        final queue = List<MediaItem>.generate(mediaSet.songs.length, (index) {
+                          return mediaSet.songs[index].mediaItem;
                         });
                         uiProvider.currentPlayer = CurrentPlayer.music;
                         mediaProvider.playSong(queue, index);
@@ -129,9 +129,10 @@ class PlaylistScreen extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (mediaSet.id != null)
                 InkWell(
                   onTap: () {
-                    playlistProvider.favoriteGlobalPlaylist(playlist.id);
+                    playlistProvider.favoriteGlobalPlaylist(mediaSet.id!);
                   },
                   child: Container(
                     decoration: BoxDecoration( 
@@ -150,9 +151,9 @@ class PlaylistScreen extends StatelessWidget {
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 500),
                       child: Icon(
-                        playlist.favorite ? Icons.star_rounded : Icons.star_outline_rounded,
-                        key: ValueKey('${playlist.favorite}+${playlist.id}'),
-                        color: playlist.favorite ? Colors.orangeAccent : Theme.of(context).iconTheme.color)),
+                        (mediaSet.favorite ?? false) ? Icons.star_rounded : Icons.star_outline_rounded,
+                        key: ValueKey('${mediaSet.favorite}+${mediaSet.id}'),
+                        color: (mediaSet.favorite ?? false) ? Colors.orangeAccent : Theme.of(context).iconTheme.color)),
                   ),
                 ),
                 InkWell(
@@ -178,15 +179,15 @@ class PlaylistScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    mediaProvider.currentPlaylistName = playlist.name;
-                    final queue = List<MediaItem>.generate(playlist.songs.length, (index) {
-                      return playlist.songs[index].mediaItem;
+                    mediaProvider.currentPlaylistName = mediaSet.name;
+                    final queue = List<MediaItem>.generate(mediaSet.songs.length, (index) {
+                      return mediaSet.songs[index].mediaItem;
                     });
                     mediaProvider.playSong(queue, 0);
                   },
                   child: Container(
                     decoration: BoxDecoration( 
-                      color: playlist.songs.first.palette!.vibrant,
+                      color: mediaSet.songs.first.palette!.vibrant,
                       borderRadius: BorderRadius.circular(100),
                       boxShadow: [
                         BoxShadow(

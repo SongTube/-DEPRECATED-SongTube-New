@@ -102,7 +102,7 @@ class SongItem {
       displaySubtitle: item.displaySubtitle,
       displayDescription: item.displayDescription,
       lastModified: stats.changed,
-      palette: item.extras != null ? item.extras!['palette'] : null
+      palette: item.extras != null ? ColorsPalette.fromMap(item.extras!['palette']) : null
     );
   }
 

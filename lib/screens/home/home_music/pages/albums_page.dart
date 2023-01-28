@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/models/media_item_models.dart';
 import 'package:songtube/providers/media_provider.dart';
+import 'package:songtube/screens/playlist.dart';
 import 'package:songtube/ui/tiles/album_card_tile.dart';
+import 'package:songtube/ui/ui_utils.dart';
 
 class AlbumsPage extends StatelessWidget {
   const AlbumsPage({ Key? key }) : super(key: key);
@@ -23,9 +25,7 @@ class AlbumsPage extends StatelessWidget {
           child: AlbumCardTile(
             album: albums[index],
             onTap: (album) {
-              //Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              //  return PlaylistScreen(playlistId: globalPlaylists[index].id);
-              //}));
+              UiUtils.pushRouteAsync(context, PlaylistScreen(mediaSet: album.toMediaSet()));
             },
           ),
         );

@@ -74,6 +74,7 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         genre: mediaItem.genre,
         duration: mediaItem.duration,
         artUri: Uri.parse('file://${mediaItem.artUri.toString()}'),
+        extras: mediaItem.extras,
       )
     );
   }

@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:songtube/internal/models/media_set.dart';
 import 'package:songtube/internal/models/song_item.dart';
 
 class MediaPlaylist {
@@ -18,6 +19,16 @@ class MediaPlaylist {
     required this.favorite,
     required this.songs,
   });
+
+  MediaSet toMediaSet() {
+    return MediaSet(
+      id: id,
+      artwork: artworkPath,
+      name: name,
+      favorite: favorite,
+      songs: songs
+    );
+  }
 
   MediaPlaylist copyWith({
     String? id,

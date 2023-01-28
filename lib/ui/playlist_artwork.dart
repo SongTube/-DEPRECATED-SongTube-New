@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/media_playlist.dart';
+import 'package:songtube/internal/models/media_set.dart';
+import 'package:validators/validators.dart';
 
 class PlaylistArtwork extends StatefulWidget {
   const PlaylistArtwork({
-    required this.playlist,
+    required this.mediaSet,
     this.useThumbnail = false,
     this.enableHeroAnimation = true,
     this.fit = BoxFit.cover,
@@ -19,7 +22,7 @@ class PlaylistArtwork extends StatefulWidget {
     this.shadowIntensity = 1,
     this.shadowSpread = 12,
     Key? key}) : super(key: key);
-  final MediaPlaylist playlist;
+  final MediaSet mediaSet;
   final bool useThumbnail;
   final bool enableHeroAnimation;
   final BoxFit fit;
@@ -34,8 +37,12 @@ class PlaylistArtwork extends StatefulWidget {
 
 class _PlaylistArtworkState extends State<PlaylistArtwork> {
 
+  // Extract Artwork can only run once
+  bool extractArtworkProcess = true;
+
   void extractArtwork() async {
-    await ArtworkManager.writeArtwork(widget.playlist.songs.first.id);
+    extractArtworkProcess = false;
+    await ArtworkManager.writeArtwork(widget.mediaSet.songs.first.id);
     setState(() {});
   }
 
@@ -75,7 +82,7 @@ class _PlaylistArtworkState extends State<PlaylistArtwork> {
 
     if (widget.enableHeroAnimation) {
       return Hero(
-        tag: widget.playlist.id,
+        tag: widget.mediaSet.id ?? UniqueKey(),
         child: _body()
       );
     } else {
@@ -84,25 +91,21 @@ class _PlaylistArtworkState extends State<PlaylistArtwork> {
   }
 
   Widget _image() {
-    final fit = widget.fit;
-    if (widget.playlist.artworkPath == null) {
-      if (widget.playlist.songs.isNotEmpty) {
-        if (widget.useThumbnail) {
-          return Image.file(widget.playlist.songs.first.thumbnailPath!, key: ValueKey('${widget.playlist.songs.first.title}pl'), fit: fit, width: double.infinity, height: double.infinity);
-        } else {
-          final artwork = artworkFile(widget.playlist.songs.first.modelId);
-          if (artwork.existsSync()) {
-            return Image.file(artworkFile(widget.playlist.songs.first.modelId), key: ValueKey('${widget.playlist.songs.first.title}pl'), fit: fit, width: double.infinity, height: double.infinity);
-          } else {
-            extractArtwork();
-            return Image.asset('assets/images/artworkPlaceholder_big.png', key: ValueKey('${widget.playlist.name}asset'), fit: fit, width: double.infinity, height: double.infinity);
-          }
-        }
-      } else {
-        return Image.asset('assets/images/artworkPlaceholder_big.png', key: ValueKey('${widget.playlist.name}asset'), fit: fit, width: double.infinity, height: double.infinity);
-      }
+    final artwork = widget.mediaSet.artwork;
+    const fit = BoxFit.cover;
+    if (artwork is File) {
+      return Image.file(artwork, fit: fit, width: double.infinity, height: double.infinity);
+    } else if (artwork is Uint8List) {
+      return Image.memory(artwork, fit: fit, width: double.infinity, height: double.infinity);
+    } else if (isURL(artwork)) {
+      return Image.network(artwork, fit: fit, width: double.infinity, height: double.infinity);
+    } else if (artwork is String) {
+      return Image.file(File(artwork), fit: fit, width: double.infinity, height: double.infinity);
     } else {
-      return Image.file(File(widget.playlist.artworkPath!), key: ValueKey('${widget.playlist.name}predef'), fit: fit, width: double.infinity, height: double.infinity);
+      if (extractArtworkProcess) {
+        extractArtwork();
+      }
+      return Image.asset('assets/images/artworkPlaceholder_big.png', key: ValueKey('${widget.mediaSet.name}asset'), fit: fit, width: double.infinity, height: double.infinity);
     }
   }
 
