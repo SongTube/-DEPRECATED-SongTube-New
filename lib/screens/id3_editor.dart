@@ -9,6 +9,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
@@ -301,7 +302,7 @@ class _ID3EditorState extends State<ID3Editor> {
     tags.discController.text = audioTags?.disc ?? '';
     tags.trackController.text = audioTags?.track ?? '';
     setState(() {});
-    tags.artwork = widget.song.extras?['artwork'];
+    tags.artwork = artworkFile(widget.song.id).path;
     originalTags = tags;
     setState(() {});
   }
