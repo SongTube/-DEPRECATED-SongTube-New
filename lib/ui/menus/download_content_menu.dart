@@ -5,6 +5,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
 import 'package:songtube/ui/menus/download_menu/music.dart';
+import 'package:songtube/ui/menus/download_menu/video.dart';
 import 'package:songtube/ui/sheet_phill.dart';
 import 'package:songtube/ui/text_styles.dart';
 
@@ -57,10 +58,8 @@ class DownloadContentMenu extends StatelessWidget {
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
                 builder: (context) {
-                return AudioDownloadMenu(video: content.videoDetails!,
-                  onDownload: () {
-
-                  },
+                return AudioDownloadMenu(
+                  video: content.videoDetails!,
                   onBack: () {
                     Navigator.pop(context);
                     showModalBottomSheet(context: context,
@@ -72,7 +71,23 @@ class DownloadContentMenu extends StatelessWidget {
               });
             }),
             _optionTile(context, title: 'Video', subtitle: 'Choose a video quality from the list and download it', icon: Ionicons.videocam_outline, onTap: () {
-              // Open Music Download Menu
+              // Open Video Download Menu
+              Navigator.pop(context);
+              showModalBottomSheet(context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) {
+                return VideoDownloadMenu(
+                  video: content.videoDetails!,
+                  onBack: () {
+                    Navigator.pop(context);
+                    showModalBottomSheet(context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: ((context) => DownloadContentMenu(content: content)));
+                  }
+                );
+              });
             }),
             _optionTile(context, title: 'Instant', subtitle: 'Instantly start downloading. Tap settings to configure', icon: Ionicons.flash_outline,
               onConfigure: () {

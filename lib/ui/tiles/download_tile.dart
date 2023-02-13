@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:songtube/internal/models/download/download_item.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:validators/validators.dart';
 
 class DownloadQueueTile extends StatefulWidget {
   const DownloadQueueTile({
@@ -102,7 +103,9 @@ class _DownloadQueueTileState extends State<DownloadQueueTile> {
           child: FadeInImage(
             fadeInDuration: const Duration(milliseconds: 200),
             image: widget.item.downloadInfo.tags.artwork is String
-              ? NetworkImage(widget.item.downloadInfo.tags.artwork)
+              ? (isURL(widget.item.downloadInfo.tags.artwork)
+                ? NetworkImage(widget.item.downloadInfo.tags.artwork)
+                : FileImage(File(widget.item.downloadInfo.tags.artwork))) as ImageProvider
               : widget.item.downloadInfo.tags.artwork is File
                 ? FileImage(widget.item.downloadInfo.tags.artwork) as ImageProvider
                 : MemoryImage(widget.item.downloadInfo.tags.artwork),

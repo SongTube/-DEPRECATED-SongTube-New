@@ -31,11 +31,9 @@ import 'package:validators/validators.dart';
 
 class AudioDownloadMenu extends StatefulWidget {
   final YoutubeVideo video;
-  final Function() onDownload;
   final Function() onBack;
   const AudioDownloadMenu({
     required this.video,
-    required this.onDownload,
     required this.onBack,
     Key? key,
   }) : super(key: key);
