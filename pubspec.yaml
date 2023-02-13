@@ -59,9 +59,7 @@ dependencies:
 
   # Audio Tagger, Music Data Extractor
   audio_tagger:
-    git:
-      url: https://github.com/SongTube/audio_tagger.git
-      ref: main
+    path: ../Projects/audio_tagger
 
   # CrossFade Images
   image_fade:
@@ -86,6 +84,7 @@ dependencies:
 
   # App Paths Provider
   path_provider: ^2.0.8
+  android_path_provider: ^0.3.0
 
   # Provider Package
   provider: any
@@ -120,10 +119,17 @@ dependencies:
   # Aditional UI Stuff I'm too lazy to do myself
   roundcheckbox: ^2.0.4+1
   auto_animated: ^3.0.1
+  grouped_list: ^5.1.2
 
   # NewPipe Extractor
   newpipeextractor_dart:
-    path: ../NewPipeExtractor_Dart
+    git:
+      url: https://github.com/SongTube/NewPipeExtractor_Dart
+      ref: master
+
+  # FFmpeg
+  flutter_ffmpeg:
+    path: ../Projects/flutter-ffmpeg
 
 dev_dependencies:
   flutter_test:
