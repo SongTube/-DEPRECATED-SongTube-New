@@ -104,7 +104,10 @@ class DownloadItem {
   Future<void> initDownload() async {
     downloadStatus.add('Initializing...');
     resetStreams();
-    // Start Downloading
+    // ---------------------
+    // Download Instructions
+    // --------------------- 
+    ///[Audio without AudioSegments]
     if (downloadInfo.downloadType == DownloadType.audio && (downloadInfo.segmentTracks?.isEmpty ?? true)) {
       // Download Audio Stream, we don't need the resulting file because its gonna
       // be written directly into the given output
@@ -134,9 +137,32 @@ class DownloadItem {
       // Write all Tags to this Song
       await writeAllMetadata(downloadFile.path, downloadInfo.tags);
       // Move to user music directory (if this fails download is saved on the app's data, user can move this out later)
+      downloadStatus.add('Saving download...');
       downloadFile = await copyDownload() ?? downloadFile;
       // Deem this download as completed
+      onDownloadCompleted(id, await toSongItem());
+    }
+    ///[Audio with AudioSegments]
+    if (downloadInfo.downloadType == DownloadType.audio && (downloadInfo.segmentTracks?.isNotEmpty ?? false)) {
+
+    }
+    ///[Video with no cuts]
+    if (downloadInfo.downloadType == DownloadType.video) {
+      // Download Video
+      final videoFile = await _downloadStream(downloadInfo.videoStream, context: 'Downloading Video');
+      // Download Audio
+      final audioFile = await _downloadStream(downloadInfo.audioStream, context: 'Downloading Audio');
+      // Check if both our files were downloaded, if not the case, cancel download
+      if (videoFile == null || audioFile == null) {
+        onDownloadCancelled(id);
+        return;
+      }
+      // Merge both files together with FFmpeg
+      downloadFile = await FFmpegConverter.writeAudioToVideo(videoPath: videoFile.path, audioPath: audioFile.path);
+      // Move to user video directory (if this fails download is saved on the app's data, user can move this out later)
       downloadStatus.add('Saving download...');
+      downloadFile = await copyDownload() ?? downloadFile;
+      // Deem this download as completed
       onDownloadCompleted(id, await toSongItem());
     }
   }
@@ -263,7 +289,10 @@ class DownloadItem {
   Future<File?> copyDownload({File? file}) async {
     try {
       final format = (file ?? downloadFile).path.split('/').last.split('.').last;
-      final result = await (file ?? downloadFile).copy('${AppSettings.musicDirectory.path}/${downloadInfo.tags.titleController.text}.$format');
+      final path = downloadInfo.downloadType == DownloadType.audio
+        ? AppSettings.musicDirectory.path
+        : AppSettings.videoDirectory.path;
+      final result = await (file ?? downloadFile).copy('$path/${downloadInfo.tags.titleController.text}.$format');
       await (file ?? downloadFile).delete();
       return result;
     } catch (e) {

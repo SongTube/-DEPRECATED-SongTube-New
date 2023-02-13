@@ -57,12 +57,17 @@ class _DownloadsCompletedPageState extends State<DownloadsCompletedPage> {
               song: song,
               isDownload: true,
               onPlay: () async {
-                mediaProvider.currentPlaylistName = 'Downloads';
-                final queue = List<MediaItem>.generate(downloadProvider.downloadedSongs.length, (index) {
-                  return downloadProvider.downloadedSongs[index].mediaItem;
-                });
-                uiProvider.currentPlayer = CurrentPlayer.music;
-                mediaProvider.playSong(queue, index);
+                if (song.isVideo) {
+                  // Open the built-in video player
+                  
+                } else {
+                  mediaProvider.currentPlaylistName = 'Downloads';
+                  final queue = List<MediaItem>.generate(downloadProvider.downloadedSongs.length, (index) {
+                    return downloadProvider.downloadedSongs[index].mediaItem;
+                  });
+                  uiProvider.currentPlayer = CurrentPlayer.music;
+                  mediaProvider.playSong(queue, index);
+                }
               }
             );
           }

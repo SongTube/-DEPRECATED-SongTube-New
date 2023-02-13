@@ -57,16 +57,15 @@ class FFmpegConverter {
   /// converts the [Audio] to the compatible format of the [Video]
   /// (only if it's needed)
   static Future<File> writeAudioToVideo({
-    required String videoFormat,
     required String videoPath,
     required String audioPath,
   }) async {
-    assert(videoFormat != "");
     assert(videoPath != "");
     assert(audioPath != "");
     List<String> argsList = <String>[];
     String outDir = "${(await getExternalStorageDirectory())!.path}/";
     File output = File(outDir + MediaUtils.getRandomString(10));
+    String videoFormat = (await getMediaFormat(videoPath))!;
     String? audioFormat = await getMediaFormat(audioPath);
     if (videoFormat == "webm" && audioFormat == "ogg" || videoFormat == "mp4" && audioFormat == "m4a") {
       argsList = [

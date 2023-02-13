@@ -31,6 +31,9 @@ class SongItem {
   /// The artwork for this media item as a File.
   final File? artworkPath;
 
+  /// Artwork URL for this media item as Uri
+  final Uri? artworkUrl;
+
   /// The thumbnail for this media item as a File.
   final File? thumbnailPath;
 
@@ -55,6 +58,16 @@ class SongItem {
   /// Thumbnail Uri for MediaPlayer
   Uri? get thumbnailUri => thumbnailPath != null ? Uri.parse(thumbnailPath!.path) : null;
 
+  // Is Video Check
+  bool get isVideo {
+    final format = id.split('/').last.split('.').last;
+    if (format == 'mp4' || format == 'webm') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /// Transform this object to MediaItem for MediaPlayer
   MediaItem get mediaItem => MediaItem(
     id: id,
@@ -71,7 +84,7 @@ class SongItem {
     extras: {
       'artwork': artworkPath?.path,
       'modelId': modelId,
-      'palette': palette?.toMap()
+      'palette': palette?.toMap(),
     }
   );
 
@@ -115,6 +128,7 @@ class SongItem {
     this.genre,
     this.duration,
     this.artworkPath,
+    this.artworkUrl,
     this.thumbnailPath,
     this.playable,
     this.displayTitle,
@@ -133,6 +147,7 @@ class SongItem {
     String? genre,
     Duration? duration,
     File? artworkPath,
+    Uri? artworkUrl,
     File? thumbnailPath,
     bool? playable,
     String? displayTitle,
@@ -150,6 +165,7 @@ class SongItem {
       genre: genre ?? this.genre,
       duration: duration ?? this.duration,
       artworkPath: artworkPath ?? this.artworkPath,
+      artworkUrl: artworkUrl ?? this.artworkUrl,
       thumbnailPath: thumbnailPath ?? this.thumbnailPath,
       playable: playable ?? this.playable,
       displayTitle: displayTitle ?? this.displayTitle,
@@ -170,6 +186,7 @@ class SongItem {
       'genre': genre,
       'duration': duration?.inSeconds,
       'artworkPath': artworkPath?.path,
+      'artworkUrl': artworkUrl?.toString(),
       'thumbnailPath': thumbnailPath?.path,
       'playable': playable,
       'displayTitle': displayTitle,
@@ -190,6 +207,7 @@ class SongItem {
       genre: map['genre'],
       duration: map['duration'] != null ? Duration(seconds: map['duration']) : null,
       artworkPath: map['artworkPath'] != null ? File(map['artworkPath']) : null,
+      artworkUrl: map['artworkUrl'] != null ? Uri.parse(map['artworkUrl']) : null,
       thumbnailPath: map['thumbnailPath'] != null ? File(map['thumbnailPath']) : null,
       playable: map['playable'],
       displayTitle: map['displayTitle'],
@@ -206,7 +224,7 @@ class SongItem {
 
   @override
   String toString() {
-    return 'SongItem(id: $id, modelId: $modelId, title: $title, album: $album, artist: $artist, genre: $genre, duration: $duration, artworkPath: $artworkPath, thumbnailPath: $thumbnailPath, playable: $playable, displayTitle: $displayTitle, displaySubtitle: $displaySubtitle, displayDescription: $displayDescription)';
+    return 'SongItem(id: $id, modelId: $modelId, title: $title, album: $album, artist: $artist, genre: $genre, duration: $duration, artworkPath: $artworkPath, artworkUrl: $artworkUrl, thumbnailPath: $thumbnailPath, playable: $playable, displayTitle: $displayTitle, displaySubtitle: $displaySubtitle, displayDescription: $displayDescription)';
   }
 
   @override
@@ -222,6 +240,7 @@ class SongItem {
       other.genre == genre &&
       other.duration == duration &&
       other.artworkPath == artworkPath &&
+      other.artworkUrl == artworkUrl &&
       other.thumbnailPath == thumbnailPath &&
       other.playable == playable &&
       other.displayTitle == displayTitle &&
@@ -241,6 +260,7 @@ class SongItem {
       genre.hashCode ^
       duration.hashCode ^
       artworkPath.hashCode ^
+      artworkUrl.hashCode ^
       thumbnailPath.hashCode ^
       playable.hashCode ^
       displayTitle.hashCode ^

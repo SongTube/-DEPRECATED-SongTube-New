@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/media_playlist.dart';
 import 'package:songtube/internal/models/song_item.dart';
@@ -50,7 +51,7 @@ class _SongTileState extends State<SongTile> {
             child: ListTile(
               onTap: widget.onPlay,
               onLongPress: () {
-                if (widget.onPlay != null) {
+                if (widget.onPlay != null && !widget.song.isVideo) {
                   showModalBottomSheet(
                     context: internalNavigatorKey.currentContext!,
                     isScrollControlled: true,
@@ -80,26 +81,42 @@ class _SongTileState extends State<SongTile> {
   Widget _leading() {
     return AspectRatio(
       aspectRatio: 1,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 12,
-              offset: const Offset(0,0),
-              color: Theme.of(context).shadowColor.withOpacity(0.1)
-            )
-          ],
-        ), 
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: FadeInImage(
-            fadeInDuration: const Duration(milliseconds: 200),
-            image: FileImage(widget.song.thumbnailPath!),
-            placeholder: MemoryImage(kTransparentImage),
-            fit: BoxFit.cover,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 12,
+                  offset: const Offset(0,0),
+                  color: Theme.of(context).shadowColor.withOpacity(0.1)
+                )
+              ],
+            ), 
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: FadeInImage(
+                fadeInDuration: const Duration(milliseconds: 200),
+                image: widget.song.isVideo
+                  ? NetworkImage(widget.song.artworkUrl!.toString()) as ImageProvider
+                  : FileImage(widget.song.thumbnailPath!),
+                placeholder: MemoryImage(kTransparentImage),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
-        ),
+          if (widget.song.isVideo)
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: Theme.of(context).cardColor.withOpacity(0.4)
+            ),
+            child: Icon(Iconsax.video, color: Theme.of(context).iconTheme.color, size: 20),
+          )
+        ],
       ),
     );
   }
@@ -110,33 +127,35 @@ class _SongTileState extends State<SongTile> {
     bool isPlaying = media.data?.id == widget.song.id;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 400),
-      child: isPlaying && !widget.disablePlayingVisualizer
-        ? Container(
-            margin: const EdgeInsets.only(left: 16, right: 8),
-            height: 20, width: 20,
-            child: StreamBuilder<PlaybackState>(
-              stream: audioHandler.playbackState,
-              builder: (context, state) {
-                bool isPaused = !(state.data?.playing ?? true);
-                return MiniMusicVisualizer(color: MediaQuery.of(context).platformBrightness == Brightness.dark && (widget.song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
-                  ? widget.song.palette?.text ?? accentColor : widget.song.palette?.vibrant ?? accentColor, width: 2, height: 12, pause: isPaused);
-              }
-            ))
-        : Bounce(
-            duration: const Duration(milliseconds: 150),
-            onPressed: () {
-              playlistProvider.addToFavorites(widget.song);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(16.0).copyWith(right: 8),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: Icon(
-                  isFavorite ? Ionicons.heart : Ionicons.heart_outline,
-                  key: ValueKey(widget.song.id+isFavorite.toString()),
-                  color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color!.withOpacity(0.2), size: 18)),
-            ),
-          ),
+      child: !widget.song.isVideo
+        ? isPlaying && !widget.disablePlayingVisualizer
+          ? Container(
+              margin: const EdgeInsets.only(left: 16, right: 8),
+              height: 20, width: 20,
+              child: StreamBuilder<PlaybackState>(
+                stream: audioHandler.playbackState,
+                builder: (context, state) {
+                  bool isPaused = !(state.data?.playing ?? true);
+                  return MiniMusicVisualizer(color: MediaQuery.of(context).platformBrightness == Brightness.dark && (widget.song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
+                    ? widget.song.palette?.text ?? accentColor : widget.song.palette?.vibrant ?? accentColor, width: 2, height: 12, pause: isPaused);
+                }
+              ))
+          : Bounce(
+              duration: const Duration(milliseconds: 150),
+              onPressed: () {
+                playlistProvider.addToFavorites(widget.song);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0).copyWith(right: 8),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Icon(
+                    isFavorite ? Ionicons.heart : Ionicons.heart_outline,
+                    key: ValueKey(widget.song.id+isFavorite.toString()),
+                    color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color!.withOpacity(0.2), size: 18)),
+              ),
+            )
+        : const SizedBox()
     );
   }
 }

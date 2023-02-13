@@ -36,7 +36,7 @@ class _VideoDownloadMenuState extends State<VideoDownloadMenu> {
       url: widget.video.videoInfo.url!,
       duration: widget.video.videoInfo.length!,
       downloadType: DownloadType.video,
-      audioStream: widget.video.audioWithHighestQuality!,
+      audioStream: widget.video.getAudioStreamWithBestMatchForVideoStream(stream) ?? widget.video.audioWithHighestQuality!,
       videoStream: stream,
       tags: tags,
     );

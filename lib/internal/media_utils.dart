@@ -13,6 +13,7 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/cache_utils.dart';
+import 'package:songtube/internal/enums/download_type.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/colors_palette.dart';
@@ -199,13 +200,15 @@ class MediaUtils {
       seconds: info.duration
     );
     FileStat stats = await FileStat.stat(path);
-    PaletteGenerator palette;
+    PaletteGenerator? palette;
+    if (info.downloadType == DownloadType.audio) { 
     await ArtworkManager.writeThumbnail(path);
-    try {
-      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(path)));
-    } catch (e) {
-      await ArtworkManager.writeDefaultThumbnail(path);
-      palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(path)));
+      try {
+        palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(path)));
+      } catch (e) {
+        await ArtworkManager.writeDefaultThumbnail(path);
+        palette = await PaletteGenerator.fromImageProvider(FileImage(thumbnailFile(path)));
+      }
     }
     return SongItem(
       id: path,
@@ -214,13 +217,15 @@ class MediaUtils {
       album: info.tags.albumController.text,
       artist: info.tags.artistController.text,
       artworkPath: artworkFile(path),
+      artworkUrl: info.tags.artwork is String
+        ? Uri.parse(info.tags.artwork) : null,
       thumbnailPath: thumbnailFile(path),
       duration: duration,
       lastModified: stats.changed,
-      palette: ColorsPalette(
+      palette: palette != null ? ColorsPalette(
         dominant: palette.dominantColor?.color,
         vibrant: palette.vibrantColor?.color,
-      )
+      ) : null
     );
   }
 
