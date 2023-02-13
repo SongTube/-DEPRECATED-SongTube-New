@@ -2,18 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/internal/enums/download_type.dart';
+import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
-import 'package:songtube/ui/info_item_renderer.dart';
+import 'package:songtube/internal/models/download/download_info.dart';
+import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/ui/menus/download_menu/music.dart';
 import 'package:songtube/ui/menus/download_menu/video.dart';
 import 'package:songtube/ui/sheet_phill.dart';
 import 'package:songtube/ui/text_styles.dart';
 
-class DownloadContentMenu extends StatelessWidget {
+class DownloadContentMenu extends StatefulWidget {
   const DownloadContentMenu({
     required this.content,
     super.key});
   final ContentWrapper content;
+
+  @override
+  State<DownloadContentMenu> createState() => _DownloadContentMenuState();
+}
+
+class _DownloadContentMenuState extends State<DownloadContentMenu> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,13 +71,13 @@ class DownloadContentMenu extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 builder: (context) {
                 return AudioDownloadMenu(
-                  video: content.videoDetails!,
+                  video: widget.content.videoDetails!,
                   onBack: () {
                     Navigator.pop(context);
                     showModalBottomSheet(context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: ((context) => DownloadContentMenu(content: content)));
+                      builder: ((context) => DownloadContentMenu(content: widget.content)));
                   }
                 );
               });
@@ -78,23 +90,67 @@ class DownloadContentMenu extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 builder: (context) {
                 return VideoDownloadMenu(
-                  video: content.videoDetails!,
+                  video: widget.content.videoDetails!,
                   onBack: () {
                     Navigator.pop(context);
                     showModalBottomSheet(context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: ((context) => DownloadContentMenu(content: content)));
+                      builder: ((context) => DownloadContentMenu(content: widget.content)));
                   }
                 );
               });
             }),
-            _optionTile(context, title: 'Instant', subtitle: 'Instantly start downloading. Tap settings to configure', icon: Ionicons.flash_outline,
-              onConfigure: () {
-
-              },
+            _optionTile(context, title: 'Instant', subtitle: 'Instantly start downloading as music', icon: Ionicons.flash_outline,
+              trailing: SizedBox(
+                height: 30,
+                child: DropdownButton<String>(
+                  value: sharedPreferences.getString('instant_download_format') ?? 'AAC',
+                  iconSize: 18,
+                  borderRadius: BorderRadius.circular(20),
+                  iconEnabledColor: Theme.of(context).primaryColor,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyText1!.color,
+                    fontFamily: 'Product Sans',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12
+                  ),
+                  underline: Container(),
+                  items: const [
+                    DropdownMenuItem(
+                      value: "AAC",
+                      child: Text("AAC"),
+                    ),
+                    DropdownMenuItem(
+                      value: "OGG",
+                      child: Text("OGG"),
+                    )
+                  ],
+                  onChanged: (String? value) {
+                    if (value == "AAC") {
+                      setState(() => sharedPreferences.setString('instant_download_format', 'AAC'));
+                    } else if (value == "OGG") {
+                      setState(() => sharedPreferences.setString('instant_download_format', 'OGG'));
+                    }
+                  },
+                ),
+              ),
               onTap: () {
-                // Open Instant Download Settings
+                // Get default format
+                final format = sharedPreferences.getString('instant_download_format') ?? 'AAC';
+                // Build download
+                final downloadInfo = DownloadInfo(
+                  url: widget.content.videoDetails!.videoInfo.url!,
+                  duration: widget.content.videoDetails!.videoInfo.length!,
+                  downloadType: DownloadType.audio,
+                  audioStream: format == 'AAC'
+                    ? widget.content.videoDetails!.audioWithBestAacQuality!
+                    : widget.content.videoDetails!.audioWithBestOggQuality!,
+                  tags: AudioTags.withStreamInfoItem(widget.content.videoDetails!.toStreamInfoItem()),
+                );
+                final downloadProvider = Provider.of<DownloadProvider>(context, listen: false);
+                downloadProvider.handleDownloadItem(info: downloadInfo);
+                Navigator.pop(context);
               }
             )
           ],
@@ -103,7 +159,7 @@ class DownloadContentMenu extends StatelessWidget {
     );
   }
 
-  Widget _optionTile(BuildContext context, {required String title, required String subtitle, required IconData icon, required Function() onTap, Function()? onConfigure}) {
+  Widget _optionTile(BuildContext context, {required String title, required String subtitle, required IconData icon, required Function() onTap, Function()? onConfigure, Widget? trailing}) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -133,11 +189,12 @@ class DownloadContentMenu extends StatelessWidget {
 
               },
               icon: Icon(Iconsax.setting, color: Theme.of(context).primaryColor)
-            )
+            ),
+            if (trailing != null)
+            trailing
           ],
         ),
       ),
     );
   }
-
 }
