@@ -34,7 +34,7 @@ class _DownloadContentMenuState extends State<DownloadContentMenu> {
         borderRadius: BorderRadius.circular(20)
       ),
       margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.only(top: 8, bottom: 16),
+      padding: const EdgeInsets.only(top: 12, bottom: 16,),
       child: Padding(
         padding: const EdgeInsets.only(left: 12, right: 12),
         child: Column(
@@ -45,7 +45,6 @@ class _DownloadContentMenuState extends State<DownloadContentMenu> {
             const Align(
               alignment: Alignment.center,
               child: BottomSheetPhill()),
-            const SizedBox(height: 6),
             // Menu Title
             Row(
               children: [

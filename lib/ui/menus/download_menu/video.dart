@@ -59,14 +59,13 @@ class _VideoDownloadMenuState extends State<VideoDownloadMenu> {
         borderRadius: BorderRadius.circular(20)
       ),
       margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: 12),
       child: SingleChildScrollView(
         child: Column(
           children: [
             const Align(
             alignment: Alignment.center,
             child: BottomSheetPhill()),
-            const SizedBox(height: 6),
             // Menu Title
             Padding(
               padding: const EdgeInsets.only(left: 12, right: 12),
