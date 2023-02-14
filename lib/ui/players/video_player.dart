@@ -20,7 +20,7 @@ class VideoPlayer extends StatefulWidget {
 class _VideoPlayerState extends State<VideoPlayer> {
   
   // Content Provider
-  ContentProvider get contentProvider => Provider.of(context);
+  ContentProvider get contentProvider => Provider.of(context, listen: false);
 
   // UiProvider
   UiProvider get uiProvider => Provider.of(context);
@@ -106,9 +106,15 @@ class _VideoPlayerState extends State<VideoPlayer> {
                               }
                             );
                           },
-                          child: VideoPlayerWidget(content: content, onAspectRatioUpdate: (aspectRatio) {
-                            setState(() {});
-                          })
+                          child: VideoPlayerWidget(
+                            content: content,
+                            onAspectRatioUpdate: (aspectRatio) {
+                              setState(() {});
+                            },
+                            onAutoplay: () {
+                              contentProvider.loadVideoPlayer(contentProvider.playingContent!.videoSuggestionsController.relatedStreams.first);
+                            },
+                          )
                         ),
                         // Song Title and Artist
                         Expanded(

@@ -22,9 +22,11 @@ class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({
     required this.content,
     required this.onAspectRatioUpdate,
+    required this.onAutoplay,
     super.key});
   final ContentWrapper content;
   final Function(double) onAspectRatioUpdate;
+  final Function() onAutoplay;
   @override
   State<VideoPlayerWidget> createState() => VideoPlayerWidgetState();
 }
@@ -33,6 +35,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   VideoPlayerController? controller;
   // Player Variables (width is set automatically)
+  bool finishedPlaying = false;
   bool isPlaying = false;
   bool hideControls = false;
   bool videoEnded = false;
@@ -71,6 +74,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Duration? get currentPosition => controller?.value.position;
 
   void handleSeek(Duration position) {
+    Future.delayed(const Duration(seconds: 1), () {
+      finishedPlaying = false;
+    });
     controller?.seekTo(position);
   }
 
@@ -199,6 +205,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     Future.delayed(const Duration(seconds: 2), () {
       setState(() => hideControls = true);
     });
+    finishedPlaying = false;
     controller = VideoPlayerController.network(
       videoDataSource: widget.content.videoDetails!.videoStreams!.last.url
     );
@@ -215,7 +222,23 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       if (!(controller?.value.isBuffering ?? false) && buffering == true) {
         setState(() => buffering = false);
       }
+      if (controller?.value.position.inSeconds == controller?.value.duration.inSeconds) {
+        if (!finishedPlaying) {
+          finishedPlaying = true;
+          controller?.pause();
+          setState(() {
+            showAutoplay = true;
+          });
+          runAutoplay();
+        }
+      }
     });
+  }
+
+  bool showAutoplay = false;
+
+  void runAutoplay() {
+    widget.onAutoplay();
   }
 
   @override
