@@ -76,7 +76,11 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
   void initState() {
     if (widget.video.segments?.isNotEmpty ?? false) {
       for (var segment in widget.video.segments!) {
-        AudioTags audioTags = AudioTags.withStreamInfoItem(widget.video.toStreamInfoItem());
+        final title = segment.title;
+        final previewUrl = segment.previewUrl;
+        AudioTags audioTags = AudioTags.withStreamInfoItem(widget.video.toStreamInfoItem())
+          ..titleController.text = title ?? widget.video.videoInfo.name ?? 'Unknown'
+          ..artwork = previewUrl;
         segmentTracks.add(StreamSegmentTrack(audioTags: audioTags, segment: segment, enabled: true));
       }
     }

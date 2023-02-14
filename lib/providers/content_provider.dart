@@ -45,6 +45,7 @@ class ContentProvider extends ChangeNotifier {
     notifyListeners();
     try {
       searchContent = await SearchExtractor.searchYoutube(query, []);
+      addStringtoSearchHistory(query);
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());

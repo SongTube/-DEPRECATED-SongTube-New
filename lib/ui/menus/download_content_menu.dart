@@ -126,11 +126,13 @@ class _DownloadContentMenuState extends State<DownloadContentMenu> {
                       child: Text("OGG"),
                     )
                   ],
-                  onChanged: (String? value) {
+                  onChanged: (String? value) async {
                     if (value == "AAC") {
-                      setState(() => sharedPreferences.setString('instant_download_format', 'AAC'));
+                      await sharedPreferences.setString('instant_download_format', 'AAC');
+                      setState(() {});
                     } else if (value == "OGG") {
-                      setState(() => sharedPreferences.setString('instant_download_format', 'OGG'));
+                      await sharedPreferences.setString('instant_download_format', 'OGG');
+                      setState(() {});
                     }
                   },
                 ),
@@ -185,13 +187,14 @@ class _DownloadContentMenuState extends State<DownloadContentMenu> {
             ),
             if (onConfigure != null)
             IconButton(
-              onPressed: () {
-
-              },
+              onPressed: onConfigure,
               icon: Icon(Iconsax.setting, color: Theme.of(context).primaryColor)
             ),
             if (trailing != null)
-            trailing
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: trailing,
+            )
           ],
         ),
       ),
