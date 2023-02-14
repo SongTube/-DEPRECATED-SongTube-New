@@ -73,29 +73,37 @@ class _VideoPlayerState extends State<VideoPlayer> {
                         AnimatedBuilder( 
                           animation: uiProvider.fwController.animationController,
                           builder: (context, child) {
-                            return Container(
-                              margin: const EdgeInsets.only(left: 12, right: 12).copyWith(
-                                top: Tween<double>(begin: 11.5, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value,
-                                bottom: Tween<double>(begin: 11.5, end: 0).animate(uiProvider.fwController.animationController).value
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: Theme.of(context).scaffoldBackgroundColor,
-                              ),
-                              constraints: BoxConstraintsTween(
-                                begin: const BoxConstraints.tightFor(width: (kToolbarHeight * 2.1)),
-                                end: BoxConstraints.tightFor(width: MediaQuery.of(context).size.width-24))
-                                  .evaluate(uiProvider.fwController.animationController),
-                              child: AnimatedSize(
-                                duration: const Duration(milliseconds: 150),
-                                child: AspectRatio(
-                                  aspectRatio: contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio != null
-                                    ? Tween<double>(end: contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio, begin: 16/9)
-                                      .animate(uiProvider.fwController.animationController).value
-                                    : 16/9,
-                                  child: child
-                                ),
-                              )
+                            return Builder(
+                              builder: (context) {
+                                final aspectRatio = contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio != null
+                                  ? contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio ?? 16/9
+                                  : 16/9;
+                                const initialHeight = kToolbarHeight * 1.18;
+                                final initialWidth = initialHeight*aspectRatio;
+                                final finalWidth = MediaQuery.of(context).size.width-24;
+                                final finalHeight = finalWidth/aspectRatio;
+                                return Container(
+                                  margin: const EdgeInsets.only(left: 12, right: 12).copyWith(
+                                    top: Tween<double>(begin: 11.5, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value,
+                                    bottom: Tween<double>(begin: 11.5, end: 0).animate(uiProvider.fwController.animationController).value
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                  ),
+                                  constraints: BoxConstraintsTween(
+                                    begin: BoxConstraints.tightFor(width: initialWidth, height: initialHeight),
+                                    end: BoxConstraints.tightFor(width: finalWidth, height: finalHeight))
+                                      .evaluate(uiProvider.fwController.animationController),
+                                  child: AnimatedSize(
+                                    duration: const Duration(milliseconds: 150),
+                                    child: AspectRatio(
+                                      aspectRatio: aspectRatio,
+                                      child: child
+                                    ),
+                                  )
+                                );
+                              }
                             );
                           },
                           child: VideoPlayerWidget(content: content, onAspectRatioUpdate: (aspectRatio) {
