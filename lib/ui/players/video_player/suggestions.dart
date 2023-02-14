@@ -79,6 +79,6 @@ class VideoSuggestionsController {
     _suggestionsState = state;
   }
 
-  List<StreamInfoItem> get relatedStreams => _suggestionsState!.relatedStreams;
+  List<StreamInfoItem>? get relatedStreams => _suggestionsState?.relatedStreams;
 
 }

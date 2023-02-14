@@ -20,7 +20,7 @@ class VideoPlayer extends StatefulWidget {
 class _VideoPlayerState extends State<VideoPlayer> {
   
   // Content Provider
-  ContentProvider get contentProvider => Provider.of(context, listen: false);
+  ContentProvider get contentProvider => Provider.of(context);
 
   // UiProvider
   UiProvider get uiProvider => Provider.of(context);
@@ -110,9 +110,6 @@ class _VideoPlayerState extends State<VideoPlayer> {
                             content: content,
                             onAspectRatioUpdate: (aspectRatio) {
                               setState(() {});
-                            },
-                            onAutoplay: () {
-                              contentProvider.loadVideoPlayer(contentProvider.playingContent!.videoSuggestionsController.relatedStreams.first);
                             },
                           )
                         ),

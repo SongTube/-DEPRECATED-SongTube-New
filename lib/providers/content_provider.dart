@@ -84,6 +84,9 @@ class ContentProvider extends ChangeNotifier {
 
   // Load the video player with provided InfoItem
   void loadVideoPlayer(dynamic infoItem) async {
+    if (infoItem == null) {
+      return;
+    }
     playingContent = null;
     notifyListeners();
     // Check wheter this InfoItem is a Stream/Playlist and load accordingly
