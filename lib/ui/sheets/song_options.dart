@@ -1,3 +1,4 @@
+import 'package:flutter_share/flutter_share.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/models/song_item.dart';
 import 'package:songtube/main.dart';
@@ -41,14 +42,6 @@ class SongOptionsSheet extends StatelessWidget {
             disablePlayingVisualizer: true),
           Divider(indent: 12, endIndent: 12, color: Theme.of(context).dividerColor),
           _optionTile(context,
-            title: 'Play on Device',
-            subtitle: 'Select device to play this song',
-            icon: LineIcons.mobilePhone,
-            onTap: () {
-
-            }
-          ),
-          _optionTile(context,
             title: 'Add to Playlist',
             subtitle: 'Add to existing or new playlist',
             icon: LineIcons.list,
@@ -64,7 +57,13 @@ class SongOptionsSheet extends StatelessWidget {
             subtitle: 'Share with friends or other platforms',
             icon: LineIcons.share,
             onTap: () {
-
+              FlutterShare.shareFile(
+                title: song.title,
+                text: '${song.title} - ${song.artist}\n\n'
+                      'Shared from SongTube\nsongtube.github.io',
+                fileType: 'audio/*',
+                filePath: song.id
+              );
             }
           ),
           _optionTile(context,
