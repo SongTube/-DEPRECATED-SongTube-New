@@ -74,8 +74,10 @@ class DownloadProvider extends ChangeNotifier {
       ..onDownloadCancelled = (id) {
         moveToCancelled(id);
       }
-      ..onDownloadCompleted = (id, songItem) {
-        handleNewDownload(song: songItem);
+      ..onDownloadCompleted = (id, items) {
+        for (final songItem in items) {
+          handleNewDownload(song: songItem);
+        }
         final index = queue.indexWhere((element) => element.id == id);
         queue.removeAt(index);
         notifyListeners();
@@ -92,8 +94,10 @@ class DownloadProvider extends ChangeNotifier {
         ..onDownloadCancelled = (id) {
           moveToCancelled(id);
         }
-        ..onDownloadCompleted = (id, songItem) {
-          handleNewDownload(song: songItem);
+        ..onDownloadCompleted = (id, items) {
+          for (final songItem in items) {
+            handleNewDownload(song: songItem);
+          }
           final index = queue.indexWhere((element) => element.id == id);
           queue.removeAt(index);
           notifyListeners();

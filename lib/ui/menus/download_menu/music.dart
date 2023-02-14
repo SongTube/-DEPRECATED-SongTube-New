@@ -94,6 +94,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
       duration: widget.video.videoInfo.length!,
       downloadType: DownloadType.audio,
       audioStream: selectedAudio,
+      segmentTracks: segmentedDownload ? segmentTracks : null,
       tags: mainTags,
       conversionTask: enableConversion ? AppSettings.defaultFfmpegTask : null
     )..filters = filters;
@@ -109,7 +110,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20)
       ),
-      margin: const EdgeInsets.all(12),
+      margin: const EdgeInsets.all(12).copyWith(top: kToolbarHeight),
       padding: const EdgeInsets.only(top: 8),
       child: SingleChildScrollView(
         child: Column(

@@ -19,7 +19,9 @@ import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/download/download_info.dart';
+import 'package:songtube/internal/models/segment_file.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/internal/models/stream_segment_track.dart';
 import 'package:uuid/uuid.dart';
 import 'package:validators/validators.dart';
 
@@ -58,7 +60,7 @@ class DownloadItem {
   File downloadFile;
 
   // Download Callbacks
-  Function(String id, SongItem song) onDownloadCompleted;
+  Function(String id, List<SongItem> song) onDownloadCompleted;
   Function(String id) onDownloadCancelled;
 
   // Download Related Stuff
@@ -140,11 +142,54 @@ class DownloadItem {
       downloadStatus.add('Saving download...');
       downloadFile = await copyDownload() ?? downloadFile;
       // Deem this download as completed
-      onDownloadCompleted(id, await toSongItem());
+      onDownloadCompleted(id, [await toSongItem()]);
     }
     ///[Audio with AudioSegments]
     if (downloadInfo.downloadType == DownloadType.audio && (downloadInfo.segmentTracks?.isNotEmpty ?? false)) {
-
+      // Download full audio file
+      final audioFile = await _downloadStream(downloadInfo.audioStream, context: 'Downloading');
+      // If download result is null, cancel download
+      if (audioFile == null) {
+        onDownloadCancelled(id);
+        return;
+      }
+      // Process the segments of the original file
+      List<SegmentFile> segmentFiles = [];
+      // Split and add all segments to our list
+      for (int i = 0; i < downloadInfo.segmentTracks!.length; i++) {
+        downloadStatus.add("Extracting audio files (${i+1}/${downloadInfo.segmentTracks!.length})");
+        final segmentTrack = downloadInfo.segmentTracks![i];
+        final segmentTracksLength = downloadInfo.segmentTracks!.length;
+        final start = segmentTrack.segment.startTimeSeconds;
+        final end = segmentTracksLength-1 == i
+          ? downloadInfo.duration
+          : downloadInfo.segmentTracks![i+1].segment.startTimeSeconds;
+        final extractedAudio = await FFmpegConverter.extractAudio(
+          audioFile.path, start, end);
+        segmentFiles.add(
+          SegmentFile(
+            segmentFile: extractedAudio,
+            tags: segmentTrack.audioTags,
+            duration: (end - start).abs(),
+          ),
+        );
+      }
+      // Write all the metadata to all our segment files
+      for (int i = 0; i < segmentFiles.length; i++) {
+        downloadStatus.add("Writting audio tags (${i+1}/${segmentFiles.length})");
+        segmentFiles[i].segmentFile = await FFmpegConverter
+          .clearFileMetadata(segmentFiles[i].segmentFile.path);
+        await writeAllMetadata(segmentFiles[i].segmentFile.path, segmentFiles[i].tags, updateStatus: false);
+      }
+      // Save all our downloads
+      downloadStatus.add('Saving downloads...');
+      final songItems = <SongItem>[];
+      for (int i = 0; i < segmentFiles.length; i++) {
+        segmentFiles[i].segmentFile = await copyDownload(file: segmentFiles[i].segmentFile, tags: segmentFiles[i].tags) ?? segmentFiles[i].segmentFile;
+        songItems.add(await toSongItem(tags: segmentFiles[i].tags, file: segmentFiles[i].segmentFile));
+      }
+      // Deem this download as completed
+      onDownloadCompleted(id, songItems);
     }
     ///[Video with no cuts]
     if (downloadInfo.downloadType == DownloadType.video) {
@@ -163,7 +208,7 @@ class DownloadItem {
       downloadStatus.add('Saving download...');
       downloadFile = await copyDownload() ?? downloadFile;
       // Deem this download as completed
-      onDownloadCompleted(id, await toSongItem());
+      onDownloadCompleted(id, [await toSongItem()]);
     }
   }
 
@@ -226,8 +271,10 @@ class DownloadItem {
   }
 
   // Write Tags & Artwork
-  Future<void> writeAllMetadata(String filePath, AudioTags userTags) async {
-    downloadStatus.add('Writting Tags...');
+  Future<void> writeAllMetadata(String filePath, AudioTags userTags, {bool updateStatus = true}) async {
+    if (updateStatus) {
+      downloadStatus.add('Writting Tags...');
+    }
     try {
       await tagger.AudioTagger.writeAllTags(
         songPath: filePath,
@@ -286,13 +333,13 @@ class DownloadItem {
     }
   }
 
-  Future<File?> copyDownload({File? file}) async {
+  Future<File?> copyDownload({File? file, AudioTags? tags}) async {
     try {
       final format = (file ?? downloadFile).path.split('/').last.split('.').last;
       final path = downloadInfo.downloadType == DownloadType.audio
         ? AppSettings.musicDirectory.path
         : AppSettings.videoDirectory.path;
-      final result = await (file ?? downloadFile).copy('$path/${downloadInfo.tags.titleController.text}.$format');
+      final result = await (file ?? downloadFile).copy('$path/${tags != null ? tags.titleController.text : downloadInfo.tags.titleController.text}.$format');
       await (file ?? downloadFile).delete();
       return result;
     } catch (e) {

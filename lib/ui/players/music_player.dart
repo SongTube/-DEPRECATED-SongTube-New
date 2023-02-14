@@ -67,7 +67,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 // Blurred Background
                 BackgroundCarousel(
                   enabled: AppSettings.enableMusicPlayerBlur,
-                  backgroundImage: File(song.thumbnailUri!.path),
+                  backgroundImage: File(song.thumbnailUri!.toString()),
                   backdropColor: song.palette!.vibrant ?? Theme.of(context).cardColor,
                   backdropOpacity: AppSettings.musicPlayerBackdropOpacity,
                   blurIntensity: AppSettings.musicPlayerBlurStrenght,
