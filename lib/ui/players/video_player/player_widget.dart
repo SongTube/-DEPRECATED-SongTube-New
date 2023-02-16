@@ -207,6 +207,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     });
     finishedPlaying = false;
     showAutoplay = false;
+    if (controller != null) {
+      controller!.removeListener(() { });
+    }
     controller = VideoPlayerController.network(
       videoDataSource: widget.content.videoDetails!.videoStreams!.last.url
     );
