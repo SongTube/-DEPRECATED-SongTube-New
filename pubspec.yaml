@@ -121,6 +121,7 @@ dependencies:
   roundcheckbox: ^2.0.4+1
   auto_animated: ^3.0.1
   grouped_list: ^5.1.2
+  timeago: ^3.3.0
 
   # NewPipe Extractor
   newpipeextractor_dart:
