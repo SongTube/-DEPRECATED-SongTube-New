@@ -19,6 +19,7 @@ import 'package:songtube/ui/players/video_player/comments.dart';
 import 'package:songtube/ui/players/video_player/suggestions.dart';
 import 'package:songtube/ui/menus/download_content_menu.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class VideoPlayerContent extends StatelessWidget {
   const VideoPlayerContent({
@@ -38,6 +39,7 @@ class VideoPlayerContent extends StatelessWidget {
         // Video Title and Show More Button
         SliverToBoxAdapter(
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(width: 16),
               Expanded(
@@ -46,8 +48,58 @@ class VideoPlayerContent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(content.infoItem.name ?? 'Unknown', style: bigTextStyle(context).copyWith(fontSize: 20), maxLines: 2, overflow: TextOverflow.ellipsis),
-                    Text((views.contains('-1') ? "" : ("$views • ${date.replaceAll('-', '/')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    Text(content.infoItem.name ?? 'Unknown', style: bigTextStyle(context).copyWith(fontSize: 22), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    // Channel Details
+                    CustomInkWell(
+                      onTap: () {
+                      
+                      },
+                      child: Row(
+                        children: [
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: videoInfo != null
+                              ? SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: ImageFade(
+                                      fadeDuration: const Duration(milliseconds: 300),
+                                      placeholder: ShimmerContainer(height: 40, width: 40, borderRadius: BorderRadius.circular(100)),
+                                      image: NetworkImage(videoInfo.uploaderAvatarUrl!),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                )
+                              : ShimmerContainer(height: 40, width: 40, borderRadius: BorderRadius.circular(100)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  content.infoItem.uploaderName ?? 'Unknown',
+                                  style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.w900),
+                                ),
+                                Text('SUBSCRIBE',
+                                  style: smallTextStyle(context).copyWith(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, letterSpacing: 1),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -121,76 +173,13 @@ class VideoPlayerContent extends StatelessWidget {
             ],
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 6)),
-        SliverToBoxAdapter(child: Divider(color: Theme.of(context).dividerColor.withOpacity(0.1), indent: 12, endIndent: 12)),
-        const SliverToBoxAdapter(child: SizedBox(height: 6)),
-        // Channel Details
-        SliverToBoxAdapter(
-          child: CustomInkWell(
-            onTap: () {
-            
-            },
-            child: Row(
-              children: [
-                const SizedBox(width: 12),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: videoInfo != null
-                    ? SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: ImageFade(
-                            fadeDuration: const Duration(milliseconds: 300),
-                            placeholder: ShimmerContainer(height: 40, width: 40, borderRadius: BorderRadius.circular(100)),
-                            image: NetworkImage(videoInfo.uploaderAvatarUrl!),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    : ShimmerContainer(height: 50, width: 50, borderRadius: BorderRadius.circular(100)),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        content.infoItem.uploaderName ?? 'Unknown',
-                        style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.w900),
-                      ),
-                      Text('SUBSCRIBE',
-                        style: smallTextStyle(context).copyWith(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, letterSpacing: 1),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                IconButton(
-                  onPressed: () {
-                    
-                  },
-                  icon: Icon(Icons.expand_more, color: Theme.of(context).primaryColor)
-                ),
-                const SizedBox(width: 12),
-              ],
-            ),
-          ),
-        ),
-        const SliverToBoxAdapter(child: SizedBox(height: 6)),
-        SliverToBoxAdapter(child: Divider(color: Theme.of(context).dividerColor.withOpacity(0.1), indent: 12, endIndent: 12)),
-        // Comments Section
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.only(left: 12, right: 12),
             child: VideoPlayerComments(url: content.infoItem.url),
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 6)),
+        const SliverToBoxAdapter(child: SizedBox(height: 12)),
         // Video Suggestions
         VideoPlayerSuggestions(url: content.infoItem.url)
       ],

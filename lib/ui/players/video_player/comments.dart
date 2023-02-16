@@ -58,50 +58,61 @@ class _VideoPlayerCommentsState extends State<VideoPlayerComments> {
   Widget build(BuildContext context) {
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: commentsAvailable ? Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 6),
-            CustomInkWell(
-              onTap: () {
-              
-              },
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Comments",
-                          style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w900)
-                        ),
-                        const SizedBox(height: 8),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          child: comments.isNotEmpty
-                            ? _commentPreview()
-                            : _commentShimmer(),
-                        )
-                      ],
+      child: Container(
+        margin: const EdgeInsets.only(top: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Theme.of(context).scaffoldBackgroundColor
+        ),
+        padding: const EdgeInsets.all(8).copyWith(left: 12, right: 12),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: commentsAvailable ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 6),
+              CustomInkWell(
+                onTap: () {
+                
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Comments",
+                                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w900)
+                              ),
+                              Text(
+                                "  •  See more",
+                                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor, fontSize: 11)
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: comments.isNotEmpty
+                              ? _commentPreview()
+                              : _commentShimmer(),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Icon(Icons.expand_more),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Divider(color: Theme.of(context).dividerColor.withOpacity(0.1), indent: 12, endIndent: 12),
-          ],
-        ) : const SizedBox(),
+              const SizedBox(height: 6),
+            ],
+          ) : const SizedBox(),
+        ),
       ),
     );
   }
