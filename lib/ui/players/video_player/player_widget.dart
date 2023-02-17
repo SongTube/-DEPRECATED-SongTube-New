@@ -220,12 +220,20 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       widget.onAspectRatioUpdate(controller?.value.aspectRatio ?? 16/9);
     });
     controller?.addListener(() {
+      // Playing Chjeck
+      if (controller?.value.isPlaying != isPlaying) {
+        setState(() {
+          isPlaying = controller?.value.isPlaying ?? false;
+        });
+      }
+      // Buffering Checks
       if ((controller?.value.isBuffering ?? false) && buffering == false) {
         setState(() => buffering = true);
       }
       if (!(controller?.value.isBuffering ?? false) && buffering == true) {
         setState(() => buffering = false);
       }
+      // AutoPlay Logic
       if (controller?.value.position.inSeconds == controller?.value.duration.inSeconds) {
         if (!finishedPlaying) {
           finishedPlaying = true;
@@ -236,6 +244,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           runAutoplay();
         }
       }
+
     });
   }
 
@@ -523,18 +532,21 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   ),
                 ),
                 // Play/Pause Buttons
-                VideoPlayerPlayPauseButton(
-                  isPlaying: isPlaying,
-                  onPlayPause: () async {
-                    if (controller?.value.isPlaying ?? false) {
-                      await controller?.pause();
-                      isPlaying = false;
-                    } else {
-                      await controller?.play();
-                      isPlaying = true;
-                    }
-                    setState(() {});
-                  },
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: !buffering ? VideoPlayerPlayPauseButton(
+                    isPlaying: isPlaying,
+                    onPlayPause: () async {
+                      if (controller?.value.isPlaying ?? false) {
+                        await controller?.pause();
+                        isPlaying = false;
+                      } else {
+                        await controller?.play();
+                        isPlaying = true;
+                      }
+                      setState(() {});
+                    },
+                  ) : const SizedBox(),
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,

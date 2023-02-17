@@ -49,8 +49,9 @@ class VideoPlayerContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 4),
-                    Text(content.infoItem.name ?? 'Unknown', style: bigTextStyle(context).copyWith(fontSize: 22), maxLines: 2, overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 4),
+                    Text(content.infoItem.name ?? 'Unknown', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 12),
                     // Channel Details
                     CustomInkWell(
                       onTap: () {
@@ -98,8 +99,6 @@ class VideoPlayerContent extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -113,7 +112,7 @@ class VideoPlayerContent extends StatelessWidget {
             ],
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+        const SliverToBoxAdapter(child: SizedBox(height: 6)),
         // Action Buttons (Like, dislike, download, etc...)
         SliverToBoxAdapter(
           child: Row(

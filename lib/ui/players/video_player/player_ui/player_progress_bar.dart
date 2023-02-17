@@ -33,6 +33,7 @@ class _VideoPlayerProgressBarState extends State<VideoPlayerProgressBar> with Ti
   // Current label, modified if segmets are available
   String? currentLabel;
   bool isDragging = false;
+  double seekValue = 0;
 
   StreamSegment? currentSegment(double value) {
     if (widget.segments == null) return null;
@@ -69,45 +70,56 @@ class _VideoPlayerProgressBarState extends State<VideoPlayerProgressBar> with Ti
               Expanded(
                 child: SizedBox(
                   height: 10,
-                  child: Slider(
-                    activeColor: Theme.of(context).primaryColor,
-                    inactiveColor: Colors.white.withOpacity(0.2),
-                    thumbColor: Theme.of(context).primaryColor,
-                    label: '${Duration(seconds: widget.position.inSeconds).inMinutes.toString().padLeft(2, '0')}:${Duration(seconds: widget.position.inSeconds).inSeconds.remainder(60).toString().padLeft(2, '0')}',
-                    value: widget.position.inSeconds.toDouble(),
-                    onChangeEnd: (newPosition) {
-                      setState(() => isDragging = false);
-                      double seekPosition = newPosition;
-                      if (widget.segments != null && widget.segments!.length >= 2) {
-                        StreamSegment segment = currentSegment(newPosition)!;
-                        if (segment.startTimeSeconds < newPosition) {
-                          if (newPosition - segment.startTimeSeconds <= 10) {
-                            seekPosition = segment.startTimeSeconds.toDouble();
+                  child: SliderTheme(
+                    data: const SliderThemeData(
+                      thumbShape: RoundSliderThumbShape(
+                        enabledThumbRadius: 5,
+                        disabledThumbRadius: 3
+                      ),
+                      trackHeight: 1,
+                    ),
+                    child: Slider(
+                      activeColor: Colors.white,
+                      inactiveColor: Colors.white.withOpacity(0.2),
+                      thumbColor: Colors.white,
+                      label: '${Duration(seconds: widget.position.inSeconds).inMinutes.toString().padLeft(2, '0')}:${Duration(seconds: widget.position.inSeconds).inSeconds.remainder(60).toString().padLeft(2, '0')}',
+                      value: isDragging ? seekValue : widget.position.inSeconds.toDouble(),
+                      onChangeEnd: (newPosition) {
+                        double seekPosition = newPosition;
+                        if (widget.segments != null && widget.segments!.length >= 2) {
+                          StreamSegment segment = currentSegment(newPosition)!;
+                          if (segment.startTimeSeconds < newPosition) {
+                            if (newPosition - segment.startTimeSeconds <= 10) {
+                              seekPosition = segment.startTimeSeconds.toDouble();
+                            }
+                          }
+                          if (segment.startTimeSeconds >= newPosition) {
+                            if (segment.startTimeSeconds - newPosition <= 10) {
+                              seekPosition = segment.startTimeSeconds.toDouble();
+                            }
                           }
                         }
-                        if (segment.startTimeSeconds >= newPosition) {
-                          if (segment.startTimeSeconds - newPosition <= 10) {
-                            seekPosition = segment.startTimeSeconds.toDouble();
+                        widget.onSeek(seekPosition);
+                        setState(() => isDragging = false);
+                      },
+                      max: widget.duration.inSeconds.toDouble() == 0
+                        ? 1 : widget.duration.inSeconds.toDouble(),
+                      min: 0,
+                      onChangeStart: (_) {
+                        widget.onSeekStart();
+                        setState(() { isDragging = true; currentLabel = null; seekValue = widget.position.inSeconds.toDouble(); });
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          seekValue = value;
+                        });
+                        if (widget.segments != null && widget.segments!.length >= 2) {
+                          if (currentLabel != currentSegment(value)!.title) {
+                            setState(() => currentLabel = currentSegment(value)!.title);
                           }
                         }
-                      }
-                      widget.onSeek(seekPosition);
-
-                    },
-                    max: widget.duration.inSeconds.toDouble() == 0
-                      ? 1 : widget.duration.inSeconds.toDouble(),
-                    min: 0,
-                    onChangeStart: (_) {
-                      widget.onSeekStart();
-                      setState(() { isDragging = true; currentLabel = null; });
-                    },
-                    onChanged: (value) {
-                      if (widget.segments != null && widget.segments!.length >= 2) {
-                        if (currentLabel != currentSegment(value)!.title) {
-                          setState(() => currentLabel = currentSegment(value)!.title);
-                        }
-                      }
-                    },
+                      },
+                    ),
                   ),
                 ),
               ),

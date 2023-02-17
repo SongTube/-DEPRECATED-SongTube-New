@@ -62,18 +62,18 @@ class _VideoPlayerCommentsState extends State<VideoPlayerComments> {
         margin: const EdgeInsets.only(top: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Theme.of(context).scaffoldBackgroundColor
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        padding: const EdgeInsets.all(8).copyWith(left: 12, right: 12),
+        padding: const EdgeInsets.all(8).copyWith(left: 16, right: 16),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: commentsAvailable ? Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               CustomInkWell(
                 onTap: () {
-                
+                  
                 },
                 child: Row(
                   children: [

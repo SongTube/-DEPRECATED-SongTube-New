@@ -37,7 +37,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
         builder: (context, child) {
           return SizedBox(
             height: Tween<double>(begin: kToolbarHeight * 1.6, end: MediaQuery.of(context).size.height-38-kToolbarHeight-(kToolbarHeight*0.7)).animate(uiProvider.fwController.animationController).value,
-            child: child,
+            child: Stack(
+              children: [
+                child!,
+              ],
+            ),
           );
         },
         child: Container(
