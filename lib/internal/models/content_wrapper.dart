@@ -1,4 +1,5 @@
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
+import 'package:songtube/internal/models/playback_quality.dart';
 import 'package:songtube/services/content_service.dart';
 import 'package:songtube/ui/players/video_player/player_widget.dart';
 import 'package:songtube/ui/players/video_player/suggestions.dart';
@@ -16,11 +17,16 @@ class ContentWrapper {
   // Video Information
   YoutubeVideo? videoDetails;
 
+  // Video Quality
+  List<VideoPlaybackQuality>? get videoOnlyOptions =>
+    videoDetails != null ? VideoPlaybackQuality.fetchAllVideoOnlyQuality(videoDetails!) : null;
+
+  // Video Quality
+  List<VideoPlaybackQuality>? get videoOptions =>
+    videoDetails != null ? VideoPlaybackQuality.fetchAllVideoQuality(videoDetails!) : null;
+
   // Playlist Information
   YoutubePlaylist? playlistDetails;
-
-  // Streaming Video from Playlist
-  YoutubeVideo? playlistVideoDetails;
 
   // Video Player Controller
   VideoPlayerWidgetController videoPlayerController = VideoPlayerWidgetController();
@@ -39,7 +45,7 @@ class ContentWrapper {
       try {
         playlistDetails = await ContentService.fetchPlaylistFromInfoItem(infoItem);
         await playlistDetails!.getStreams();
-        playlistVideoDetails = await ContentService.fetchVideoFromInfoItem(playlistDetails!.streams!.first);
+        videoDetails = await ContentService.fetchVideoFromInfoItem(playlistDetails!.streams!.first);
       } catch (e) {
         errorMessage = e.toString();
       }

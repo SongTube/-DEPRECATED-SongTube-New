@@ -10,9 +10,12 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
+import 'package:songtube/internal/models/playback_quality.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
+import 'package:songtube/ui/players/video_player/pages/quality_selection.dart';
 import 'package:songtube/ui/players/video_player/player_ui/play_pause_button.dart';
 import 'package:songtube/ui/players/video_player/player_ui/player_app_bar.dart';
 import 'package:songtube/ui/players/video_player/player_ui/player_progress_bar.dart';
@@ -41,12 +44,12 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   bool videoEnded = false;
   bool buffering = true;
   bool isSeeking = false;
-  String? currentQuality;
   bool showVolumeUI     = false;
   bool showBrightnessUI = false;
   String? currentVolumePercentage;
   String? currentBrightnessPercentage;
   int tapId = 0;
+  VideoPlaybackQuality? currentQuality;
 
   // Reverse and Forward Animation
   bool showReverse = false;
@@ -201,7 +204,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.didUpdateWidget(oldWidget);
   }
 
-  void loadVideo() async {
+  void loadVideo({Duration? position}) async {
     Future.delayed(const Duration(seconds: 2), () {
       setState(() => hideControls = true);
     });
@@ -210,10 +213,16 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     if (controller != null) {
       controller!.removeListener(() { });
     }
+    // Choose video quality
+    currentQuality ??= widget.content.videoOptions!.last;
     controller = VideoPlayerController.network(
-      videoDataSource: widget.content.videoDetails!.videoStreams!.last.url
+      videoDataSource: currentQuality!.videoUrl,
+      audioDataSource: currentQuality!.audioUrl
     );
     controller?.initialize().then((_) async {
+      if (position != null) {
+        await controller?.seekTo(position);
+      }
       await controller?.play();
       setState(() {isPlaying = true; buffering = false;});
       setState(() { showControls = false; showBackdrop = false; });
@@ -521,11 +530,20 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   alignment: Alignment.topLeft,
                   child: VideoPlayerAppBar(
                     audioOnly: false,
-                    currentQuality: '720p',
+                    currentQuality: currentQuality?.resolution ?? '',
                     videoTitle: widget.content.videoDetails?.videoInfo.name ?? '',
                     onChangeQuality: () {
-                      
-                    },
+                      showModalBottomSheet(
+                        context: internalNavigatorKey.currentContext!,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => PlaybackQualitySheet(content: widget.content, currentQuality: currentQuality!, onChangeQuality: (quality) async {
+                          final position = controller?.value.position;
+                          controller?.removeListener(() { });
+                          await controller?.dispose();
+                          setState(() { controller = null; currentQuality = quality; });
+                          loadVideo(position: position);
+                        }));
+                      },
                     onEnterPipMode: () {
 
                     },
