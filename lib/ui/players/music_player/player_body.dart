@@ -182,18 +182,21 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                       child: child)
                   );
                 },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Song Data
-                    _songTitle(),
-                    const SizedBox(height: 16),
-                    // Playback Controls
-                    _playbackControls(),
-                    const SizedBox(height: 16),
-                    // Progress Bar
-                    _progressIndicator(),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Song Data
+                      _songTitle(),
+                      const SizedBox(height: 16),
+                      // Playback Controls
+                      _playbackControls(),
+                      const SizedBox(height: 16),
+                      // Progress Bar
+                      _progressIndicator(),
+                    ],
+                  ),
                 ),
               ),
             ),

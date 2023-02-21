@@ -191,7 +191,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
       },
       child: Row(
         children: [
-          const SizedBox(width: 8),
+          const SizedBox(width: 16),
           // Hide Player Button
           IconButton(
             onPressed: () {
@@ -224,7 +224,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
             },
             icon: Icon(Icons.graphic_eq_outlined, color: song.palette?.text ?? Theme.of(context).iconTheme.color)
           ),
-          const SizedBox(width: 8)
+          const SizedBox(width: 16)
         ],
       ),
     );
