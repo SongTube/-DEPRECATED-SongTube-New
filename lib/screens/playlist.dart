@@ -9,6 +9,7 @@ import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/providers/playlist_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/animations/fade_in.dart';
+import 'package:songtube/ui/animations/mini_music_visualizer.dart';
 import 'package:songtube/ui/playlist_artwork.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/tiles/song_tile.dart';
@@ -209,13 +210,34 @@ class PlaylistScreen extends StatelessWidget {
                       ]
                     ),
                     padding: const EdgeInsets.all(12).copyWith(left: 18, right: 24),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Ionicons.play, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Text('Play all', style: textStyle(context).copyWith(color: Colors.white))
-                      ],
+                    child: AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        child: mediaProvider.currentPlaylistName != mediaSet.name
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Ionicons.play, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Text('Play all', style: textStyle(context).copyWith(color: Colors.white))
+                              ],
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                StreamBuilder<PlaybackState>(
+                                  stream: audioHandler.playbackState,
+                                  builder: (context, state) {
+                                    final isPaused = !(state.data?.playing ?? true);
+                                    return MiniMusicVisualizer(color: Colors.white, width: 4, height: 12, pause: isPaused);
+                                  }
+                                ),
+                                const SizedBox(width: 8),
+                                Text('Playing...', style: textStyle(context).copyWith(color: Colors.white))
+                              ],
+                            )
+                      ),
                     ),
                   ),
                 ),
