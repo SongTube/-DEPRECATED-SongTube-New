@@ -1,16 +1,17 @@
 import 'dart:io';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/media_utils.dart';
+import 'package:songtube/internal/models/song_item.dart';
 
 class AlbumUtils {
 
   // Album Artwork Getter, if it aint available, it will be
-  static Future<File> getAlbumImageFromSong(String path, String modelId) async {
-    if (await artworkFile(modelId).exists()) {
-      return artworkFile(modelId);
+  static Future<File> getAlbumImageFromSong(SongItem song) async {
+    if (await artworkFile(song.id).exists()) {
+      return artworkFile(song.id);
     } else {
-      await ArtworkManager.writeDefaultThumbnail(path);
-      return artworkFile(modelId);
+      await ArtworkManager.writeArtwork(song.id);
+      return artworkFile(song.id);
     }
   }
 

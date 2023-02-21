@@ -29,7 +29,7 @@ class AlbumGridTile extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: FutureBuilder<File>(
-                future: AlbumUtils.getAlbumImageFromSong(songs.first.id, songs.first.modelId),
+                future: AlbumUtils.getAlbumImageFromSong(songs.first),
                 builder: (context, snapshot) {
                   return Container(
                     decoration: BoxDecoration(

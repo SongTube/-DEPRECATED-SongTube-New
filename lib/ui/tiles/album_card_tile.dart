@@ -69,7 +69,7 @@ class _AlbumCardTileState extends State<AlbumCardTile> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: FutureBuilder<File>(
-                  future: AlbumUtils.getAlbumImageFromSong(widget.album.mediaItems.first.id, widget.album.mediaItems.first.modelId),
+                  future: AlbumUtils.getAlbumImageFromSong(widget.album.mediaItems.first),
                   builder: (context, snapshot) {
                     Widget shimmer() => const ShimmerContainer(height: double.infinity, width: double.infinity);
                     return ImageFade(
