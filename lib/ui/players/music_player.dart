@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/media_item_models.dart';
 import 'package:songtube/internal/models/song_item.dart';
@@ -82,8 +83,10 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 // Blurred Background
                 BackgroundCarousel(
                   enabled: AppSettings.enableMusicPlayerBlur,
-                  backgroundImage: File(song.thumbnailUri!.toString()),
-                  backdropColor: song.palette!.vibrant ?? Theme.of(context).cardColor,
+                  backgroundImage: thumbnailFile(song.id),
+                  backdropColor: AppSettings.enableMusicPlayerBlur
+                    ? song.palette!.dominant ?? Theme.of(context).scaffoldBackgroundColor
+                    : Theme.of(context).scaffoldBackgroundColor,
                   backdropOpacity: AppSettings.musicPlayerBackdropOpacity,
                   blurIntensity: AppSettings.musicPlayerBlurStrenght,
                   transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
@@ -180,7 +183,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
             onPressed: () {
               uiProvider.fwController.close();
             },
-            icon: Icon(Icons.expand_more_rounded, color: Theme.of(context).iconTheme.color)
+            icon: Icon(Icons.expand_more_rounded, color: song.palette?.text ?? Theme.of(context).iconTheme.color)
           ),
           // Now Playing Text
           Expanded(
@@ -189,7 +192,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
                 child: Text(
                   mediaProvider.currentPlaylistName ?? 'Unknown Playlist',
-                  style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1)
+                  style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: song.palette?.text)
                 ),
               ),
             ),
@@ -205,7 +208,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 backgroundColor: Colors.transparent,
                 builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap));
             },
-            icon: Icon(Icons.graphic_eq_outlined, color: Theme.of(context).iconTheme.color)
+            icon: Icon(Icons.graphic_eq_outlined, color: song.palette?.text ?? Theme.of(context).iconTheme.color)
           ),
           const SizedBox(width: 8)
         ],

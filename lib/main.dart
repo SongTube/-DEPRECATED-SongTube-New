@@ -1,10 +1,12 @@
 import 'package:animations/animations.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/models/song_item.dart';
 import 'package:songtube/languages/languages.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/download_provider.dart';
@@ -178,9 +180,12 @@ class _SongTubeState extends State<SongTube> {
                       initialRoute: initialRoute,
                     ),
                   ),
-                  floatingWidgetConfig: const FloatingWidgetConfig(
+                  floatingWidgetConfig: FloatingWidgetConfig(
                     backdropColor: Colors.black,
                     backdropEnabled: true,
+                    onSlide: media.hasData && media.data != null && uiProvider.currentPlayer == CurrentPlayer.music
+                      ? (position) => onSlide(position, media.data!)
+                      : null,
                   ),
                   floatingWidgetController: uiProvider.fwController,
                   musicFloatingWidget: media.hasData && media.data != null ? const MusicPlayer() : null,
@@ -193,4 +198,29 @@ class _SongTubeState extends State<SongTube> {
       ),
     );
   }
+
+  // Change appbar colors on music player slide
+  void onSlide(double position, MediaItem mediaItem) {
+    final iconColor = Theme.of(context).brightness == Brightness.light
+      ? Brightness.light : Brightness.dark;
+    final Color? textColor = SongItem.fromMediaItem(mediaItem).palette?.text;
+    if (position > 0.95) {
+      if (textColor != null) {
+        SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(
+            statusBarIconBrightness: AppSettings.enableMusicPlayerBlur ? textColor == Colors.black
+              ? Brightness.dark : Brightness.light : iconColor,
+          ),
+        );
+      }
+    } else if (position < 0.95) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarIconBrightness: iconColor,
+          systemNavigationBarIconBrightness: iconColor,
+        ),
+      );
+    }
+  }
+
 }

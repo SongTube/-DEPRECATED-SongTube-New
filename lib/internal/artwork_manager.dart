@@ -3,15 +3,16 @@ import 'dart:io';
 
 import 'package:audio_tagger/audio_tagger.dart';
 import 'package:flutter/services.dart';
+import 'package:songtube/internal/media_utils.dart';
 
 // Song Thumnnails Directory
 late Directory songArtworkPath;
 
 // Artwork Getter
-File artworkFile(String id) => File('${songArtworkPath.path}/${(id.split('/').last).replaceAll(' ', '').trim()}-hq');
+File artworkFile(String id) => File('${songArtworkPath.path}/${MediaUtils.removeToxicSymbols((id.split('/').last).replaceAll(' ', '').trim())}-hq');
 
 // Thumbnail Getter
-File thumbnailFile(String id) => File('${songArtworkPath.path}/${(id.split('/').last).replaceAll(' ', '').trim()}-bq');
+File thumbnailFile(String id) => File('${songArtworkPath.path}/${MediaUtils.removeToxicSymbols((id.split('/').last).replaceAll(' ', '').trim())}-lq');
 
 class ArtworkManager {
 

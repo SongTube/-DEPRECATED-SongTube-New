@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/colors_palette.dart';
 
@@ -104,12 +105,8 @@ class SongItem {
       artist: item.artist,
       genre: item.genre,
       duration: item.duration,
-      artworkPath: item.extras != null ? File(item.extras!['artwork']
-        .replaceAll('file://', '')
-        .replaceAll('file//', '')) : null,
-      thumbnailPath: File(item.artUri.toString()
-        .replaceAll('file://', '')
-        .replaceAll('file//', '')),
+      artworkPath: artworkFile(item.id),
+      thumbnailPath: thumbnailFile(item.id),
       playable: item.playable,
       displayTitle: item.displayTitle,
       displaySubtitle: item.displaySubtitle,
@@ -185,9 +182,7 @@ class SongItem {
       'artist': artist,
       'genre': genre,
       'duration': duration?.inSeconds,
-      'artworkPath': artworkPath?.path,
       'artworkUrl': artworkUrl?.toString(),
-      'thumbnailPath': thumbnailPath?.path,
       'playable': playable,
       'displayTitle': displayTitle,
       'displaySubtitle': displaySubtitle,
@@ -198,6 +193,7 @@ class SongItem {
   }
 
   factory SongItem.fromMap(Map<String, dynamic> map) {
+    final path = map['id'] ?? '';
     return SongItem(
       id: map['id'] ?? '',
       modelId: map['modelId'] ?? '',
@@ -206,9 +202,9 @@ class SongItem {
       artist: map['artist'],
       genre: map['genre'],
       duration: map['duration'] != null ? Duration(seconds: map['duration']) : null,
-      artworkPath: map['artworkPath'] != null ? File(map['artworkPath']) : null,
+      artworkPath: path != null ? artworkFile(path) : null,
       artworkUrl: map['artworkUrl'] != null ? Uri.parse(map['artworkUrl']) : null,
-      thumbnailPath: map['thumbnailPath'] != null ? File(map['thumbnailPath']) : null,
+      thumbnailPath: path != null ? thumbnailFile(path) : null,
       playable: map['playable'],
       displayTitle: map['displayTitle'],
       displaySubtitle: map['displaySubtitle'],

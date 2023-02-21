@@ -257,7 +257,12 @@ class MediaUtils {
       .replaceAll('"', '')
       .replaceAll('<', '')
       .replaceAll('>', '')
-      .replaceAll('|', '');
+      .replaceAll('|', '')
+      .replaceAll(':', '')
+      .replaceAll('!', '')
+      .replaceAll('[', '')
+      .replaceAll(']', '')
+      .replaceAll('¡', '');
   }
 
   static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';

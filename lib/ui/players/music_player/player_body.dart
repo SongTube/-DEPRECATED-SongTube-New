@@ -212,7 +212,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Ionicons.repeat_outline,
             size: 16,
-            color: Theme.of(context).iconTheme.color!.withOpacity(0.6)
+            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.6)
           ),
           onPressed: () => audioHandler.skipToNext()
         ),
@@ -222,7 +222,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Icons.arrow_back_ios,
             size: 16,
-            color: Theme.of(context).iconTheme.color!.withOpacity(0.8)
+            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.8)
           ),
           onPressed: () => audioHandler.skipToPrevious()
         ),
@@ -261,7 +261,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Icons.arrow_forward_ios,
             size: 16,
-            color: Theme.of(context).iconTheme.color!.withOpacity(0.8)
+            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.8)
           ),
           onPressed: () => audioHandler.skipToNext()
         ),
@@ -271,7 +271,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Ionicons.shuffle_outline,
             size: 16,
-            color: Theme.of(context).iconTheme.color!.withOpacity(0.6)
+            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.6)
           ),
           onPressed: () => audioHandler.skipToNext()
         ),
@@ -303,7 +303,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                         return Text(
                           snapshot.data?.title ?? '',
                           key: ValueKey(snapshot.data?.title),
-                          style: bigTextStyle(context).copyWith(fontWeight: FontWeight.w900),
+                          style: bigTextStyle(context).copyWith(fontWeight: FontWeight.w900).copyWith(color: song.palette?.text),
                           maxLines: 1,
                           softWrap: false,
                           overflow: TextOverflow.fade,
@@ -322,7 +322,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                         return Text(
                           snapshot.data?.artist ?? '',
                           key: ValueKey(snapshot.data?.artist),
-                          style: subtitleTextStyle(context, opacity: 0.6),
+                          style: subtitleTextStyle(context, opacity: 0.7).copyWith(color: song.palette?.text.withOpacity(0.7)),
                           maxLines: 1,
                           softWrap: false,
                           overflow: TextOverflow.fade,
@@ -346,7 +346,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                 child: Icon(
                   isFavorite ? Ionicons.heart : Ionicons.heart_outline,
                   key: ValueKey(song.id+isFavorite.toString()),
-                  color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color!.withOpacity(0.6),
+                  color: isFavorite ? Colors.red : song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.6),
                 ),
               ),
             )
@@ -382,7 +382,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                 child: Slider(
                   activeColor: MediaQuery.of(context).platformBrightness == Brightness.dark && (song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
                     ? song.palette?.text ?? accentColor : song.palette?.vibrant ?? accentColor,
-                  inactiveColor: Colors.black12.withOpacity(0.1),
+                  inactiveColor: song.palette?.text.withOpacity(0.1) ?? Colors.black12.withOpacity(0.1),
                   min: 0.0,
                   max: duration.inMilliseconds.toDouble(),
                   value: duration == Duration.zero ? 0 : max(0.0, min(
@@ -413,12 +413,12 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                 children: <Widget>[
                   Text(
                     "${position.inMinutes}:${(position.inSeconds.remainder(60).toString().padLeft(2, '0'))}",
-                    style: tinyTextStyle(context, opacity: 0.6)
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(color: song.palette?.text),
                   ),
                   const Spacer(),
                   Text(
                     "${duration.inMinutes}:${(duration.inSeconds.remainder(60).toString().padLeft(2, '0'))}",
-                    style: tinyTextStyle(context, opacity: 0.6)
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(color: song.palette?.text),
                   )
                 ],
               ),

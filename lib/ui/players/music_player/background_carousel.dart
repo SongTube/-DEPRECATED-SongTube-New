@@ -98,7 +98,6 @@ class _BackgroundCarouselState extends State<BackgroundCarousel> with TickerProv
                       child: Container(
                         width: double.infinity,
                         height: double.infinity,
-                        color: Theme.of(context).cardColor.withOpacity(widget.backdropOpacity),
                       )
                     ),
                   );
