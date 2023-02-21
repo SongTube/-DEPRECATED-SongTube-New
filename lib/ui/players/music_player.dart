@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/artwork_manager.dart';
@@ -46,6 +47,19 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
     audioHandler.mediaItem.listen((event) {
       if (mounted) {
         setState(() {});
+        if (uiProvider.fwController.isPanelOpen && event != null) {
+          final iconColor = Theme.of(context).brightness == Brightness.light
+            ? Brightness.light : Brightness.dark;
+          final Color? textColor = SongItem.fromMediaItem(event).palette?.text;
+          if (textColor != null) {
+            SystemChrome.setSystemUIOverlayStyle(
+              SystemUiOverlayStyle(
+                statusBarIconBrightness: AppSettings.enableMusicPlayerBlur ? textColor == Colors.black
+                  ? Brightness.dark : Brightness.light : iconColor,
+              ),
+            );
+          }
+        }
       }
     });
     super.initState();
