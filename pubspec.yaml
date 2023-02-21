@@ -81,7 +81,7 @@ dependencies:
   particles_flutter: ^0.1.1
 
   # Permisisons Managing
-  permission_handler: ^8.3.0
+  permission_handler: ^10.2.0
 
   # App Paths Provider
   path_provider: ^2.0.8
