@@ -6,15 +6,16 @@ import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/id_helper.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:songtube/providers/ui_provider.dart';
 
 class UiUtils {
   
-  static Future<dynamic> pushRouteAsync(BuildContext context, Widget widget) async {
+  static Future<dynamic> pushRouteAsync(BuildContext context, Widget widget, {BuildContext? providerContext}) async {
     // Media Provider, which contains the controller for the FancyScaffold
-    final uiProvider = Provider.of<UiProvider>(context, listen: false);
+    final uiProvider = Provider.of<UiProvider>(providerContext ?? context, listen: false);
     // Previous values for the FancyScaffold position variables
     final navbarAnimationValue = uiProvider.fwController.navbarAnimationController.value;
     final navbarScrollStatus = uiProvider.fwController.navbarScrolledDown;

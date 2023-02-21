@@ -5,13 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/internal/models/media_item_models.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/providers/media_provider.dart';
+import 'package:songtube/providers/playlist_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
+import 'package:songtube/screens/playlist.dart';
 import 'package:songtube/ui/players/music_player/background_carousel.dart';
 import 'package:songtube/ui/players/music_player/player_body.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:songtube/ui/ui_utils.dart';
  
 class MusicPlayer extends StatefulWidget {
   const MusicPlayer({ Key? key }) : super(key: key);
@@ -24,6 +29,8 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
 
   // MediaProvider
   MediaProvider get mediaProvider => Provider.of<MediaProvider>(context, listen: false);
+  // Playlist Provider
+  PlaylistProvider get playlistProvider => Provider.of<PlaylistProvider>(context, listen: false);
   // DownloadProvider
   DownloadProvider get downloadProvider => Provider.of<DownloadProvider>(context, listen: false);
   // UiProvider
@@ -44,6 +51,13 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    // Playlist exception filter
+    const playlistExceptionFilter = <String>[
+      'Music',
+      'Downloads',
+      'Most Played',
+      'Recently Added'
+    ];
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(30),
@@ -92,7 +106,8 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
             _nowPlaying(),
             // Player Body
             const ExpandedPlayerBody(),
-            // Show Playlist Text
+            // Show Playlist Text, filtered by the exception list
+            if (!playlistExceptionFilter.any((element) => element == mediaProvider.currentPlaylistName))
             AnimatedBuilder(
               animation: uiProvider.fwController.animationController,
               builder: (context, child) {
@@ -107,12 +122,28 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
               },
               child: GestureDetector(
                 onTap: () {
-                  uiProvider.fwController.animationController.animateTo(0, curve: Curves.fastOutSlowIn);
+                  // Build mediaSet from the current playing playlist to push playlist page
+                  final name = mediaProvider.currentPlaylistName;
+                  final albums = MediaItemAlbum.fetchAlbums(mediaProvider.songs);
+                  var playlistScreen;
+                  if (name == 'Favorites') {
+                    playlistScreen = PlaylistScreen(mediaSet: playlistProvider.favorites.toMediaSet());
+                  } else if (name == 'Most Played') {
+                    
+                  } else if (name == 'Downloads') {
+
+                  } else if (playlistProvider.globalPlaylists.any((element) => element.name == name)) {
+                    playlistScreen = PlaylistScreen(mediaSet: playlistProvider.globalPlaylists.firstWhere((element) => element.name == name).toMediaSet());
+                  } else if (albums.any((element) => element.albumTitle == name)) {
+                    playlistScreen = PlaylistScreen(mediaSet: albums.firstWhere((element) => element.albumTitle == name).toMediaSet());
+                  }
+                  UiUtils.pushRouteAsync(navigatorKey.currentState!.context, playlistScreen, providerContext: context);
+                  uiProvider.fwController.close();
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Show Playlist', style: tinyTextStyle(context)),
+                    Text('Show Playlist', style: tinyTextStyle(context, bold: true)),
                     Icon(Icons.expand_less, color: Theme.of(context).iconTheme.color, size: 18)
                   ],
                 ),
@@ -157,7 +188,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
                 child: Text(
                   mediaProvider.currentPlaylistName ?? 'Unknown Playlist',
-                  style: subtitleTextStyle(context)
+                  style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1)
                 ),
               ),
             ),
