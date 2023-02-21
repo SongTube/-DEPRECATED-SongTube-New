@@ -13,6 +13,7 @@ import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/providers/playlist_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/players/music_player/artwork_carousel.dart';
+import 'package:songtube/ui/players/music_player/marquee_widget.dart';
 import 'package:songtube/ui/text_styles.dart';
 
 class ExpandedPlayerBody extends StatefulWidget {
@@ -300,13 +301,19 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                     child: StreamBuilder<MediaItem?>(
                       stream: audioHandler.mediaItem,
                       builder: (context, snapshot) {
-                        return Text(
-                          snapshot.data?.title ?? '',
-                          key: ValueKey(snapshot.data?.title),
-                          style: bigTextStyle(context).copyWith(fontWeight: FontWeight.w900).copyWith(color: song.palette?.text),
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
+                        return MarqueeWidget(
+                          animationDuration: const Duration(seconds: 10),
+                          backDuration: const Duration(seconds: 5),
+                          pauseDuration: const Duration(seconds: 2),
+                          direction: Axis.horizontal,
+                          child: Text(
+                            snapshot.data?.title ?? '',
+                            key: ValueKey(snapshot.data?.title),
+                            style: bigTextStyle(context).copyWith(fontWeight: FontWeight.w900).copyWith(color: song.palette?.text),
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                          ),
                         );
                       }
                     ),
