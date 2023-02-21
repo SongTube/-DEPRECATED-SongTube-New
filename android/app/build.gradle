@@ -27,7 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -39,10 +39,10 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.artxdev.songtube"
+        applicationId "com.artxdev.songtube.beta"
         minSdkVersion 22
-        resValue "string", "app_name", "SongTube"
-        targetSdkVersion flutter.targetSdkVersion
+        resValue "string", "app_name", "SongTube Beta"
+        targetSdkVersion 32
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         // Enabling multidex support.
