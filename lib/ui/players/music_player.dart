@@ -15,6 +15,7 @@ import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/screens/playlist.dart';
 import 'package:songtube/ui/players/music_player/background_carousel.dart';
 import 'package:songtube/ui/players/music_player/player_body.dart';
+import 'package:songtube/ui/sheets/music_equalizer.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/ui_utils.dart';
  
@@ -195,8 +196,14 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
           ),
           // Show Equalizer
           IconButton(
-            onPressed: () {
-              uiProvider.fwController.close();
+            onPressed: () async {
+              final equalizerMap = await audioHandler.customAction('retrieveEqualizer');
+              final loudnessMap = await audioHandler.customAction('retrieveLoudnessGain');
+              showModalBottomSheet(
+                context: internalNavigatorKey.currentContext!,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap));
             },
             icon: Icon(Icons.graphic_eq_outlined, color: Theme.of(context).iconTheme.color)
           ),

@@ -2,6 +2,32 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
+MediaControl playControl = const MediaControl(
+  androidIcon: 'drawable/ic_play_arrow',
+  label: 'Play',
+  action: MediaAction.play,
+);
+MediaControl pauseControl = const MediaControl(
+  androidIcon: 'drawable/ic_pause',
+  label: 'Pause',
+  action: MediaAction.pause,
+);
+MediaControl skipToNextControl = const MediaControl(
+  androidIcon: 'drawable/ic_navigate_next',
+  label: 'Next',
+  action: MediaAction.skipToNext,
+);
+MediaControl skipToPreviousControl = const MediaControl(
+  androidIcon: 'drawable/ic_navigate_before',
+  label: 'Previous',
+  action: MediaAction.skipToPrevious,
+);
+MediaControl stopControl = const MediaControl(
+  androidIcon: 'drawable/ic_clear',
+  label: 'Stop',
+  action: MediaAction.stop,
+);
+
 class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   StAudioHandler() {
@@ -12,8 +38,13 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     _listenForSequenceStateChanges();
   }
 
-  final _player = AudioPlayer();
+  late final _player = AudioPlayer(audioPipeline: AudioPipeline(
+    androidAudioEffects: [ equalizer, loudnessEnhancer ]));
   final _playlist = ConcatenatingAudioSource(children: []);
+
+  // Equalizer
+  AndroidEqualizer equalizer = AndroidEqualizer();
+  AndroidLoudnessEnhancer loudnessEnhancer = AndroidLoudnessEnhancer();
 
   Future<void> _loadEmptyPlaylist() async {
     try {
@@ -29,12 +60,7 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     _player.playbackEventStream.listen((PlaybackEvent event) {
       final playing = _player.playing;
       playbackState.add(playbackState.value.copyWith(
-        controls: [
-          MediaControl.skipToPrevious,
-          if (playing) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
-          MediaControl.skipToNext,
-        ],
+        controls: getControls(),
         systemActions: const {
           MediaAction.seek,
         },
@@ -173,6 +199,77 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       case AudioServiceRepeatMode.all:
         _player.setLoopMode(LoopMode.all);
         break;
+    }
+  }
+  
+  @override
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) async {
+    if (name == "retrieveEqualizer") {
+      final parameters = await equalizer.parameters;
+      final map = {
+        'enabled': equalizer.enabled ? 'true' : 'false',
+        'bands': List.generate(parameters.bands.length, (index) {
+          final band = parameters.bands[index];
+          return {
+            'centerFrequency': band.centerFrequency,
+            'minFreq': parameters.minDecibels,
+            'maxFreq': parameters.maxDecibels,
+            'gain': band.gain
+          };
+        })
+      };
+      return map;
+    }
+    if (name == "updateEqualizer") {
+      final enabled = extras!['enabled'] == 'true' ? true : false;
+      if (enabled) {
+        await equalizer.setEnabled(true);
+      } else {
+        await equalizer.setEnabled(false);
+      }
+      final bands = List.from(extras['bands']);
+      final parameters = await equalizer.parameters;
+      for (int i = 0; parameters.bands.length > i; i++) {
+        final bandMap = Map<String, dynamic>.from(bands[i]);
+        parameters.bands[i].setGain(bandMap["gain"]);
+      }
+    }
+    if (name == 'retrieveLoudnessGain') {
+      return {
+        'enabled': loudnessEnhancer.enabled ? 'true' : 'false',
+        'gain': loudnessEnhancer.targetGain
+      };
+    }
+    if (name == 'updateLoudnessGain') {
+      final enabled = extras!['enabled'] == 'true' ? true : false;
+      if (enabled) {
+        await loudnessEnhancer.setEnabled(true);
+      } else {
+        await loudnessEnhancer.setEnabled(false);
+      }
+      final gain = extras['gain'] as double;
+      loudnessEnhancer.setTargetGain(gain);
+    }
+    return null;
+  }
+
+
+  /// Get MediaPlayer Controls
+  List<MediaControl> getControls() {
+    if (_player.playing) {
+      return [
+        skipToPreviousControl,
+        pauseControl,
+        skipToNextControl,
+        stopControl
+      ];
+    } else {
+      return [
+        skipToPreviousControl,
+        playControl,
+        skipToNextControl,
+        stopControl,
+      ];
     }
   }
 
