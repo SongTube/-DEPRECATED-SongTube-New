@@ -21,7 +21,7 @@ class ContentService {
   static Future<dynamic> fetchInfoItemFromUrl(String? url) async {
     if (isNull(url) || !isURL(url)) return null;
     // Check if url is a playlist
-    if (url!.contains('list=')) {
+    if (false) { //url!.contains('list=')) {
       try {
         final playlist = await PlaylistExtractor.getPlaylistDetails(url);
         await playlist.getStreams();
