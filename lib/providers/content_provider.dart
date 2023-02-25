@@ -94,8 +94,9 @@ class ContentProvider extends ChangeNotifier {
     if (infoItem is StreamInfoItem || infoItem is PlaylistInfoItem) {
       playingContent = ContentWrapper(infoItem: infoItem);
     } else if (infoItem is String) {
-      final item = await ContentService.fetchInfoItemFromUrl(infoItem);
-      playingContent = ContentWrapper(infoItem: item);
+      final YoutubeVideo item = await ContentService.fetchInfoItemFromUrl(infoItem);
+      playingContent = ContentWrapper(infoItem: item.toStreamInfoItem())
+        ..videoDetails = item;
     }
   }
 
