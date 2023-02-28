@@ -41,6 +41,9 @@ class _VideoPlayerCommentsState extends State<VideoPlayerComments> {
   }
 
   void loadComments() {
+    if (widget.url == null) {
+      return;
+    }
     setState(() {
       comments.clear();
     });

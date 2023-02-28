@@ -6,11 +6,13 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_fade/image_fade.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/extractors/videos.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/cache_utils.dart';
 import 'package:songtube/internal/enums/download_type.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/http_server.dart';
@@ -20,6 +22,7 @@ import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeLibrary extends StatefulWidget {
@@ -55,14 +58,16 @@ class _HomeLibraryState extends State<HomeLibrary> {
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
+            if (CacheUtils.watchHistory.isNotEmpty)
             SizedBox(
-              height: 180,
+              height: 160,
               child: ListView.builder(
                 padding: const EdgeInsets.only(left: 12),
-                itemCount: 10,
+                itemCount: CacheUtils.watchHistory.length,
                 physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
+                  final video = CacheUtils.watchHistory[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: AspectRatio(
@@ -72,6 +77,13 @@ class _HomeLibraryState extends State<HomeLibrary> {
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(20)
                         ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: ImageFade(
+                            fadeDuration: const Duration(milliseconds: 300),
+                            image: NetworkImage(video.thumbnails!.hqdefault),
+                            placeholder: Image.memory(kTransparentImage),
+                            fit: BoxFit.cover)),
                       ),
                     ),
                   );

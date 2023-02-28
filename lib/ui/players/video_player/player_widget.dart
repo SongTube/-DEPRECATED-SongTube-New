@@ -60,6 +60,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   set youtubeVideo(YoutubeVideo? video) {
     if (video == null) {
       _youtubeVideo = null;
+      finishedPlaying = false;
       controller?.removeListener(() { });
       controller?.dispose().then((value) {
         setState(() {
@@ -69,6 +70,8 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     } else {
       if (youtubeVideo != video) {
         _youtubeVideo = video;
+        finishedPlaying = false;
+        currentQuality = null;
         loadVideo();
       }
     }
@@ -243,7 +246,8 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         setState(() => buffering = false);
       }
       // AutoPlay Logic
-      if (controller?.value.position.inSeconds == controller?.value.duration.inSeconds) {
+      final autoplayCondition = controller != null && controller?.value.position.inSeconds == controller?.value.duration.inSeconds;
+      if (autoplayCondition) {
         if (!finishedPlaying) {
           finishedPlaying = true;
           controller?.pause();
@@ -284,7 +288,11 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   // Load next video in provider
   void playNext() {
     final contentProvider = Provider.of<ContentProvider>(context, listen: false);
-    contentProvider.loadVideoPlayer(contentProvider.playingContent!.videoSuggestionsController.relatedStreams?.first);
+    if (widget.content.infoItem is StreamInfoItem) {
+      contentProvider.loadVideoPlayer(contentProvider.playingContent!.videoSuggestionsController.relatedStreams?.first);
+    } else {
+      contentProvider.loadNextPlaylistVideo();
+    }
   }
 
   @override
@@ -644,7 +652,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                       child: AspectRatio(
                         aspectRatio: 16/9,
                         child: Image.network(
-                          nextStream.thumbnails!.hqdefault,
+                          nextStream is StreamInfoItem
+                            ? nextStream.thumbnails!.hqdefault
+                            : (nextStream as PlaylistInfoItem).thumbnailUrl!,
                           fit: BoxFit.cover,
                         ),
                       )

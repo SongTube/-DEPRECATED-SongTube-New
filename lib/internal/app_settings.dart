@@ -16,6 +16,9 @@ const enableMusicPlayerBlurKey = 'enablePlayerBlurKey';
 const musicPlayerBackdropOpacityKey = 'musicPlayerBlurOpacity';
 const musicPlayerBlurStrenghtKey = 'musicPlayerBlurStrenght';
 
+// Watch History Status
+const enableWatchHistoryKey = 'enableWatchHistory';
+
 class AppSettings {
 
   // Initialize App Settings
@@ -31,6 +34,12 @@ class AppSettings {
       final defaultVideoDirectory = await AndroidPathProvider.moviesPath;
       await sharedPreferences.setString(videoDirectoryKey, defaultVideoDirectory);
     }
+  }
+
+  // Watch History
+  static bool get enableWatchHistory => sharedPreferences.getBool(enableWatchHistoryKey) ?? true;
+  static set enableWatchHistory(bool value) {
+    sharedPreferences.setBool(enableWatchHistoryKey, value);
   }
 
   // FFmpeg Default Task

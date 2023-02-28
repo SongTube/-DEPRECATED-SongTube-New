@@ -89,11 +89,17 @@ class MediaProvider extends ChangeNotifier {
   // User Songs
   List<SongItem> _songs = [];
   List<SongItem> get songs {
-    return _songs..sort(((a, b) => a.title.compareTo(b.title)));
+    return _songs.unique((element) => element.id)..sort(((a, b) => a.title.compareTo(b.title)));
   }
   set songs(List<SongItem> items) {
     _songs = items;
     notifyListeners();
+  }
+
+  // Save song to our current list and cache
+  void insertSong(SongItem song) {
+    songs = songs..add(song)..unique((element) => element.id);
+    CacheUtils.cacheSongs = songs;
   }
 
   Future<void> playSong(List<MediaItem> queue, int index) async {

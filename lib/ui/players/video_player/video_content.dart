@@ -49,7 +49,7 @@ class VideoPlayerContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 4),
-                    Text(content.infoItem.name ?? 'Unknown', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(videoInfo?.name ?? '', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
                     Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 12),
                     // Channel Details
@@ -84,7 +84,7 @@ class VideoPlayerContent extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  content.infoItem.uploaderName ?? 'Unknown',
+                                  videoInfo?.uploaderName ?? '',
                                   style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.w900),
                                 ),
                                 Text('SUBSCRIBE',
@@ -141,7 +141,7 @@ class VideoPlayerContent extends StatelessWidget {
                 icon: const Icon(LineIcons.share),
                 text: 'Share',
                 onTap: () {
-                  Share.share(content.infoItem.url);
+                  Share.share(videoInfo!.url!);
                 },
               ),
               // Like Button
@@ -174,13 +174,13 @@ class VideoPlayerContent extends StatelessWidget {
         ),
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12),
-            child: VideoPlayerComments(url: content.infoItem.url),
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
+            child: VideoPlayerComments(url: videoInfo?.url),
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 12)),
         // Video Suggestions
-        VideoPlayerSuggestions(url: content.infoItem.url)
+        VideoPlayerSuggestions(url: videoInfo?.url)
       ],
     );
   }

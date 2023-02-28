@@ -5,12 +5,15 @@ import 'package:audio_tagger/audio_tagger.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/colors_palette.dart';
 import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/internal/models/download/download_item.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/main.dart';
+import 'package:songtube/providers/media_provider.dart';
 
 class DownloadProvider extends ChangeNotifier {
 
@@ -153,6 +156,8 @@ class DownloadProvider extends ChangeNotifier {
     downloadedSongs.add(song);
     // Save song into sharedPreferences
     saveDownload(song);
+    // Save song into MediaProvider
+    Provider.of<MediaProvider>(navigatorKey.currentState!.context, listen: false).insertSong(song);
   }
 
   // Fetch Downloaded Songs

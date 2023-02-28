@@ -77,7 +77,7 @@ class StreamTileCollapsed extends StatelessWidget {
                     left: 8, right: 8,
                     top: 4, bottom: 4),
                   child: Text(
-                    stream.name ?? 'Unknown',
+                    stream.name ?? '',
                     style: smallTextStyle(context),
                     overflow: TextOverflow.clip,
                     maxLines: 2,

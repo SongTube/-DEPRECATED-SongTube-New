@@ -1,11 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
+import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -16,7 +21,92 @@ class PlaylistTileCollapsed extends StatelessWidget {
   final PlaylistInfoItem playlist;
   @override
   Widget build(BuildContext context) {
-    return Container();
+    ContentProvider contentProvider = Provider.of(context);
+    UiProvider uiProvider = Provider.of(context);
+    return CustomInkWell(
+      onTap: () {
+        uiProvider.currentPlayer = CurrentPlayer.video;
+        contentProvider.loadVideoPlayer(playlist);
+        uiProvider.fwController.open();
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 80,
+            child: AspectRatio(
+              aspectRatio: 16/9,
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: ImageFade(
+                      fadeDuration: const Duration(milliseconds: 300),
+                      placeholder: const ShimmerContainer(height: null, width: null),
+                      image: NetworkImage(playlist.thumbnailUrl!),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: 30,
+                      width: double.infinity,
+                      margin: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(20)
+                      ),
+                      child: Center(child: Icon(Ionicons.list, color: Theme.of(context).iconTheme.color, size: 16))
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 8, right: 8,
+                    top: 4, bottom: 4),
+                  child: Text(
+                    playlist.name ?? '',
+                    style: smallTextStyle(context),
+                    overflow: TextOverflow.clip,
+                    maxLines: 2,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text(
+                    "${playlist.uploaderName}",
+                    style: tinyTextStyle(context, opacity: 0.7),
+                    overflow: TextOverflow.clip,
+                    maxLines: 1,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text(
+                    "${playlist.streamCount} videos",
+                    style: tinyTextStyle(context, opacity: 0.7),
+                    overflow: TextOverflow.clip,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -33,23 +123,16 @@ class PlaylistTileExpanded extends StatelessWidget {
       onTap: () {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(playlist);
+        uiProvider.fwController.open();
       },
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: AspectRatio(
-                aspectRatio: 16/9,
-                child: _thumbnail(context)),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12),
-            child: _details(context),
-          )
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12, right: 12),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: AspectRatio(
+            aspectRatio: 16/9,
+            child: _thumbnail(context)),
+        ),
       ),
     );
   }
@@ -57,25 +140,28 @@ class PlaylistTileExpanded extends StatelessWidget {
   Widget _thumbnail(context) {
     return Stack(
       alignment: Alignment.bottomCenter,
+      fit: StackFit.expand,
       children: [
-        ImageFade(
-          fadeDuration: const Duration(milliseconds: 300),
-          placeholder: Container(color: Theme.of(context).cardColor),
-          image: NetworkImage(playlist.thumbnailUrl!),
+        CachedNetworkImage(
+          fadeInDuration: const Duration(milliseconds: 300),
+          placeholder: (context, _) {
+            return Container(color: Theme.of(context).cardColor.withOpacity(0.6));
+          },
+          imageUrl: playlist.thumbnailUrl ?? '',
           fit: BoxFit.cover,
+          errorWidget: (context, error, stackTrace) =>
+            Container(color: Theme.of(context).cardColor),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(15),
-              bottomRight: Radius.circular(15)
-            )
-          ),
-          height: 25,
-          child: const Center(
-            child: Icon(Ionicons.musical_notes_outline,
-              color: Colors.white, size: 20),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            height: kToolbarHeight,
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(20)
+            ),
+            child: _details(context)
           ),
         )
       ],
@@ -83,46 +169,40 @@ class PlaylistTileExpanded extends StatelessWidget {
   }
 
   Widget _details(context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: BorderRadius.circular(100)
-          ),
-          child: Icon(
-            Icons.playlist_play_outlined,
-            color: Theme.of(context).iconTheme.color,
-            size: 32,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${playlist.name}",
-                  maxLines: 2,
-                  style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "",
-                  style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
-                )
-              ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 18, right: 18),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${playlist.name}",
+                    maxLines: 2,
+                    style: smallTextStyle(context, bold: true),
+                  ),
+                  Text(
+                    "${playlist.streamCount} videos",
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 12),
+          Icon(
+            Ionicons.list,
+            color: Theme.of(context).iconTheme.color,
+            size: 20,
+          ),
+        ],
+      ),
     );
   }
 

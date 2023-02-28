@@ -34,14 +34,14 @@ class _VideoPlayerCollapsedState extends State<VideoPlayerCollapsed> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                widget.content.infoItem.name ?? '',
+                widget.content.infoItem is StreamInfoItem ? (widget.content.infoItem.name ?? '') : (widget.content.videoDetails?.videoInfo.name ?? ''),
                 style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 maxLines: 1,
               ),
               Text(
-                widget.content.infoItem.uploaderName ?? '',
+                widget.content.infoItem is StreamInfoItem ? (widget.content.infoItem.uploaderName ?? '') : (widget.content.videoDetails?.videoInfo.uploaderName ?? ''),
                 style: tinyTextStyle(context, opacity: 0.6),
                 overflow: TextOverflow.fade,
                 softWrap: false,

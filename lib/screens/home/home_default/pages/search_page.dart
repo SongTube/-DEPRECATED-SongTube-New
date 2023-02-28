@@ -26,6 +26,7 @@ class SearchPage extends StatelessWidget {
   
   Widget _contentList(context) {
     ContentProvider contentProvider = Provider.of(context);
+    final list = <dynamic>[...contentProvider.searchContent!.searchPlaylists!, ...contentProvider.searchContent!.searchVideos!];
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Column(
@@ -36,13 +37,13 @@ class SearchPage extends StatelessWidget {
             shrinkWrap: true,
             padding: const EdgeInsets.only(top: 12).copyWith(bottom: audioHandler.mediaItem.value != null ? (kToolbarHeight*1.6)+24 : 24),
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: contentProvider.searchContent!.searchVideos?.length ?? 0,
+            itemCount: list.length,
             itemBuilder: (context, index) {
-              final video = contentProvider.searchContent!.searchVideos![index];
+              final item = list[index];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 24),
                 child: InfoItemRenderer(
-                  infoItem: video,
+                  infoItem: item,
                   expandItem: true,
                 ),
               );
