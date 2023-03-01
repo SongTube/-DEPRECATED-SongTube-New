@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
@@ -108,13 +110,23 @@ class _VideoPlayerPlaylistContentState extends State<VideoPlayerPlaylistContent>
                       height: kToolbarHeight*1.5-46,
                       child: IconButton(
                         onPressed: () {
-                          
+                          final containsPlaylist = contentProvider.streamPlaylists.any((element) => element.name == widget.content.playlistDetails?.name);
+                          if (containsPlaylist) {
+                            contentProvider.streamPlaylistRemove(widget.content.playlistDetails!.name!);
+                          } else {
+                            contentProvider.streamPlaylistCreate(widget.content.playlistDetails!.name!, widget.content.playlistDetails!.uploaderName!, widget.content.playlistDetails!.streams!);
+                          }
                         },
                         icon: AnimatedBuilder(
                           animation: panelController!.animationController,
                           builder: (context, snapshot) {
-                            final color = ColorTween(begin: Colors.white, end: Theme.of(context).iconTheme.color).animate(panelController!.animationController).value;
-                            return Icon(Iconsax.star, size: 18, color: color);
+                            final containsPlaylist = contentProvider.streamPlaylists.any((element) => element.name == widget.content.playlistDetails?.name);
+                            final color = containsPlaylist
+                              ? ColorTween(begin: Colors.white, end: Colors.red).animate(panelController!.animationController).value
+                              : ColorTween(begin: Colors.white.withOpacity(0.6), end: Theme.of(context).iconTheme.color).animate(panelController!.animationController).value;
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 300),
+                              child: Icon(containsPlaylist ? Ionicons.heart : Ionicons.heart_outline, key: ValueKey(containsPlaylist), size: 20, color: color));
                           }
                         )
                       ),
