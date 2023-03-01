@@ -110,9 +110,8 @@ class ContentProvider extends ChangeNotifier {
 
   // Next playlist video getter
   StreamInfoItem? get nextPlaylistVideo {
-    if (playingContent?.videoDetails != null && playingContent?.infoItem is PlaylistInfoItem) {
-      final currentIndex = playingContent!.playlistDetails!.streams!
-        .indexWhere((element) => element.id == playingContent!.videoDetails!.toStreamInfoItem().id);
+    if (playingContent?.infoItem is PlaylistInfoItem && playingContent?.playlistDetails != null) {
+      final currentIndex = playingContent!.selectedPlaylistIndex ?? 0;
       final length = playingContent!.playlistDetails!.streams!.length-1;
       return currentIndex == length ? null : playingContent!.playlistDetails!.streams![currentIndex+1];
     } else {
@@ -120,15 +119,25 @@ class ContentProvider extends ChangeNotifier {
     }
   }
   // Load next video in Playlist
-  void loadNextPlaylistVideo() async {
-    if (nextPlaylistVideo != null) {
-      // Remove previous videos so the player enters a loading state
-      playingContent!.videoDetails = null;
+  void loadNextPlaylistVideo({StreamInfoItem? override}) async {
+    playingContent!.videoDetails = null;
+    notifyListeners();
+    if (override != null) {
+      // Load next video from the provided override
+      playingContent?.selectedPlaylistIndex = playingContent?.playlistDetails?.streams?.indexWhere((element) => element.id == override.id);
       notifyListeners();
-      // Load next video
-      playingContent!.videoDetails = await ContentService.fetchVideoFromInfoItem(nextPlaylistVideo!);
+      playingContent!.videoDetails = await ContentService.fetchVideoFromInfoItem(override);
       saveToHistory(nextPlaylistVideo!);
       notifyListeners();
+    } else {
+      if (nextPlaylistVideo != null) {
+        // Load next video
+        playingContent?.selectedPlaylistIndex = playingContent?.playlistDetails?.streams?.indexWhere((element) => element.id == nextPlaylistVideo?.id);
+        notifyListeners();
+        playingContent!.videoDetails = await ContentService.fetchVideoFromInfoItem(nextPlaylistVideo!);
+        saveToHistory(nextPlaylistVideo!);
+        notifyListeners();
+      }
     }
   }
 

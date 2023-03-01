@@ -28,6 +28,9 @@ class ContentWrapper {
   // Playlist Information
   YoutubePlaylist? playlistDetails;
 
+  // Selected playlist video index
+  int? selectedPlaylistIndex;
+
   // Video Player Controller
   VideoPlayerWidgetController videoPlayerController = VideoPlayerWidgetController();
 
@@ -46,6 +49,7 @@ class ContentWrapper {
         playlistDetails = await ContentService.fetchPlaylistFromInfoItem(infoItem);
         await playlistDetails!.getStreams();
         videoDetails = await ContentService.fetchVideoFromInfoItem(playlistDetails!.streams!.first);
+        selectedPlaylistIndex = 0;
       } catch (e) {
         errorMessage = e.toString();
       }

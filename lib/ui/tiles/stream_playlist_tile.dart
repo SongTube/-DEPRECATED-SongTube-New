@@ -52,13 +52,15 @@ class PlaylistTileCollapsed extends StatelessWidget {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                      height: 30,
+                      height: 25,
                       width: double.infinity,
-                      margin: const EdgeInsets.all(4),
                       padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(20)
+                        color: Theme.of(context).cardColor.withOpacity(0.8),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15)
+                        )
                       ),
                       child: Center(child: Icon(Ionicons.list, color: Theme.of(context).iconTheme.color, size: 16))
                     ),

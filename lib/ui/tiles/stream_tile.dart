@@ -16,14 +16,18 @@ import 'package:transparent_image/transparent_image.dart';
 class StreamTileCollapsed extends StatelessWidget {
   const StreamTileCollapsed({
     required this.stream,
+    this.onTap,
     super.key});
   final StreamInfoItem stream;
+  /// By default, onTap loads this video on the content provider, but
+  /// if onTap is set, you can run override that default behavior
+  final Function()? onTap;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
     UiProvider uiProvider = Provider.of(context);
     return CustomInkWell(
-      onTap: () {
+      onTap: onTap ?? () {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(stream);
         uiProvider.fwController.open();
@@ -86,7 +90,7 @@ class StreamTileCollapsed extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
-                    "${stream.uploaderName} • ${NumberFormat.compact().format(stream.viewCount)} Views",
+                    "${stream.uploaderName}  ${NumberFormat.compact().format(stream.viewCount) != '-1' ? '•  ${NumberFormat.compact().format(stream.viewCount)} views' : ''}",
                     style: tinyTextStyle(context, opacity: 0.7),
                     overflow: TextOverflow.clip,
                     maxLines: 1,
