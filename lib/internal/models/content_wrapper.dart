@@ -46,8 +46,10 @@ class ContentWrapper {
       }
     } else if (infoItem is PlaylistInfoItem) {
       try {
-        playlistDetails = await ContentService.fetchPlaylistFromInfoItem(infoItem);
-        await playlistDetails!.getStreams();
+        if (playlistDetails == null) {
+          playlistDetails = await ContentService.fetchPlaylistFromInfoItem(infoItem);
+          await playlistDetails!.getStreams();
+        }
         videoDetails = await ContentService.fetchVideoFromInfoItem(playlistDetails!.streams!.first);
         selectedPlaylistIndex = 0;
       } catch (e) {

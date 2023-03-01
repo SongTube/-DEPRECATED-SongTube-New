@@ -62,12 +62,12 @@ class _VideoPlayerCommentsState extends State<VideoPlayerComments> {
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       child: Container(
-        margin: const EdgeInsets.only(top: 6),
+        margin: EdgeInsets.only(top: commentsAvailable ? 6 : 0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: commentsAvailable ? Theme.of(context).scaffoldBackgroundColor : Colors.transparent,
         ),
-        padding: const EdgeInsets.all(8).copyWith(left: 16, right: 16),
+        padding: const EdgeInsets.all(8).copyWith(left: 16, right: 16, top: commentsAvailable ? 8 : 0, bottom: commentsAvailable ? 8 : 0),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: commentsAvailable ? Column(

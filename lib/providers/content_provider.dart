@@ -147,8 +147,8 @@ class ContentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Retrieve list of all videos on Watch History
-  
+  // Save playlist to favorites
+
 
   // Save video to Watch History
   Future<void> saveToHistory(StreamInfoItem video) async {
@@ -177,6 +177,59 @@ class ContentProvider extends ChangeNotifier {
         sharedPreferences.setString('watchHistory', jsonEncode(map));
       }
     }
+  }
+
+  // ------------------------------------
+  // Stream Playlists Creation/Management
+  // ------------------------------------
+  void loadLocalPlaylist(int index) {
+    final playlist = streamPlaylists[index];
+    // Switch to video player
+    Provider.of<UiProvider>(navigatorKey.currentState!.context, listen: false).currentPlayer = CurrentPlayer.video;
+    playingContent = ContentWrapper(infoItem: playlist.toPlaylistInfoItem())..playlistDetails = playlist;
+    notifyListeners();
+  }
+  set streamPlaylists(List<YoutubePlaylist> playlist) {
+    String json = playlist.isNotEmpty ? jsonEncode(playlist.map((e) => e.toMap()).toList()) : jsonEncode({});
+    sharedPreferences.setString('videoplaylists', json);
+    notifyListeners();
+  }
+  List<YoutubePlaylist> get streamPlaylists {
+    String? json = sharedPreferences.getString('videoplaylists');
+    if (json != null) {
+      final map = jsonDecode(json);
+      return List<YoutubePlaylist>.generate(map.length, (index) {
+        final playlist = YoutubePlaylist.fromMap(map[index]);
+        return playlist..streamCount = playlist.streams!.length;
+      });
+    } else {
+      return [];
+    }
+  }
+  void streamPlaylistCreate(String name, String author, List<StreamInfoItem> streams) {
+    final playlist =  YoutubePlaylist(null, name, null, author, null, null, null, streams.first.thumbnails!.maxresdefault, streams.length)..streams = streams;
+    streamPlaylists = streamPlaylists..add(playlist);
+  }
+  void streamPlaylistRemove(String name) {
+    int index = streamPlaylists.indexWhere((element) => element.name == name);
+    if (index == -1) return;
+    streamPlaylists = streamPlaylists..removeAt(index);
+  }
+  void streamPlaylistsInsertStream(String name, StreamInfoItem stream) {
+    int index = streamPlaylists.indexWhere((element) => element.name == name);
+    if (index == -1) return;
+    final newPlaylist = streamPlaylists[index]..streams!.add(stream);
+    newPlaylist.thumbnailUrl ??= stream.thumbnails!.hqdefault;
+    streamPlaylists = streamPlaylists..[index] = newPlaylist;
+  }
+  void streamPlaylistRemoveStream(String name, StreamInfoItem stream) {
+    int index = streamPlaylists.indexWhere((element) => element.name == name);
+    if (index == -1) return;
+    final newPlaylist = streamPlaylists[index]..streams!.removeWhere((element) => element.id == stream.id);
+    if (newPlaylist.streams!.isEmpty) {
+      newPlaylist.thumbnailUrl = null;
+    }
+    streamPlaylists = streamPlaylists..[index] = newPlaylist;
   }
 
   // Search History

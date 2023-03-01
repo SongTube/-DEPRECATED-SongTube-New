@@ -18,6 +18,7 @@ import 'package:songtube/ui/components/text_icon_button.dart';
 import 'package:songtube/ui/players/video_player/comments.dart';
 import 'package:songtube/ui/players/video_player/suggestions.dart';
 import 'package:songtube/ui/menus/download_content_menu.dart';
+import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -124,7 +125,7 @@ class VideoPlayerContent extends StatelessWidget {
                 text: videoInfo != null && (videoInfo.likeCount != -1 && videoInfo.likeCount != null)
                   ? NumberFormat.compact().format(videoInfo.likeCount) : 'Like',
                 onTap: () {
-            
+                  
                 },
               ),
               // Dislike Button
@@ -149,7 +150,9 @@ class VideoPlayerContent extends StatelessWidget {
                 icon: const Icon(Ionicons.add_outline),
                 text: 'Playlist',
                 onTap: () {
-            
+                  showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
+                    return AddToStreamPlaylist(stream: content.videoDetails!.toStreamInfoItem());
+                  });
                 },
               ),
               // Like Button

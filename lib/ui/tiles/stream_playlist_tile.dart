@@ -1,10 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/providers/content_provider.dart';
@@ -12,7 +9,6 @@ import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/text_styles.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class PlaylistTileCollapsed extends StatelessWidget {
   const PlaylistTileCollapsed({
@@ -40,13 +36,16 @@ class PlaylistTileCollapsed extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: ImageFade(
-                      fadeDuration: const Duration(milliseconds: 300),
-                      placeholder: const ShimmerContainer(height: null, width: null),
-                      image: NetworkImage(playlist.thumbnailUrl!),
-                      fit: BoxFit.fitWidth,
+                  AspectRatio(
+                    aspectRatio: 16/9,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: playlist.thumbnailUrl != null ? ImageFade(
+                        fadeDuration: const Duration(milliseconds: 300),
+                        placeholder: const ShimmerContainer(height: null, width: null),
+                        image: NetworkImage(playlist.thumbnailUrl!),
+                        fit: BoxFit.fitWidth,
+                      ) : Container(color: Theme.of(context).scaffoldBackgroundColor),
                     ),
                   ),
                   Align(

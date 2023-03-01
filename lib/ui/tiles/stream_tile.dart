@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:newpipeextractor_dart/models/infoItems/video.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
+import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -31,6 +33,9 @@ class StreamTileCollapsed extends StatelessWidget {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(stream);
         uiProvider.fwController.open();
+      },
+      onLongPress: () {
+        
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
