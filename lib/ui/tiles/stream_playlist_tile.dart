@@ -114,14 +114,18 @@ class PlaylistTileCollapsed extends StatelessWidget {
 class PlaylistTileExpanded extends StatelessWidget {
   const PlaylistTileExpanded({
     required this.playlist,
+    this.onTapOverride,
     super.key});
   final PlaylistInfoItem playlist;
+  /// Use this override in case you want to execute another
+  /// action when tapping this tile on the parent elements
+  final Function()? onTapOverride;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
     UiProvider uiProvider = Provider.of(context);
     return CustomInkWell(
-      onTap: () {
+      onTap: onTapOverride ?? () {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(playlist);
         uiProvider.fwController.open();

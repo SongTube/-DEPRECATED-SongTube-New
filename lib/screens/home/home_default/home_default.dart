@@ -7,7 +7,7 @@ import 'package:songtube/screens/home/home_default/pages/favorites_page.dart';
 import 'package:songtube/screens/home/home_default/pages/search_page.dart';
 import 'package:songtube/screens/home/home_default/pages/subscriptions_page.dart';
 import 'package:songtube/screens/home/home_default/pages/trending_page.dart';
-import 'package:songtube/screens/home/home_default/pages/watch_later_page.dart';
+import 'package:songtube/screens/home/home_default/pages/video_playlists_page.dart';
 import 'package:songtube/ui/animations/show_up.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/nested_will_pop_scope.dart';
@@ -205,9 +205,9 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
           // Subscriptions
           const Tab(child: Text('Subscriptions')),
           // Favorites
-          const Tab(child: Text('Favorites')),
+          const Tab(child: Text('Playlists')),
           // Watch Later
-          const Tab(child: Text('Watch Later')),
+          const Tab(child: Text('Favorites')),
         ],
       ),
     );
@@ -228,10 +228,10 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
           const TrendingPage(),
           // Subscriptions Page
           const SubscriptionsPage(),
+          // Video Playlists Page
+          const VideoPlaylistPage(),
           // Favorites Page
           const FavoritesPage(),
-          // Watch Later Page
-          const WatchLaterPage(),
         ]
       ),
     );
