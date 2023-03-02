@@ -83,13 +83,13 @@ class InfoItemOptions extends StatelessWidget {
                 subtitle: hasVideo ? 'Remove this video from your favorites' : 'Add video to your list of favorites',
                 icon: LineIcons.star,
                 onTap: () {
+                  Navigator.pop(context);
+                  showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
                   if (hasVideo) {
                     contentProvider.removeVideoFromFavorites(infoItem.id);
                   } else {
                     contentProvider.saveVideoToFavorites(infoItem);
                   }
-                  Navigator.pop(context);
-                  showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
                 }
               );
             }
