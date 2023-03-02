@@ -179,6 +179,37 @@ class ContentProvider extends ChangeNotifier {
     }
   }
 
+  // Favorite Videos
+  List<StreamInfoItem> get favoriteVideos {
+    var map = jsonDecode(sharedPreferences.getString('newFavoriteVideos') ?? "{}");
+    List<StreamInfoItem> videos = [];
+    if (map.isNotEmpty) {
+      if (map['favoriteVideos'].isNotEmpty) {
+        map['favoriteVideos'].forEach((v) {
+          videos.add(StreamInfoItem.fromMap(v));
+        });
+      }
+    }
+    return videos;
+  }
+  set favoriteVideos(List<StreamInfoItem> videos) {
+    var map = videos.map((e) {
+      return e.toMap();
+    }).toList();
+    String json = jsonEncode({ 'favoriteVideos': map });
+    sharedPreferences.setString('newFavoriteVideos', json).then((_) {
+      notifyListeners();
+    });
+  }
+  void saveVideoToFavorites(StreamInfoItem item) {
+    favoriteVideos = favoriteVideos..add(item);
+    notifyListeners();
+  }
+  void removeVideoFromFavorites(String id) {
+    favoriteVideos = favoriteVideos..removeWhere((element) => element.id == id);
+    notifyListeners();
+  }
+
   // ------------------------------------
   // Stream Playlists Creation/Management
   // ------------------------------------

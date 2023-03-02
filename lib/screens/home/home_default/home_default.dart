@@ -37,7 +37,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
-    if (tabController.length == 5 && (contentProvider.searchContent == null || !contentProvider.searchingContent)) {
+    if (tabController.length == 5 && (contentProvider.searchContent == null)) {
       tabController = TabController(length: 4, vsync: this);
     }
     if (tabController.length == 4 && (contentProvider.searchContent != null || contentProvider.searchingContent)) {

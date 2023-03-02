@@ -24,6 +24,7 @@ import 'package:songtube/ui/themes/light.dart';
 
 final internalNavigatorKey = GlobalKey<NavigatorState>();
 final navigatorKey = GlobalKey<NavigatorState>();
+final snackbarKey = GlobalKey<ScaffoldState>();
 
 void main() async {
   // Initialize WidgetsBinding
@@ -130,66 +131,69 @@ class _SongTubeState extends State<SongTube> {
             home: StreamBuilder<MediaItem?>(
               stream: audioHandler.mediaItem,
               builder: (context, media) {
-                return FancyScaffold(
-                  resizeToAvoidBottomInset: false,
-                  key: internalNavigatorKey,
-                  body: NestedWillPopScope(
-                    onWillPop: () async {
-                      if (navigatorKey.currentState?.canPop() ?? false) {
-                        navigatorKey.currentState?.pop();
-                        return false;
-                      }
-                      return true;
-                    },
-                    child: Navigator(
-                      key: navigatorKey,
-                      onGenerateRoute: (settings) {
-                        Widget widget;
-                        // Manage your route names here
-                        switch (settings.name) {
-                          case 'intro':
-                            widget = const IntroScreen();
-                            break;
-                          case 'home':
-                            widget = const HomeScreen();
-                            break;
-                          default:
-                            throw Exception('Invalid route: ${settings.name}');
+                return Scaffold(
+                  key: snackbarKey,
+                  body: FancyScaffold(
+                    resizeToAvoidBottomInset: false,
+                    key: internalNavigatorKey,
+                    body: NestedWillPopScope(
+                      onWillPop: () async {
+                        if (navigatorKey.currentState?.canPop() ?? false) {
+                          navigatorKey.currentState?.pop();
+                          return false;
                         }
-                        // You can also return a PageRouteBuilder and
-                        // define custom transitions between pages
-                        return PageRouteBuilder(
-                          settings: settings,
-                          barrierColor: Colors.transparent,
-                          transitionDuration: const Duration(milliseconds: 500),
-                          reverseTransitionDuration: const Duration(milliseconds: 500),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            return SharedAxisTransition(
-                              fillColor: Colors.transparent,
-                              animation: animation,
-                              secondaryAnimation: secondaryAnimation,
-                              transitionType: SharedAxisTransitionType.scaled,
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (context, animation, secondaryAnimation) {
-                            return widget;
-                          }
-                        );
+                        return true;
                       },
-                      initialRoute: initialRoute,
+                      child: Navigator(
+                        key: navigatorKey,
+                        onGenerateRoute: (settings) {
+                          Widget widget;
+                          // Manage your route names here
+                          switch (settings.name) {
+                            case 'intro':
+                              widget = const IntroScreen();
+                              break;
+                            case 'home':
+                              widget = const HomeScreen();
+                              break;
+                            default:
+                              throw Exception('Invalid route: ${settings.name}');
+                          }
+                          // You can also return a PageRouteBuilder and
+                          // define custom transitions between pages
+                          return PageRouteBuilder(
+                            settings: settings,
+                            barrierColor: Colors.transparent,
+                            transitionDuration: const Duration(milliseconds: 500),
+                            reverseTransitionDuration: const Duration(milliseconds: 500),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              return SharedAxisTransition(
+                                fillColor: Colors.transparent,
+                                animation: animation,
+                                secondaryAnimation: secondaryAnimation,
+                                transitionType: SharedAxisTransitionType.scaled,
+                                child: child,
+                              );
+                            },
+                            pageBuilder: (context, animation, secondaryAnimation) {
+                              return widget;
+                            }
+                          );
+                        },
+                        initialRoute: initialRoute,
+                      ),
                     ),
+                    floatingWidgetConfig: FloatingWidgetConfig(
+                      backdropColor: Colors.black,
+                      backdropEnabled: true,
+                      onSlide: media.hasData && media.data != null && uiProvider.currentPlayer == CurrentPlayer.music
+                        ? (position) => onSlide(position, media.data!)
+                        : null,
+                    ),
+                    floatingWidgetController: uiProvider.fwController,
+                    musicFloatingWidget: media.hasData && media.data != null ? const MusicPlayer() : null,
+                    videoFloatingWidget: contentProvider.playingContent != null ? const VideoPlayer() : null,
                   ),
-                  floatingWidgetConfig: FloatingWidgetConfig(
-                    backdropColor: Colors.black,
-                    backdropEnabled: true,
-                    onSlide: media.hasData && media.data != null && uiProvider.currentPlayer == CurrentPlayer.music
-                      ? (position) => onSlide(position, media.data!)
-                      : null,
-                  ),
-                  floatingWidgetController: uiProvider.fwController,
-                  musicFloatingWidget: media.hasData && media.data != null ? const MusicPlayer() : null,
-                  videoFloatingWidget: contentProvider.playingContent != null ? const VideoPlayer() : null,
                 );
               }
             )

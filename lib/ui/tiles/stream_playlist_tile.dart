@@ -4,27 +4,31 @@ import 'package:image_fade/image_fade.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
+import 'package:songtube/ui/sheets/info_item_options.dart';
 import 'package:songtube/ui/text_styles.dart';
 
 class PlaylistTileCollapsed extends StatelessWidget {
   const PlaylistTileCollapsed({
     required this.playlist,
+    this.isEditable = true,
     super.key});
   final PlaylistInfoItem playlist;
+  final bool isEditable;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
     UiProvider uiProvider = Provider.of(context);
     return CustomInkWell(
-      onTap: () {
+      onTap: isEditable ? () {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(playlist);
         uiProvider.fwController.open();
-      },
+      } : () {},
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,6 +109,17 @@ class PlaylistTileCollapsed extends StatelessWidget {
               ],
             ),
           ),
+          if (isEditable)
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: internalNavigatorKey.currentContext!,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => InfoItemOptions(infoItem: playlist));
+            },
+            icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
+          )
         ],
       ),
     );
@@ -214,6 +229,16 @@ class PlaylistTileExpanded extends StatelessWidget {
             ),
           ),
         ),
+        IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: internalNavigatorKey.currentContext!,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => InfoItemOptions(infoItem: playlist));
+          },
+          icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
+        )
       ],
     );
   }

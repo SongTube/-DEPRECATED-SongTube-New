@@ -45,7 +45,7 @@ class AddToStreamPlaylist extends StatelessWidget {
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.all(8.0).copyWith(top: 4),
-            child: StreamTileCollapsed(stream: stream),
+            child: StreamTileCollapsed(stream: stream, isEditable: false),
           ),
           Flex(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -64,6 +64,7 @@ class AddToStreamPlaylist extends StatelessWidget {
           ),
           ListView.builder(
             shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
             itemCount: playlists.length,
             itemBuilder: (context, index) {
               final playlist = playlists[index];
@@ -82,7 +83,7 @@ class AddToStreamPlaylist extends StatelessWidget {
                     color: Colors.transparent,
                     child: Row(
                       children: [
-                        Expanded(child: IgnorePointer(ignoring: true, child: PlaylistTileCollapsed(playlist: playlist.toPlaylistInfoItem()))),
+                        Expanded(child: IgnorePointer(ignoring: true, child: PlaylistTileCollapsed(playlist: playlist.toPlaylistInfoItem(), isEditable: false))),
                         Padding(
                           padding: const EdgeInsets.only(right: 18, left: 12),
                           child: Transform.scale(

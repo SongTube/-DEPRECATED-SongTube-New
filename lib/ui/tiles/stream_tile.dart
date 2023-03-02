@@ -12,6 +12,7 @@ import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
+import 'package:songtube/ui/sheets/info_item_options.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -19,24 +20,23 @@ class StreamTileCollapsed extends StatelessWidget {
   const StreamTileCollapsed({
     required this.stream,
     this.onTap,
+    this.isEditable = true,
     super.key});
   final StreamInfoItem stream;
   /// By default, onTap loads this video on the content provider, but
   /// if onTap is set, you can run override that default behavior
   final Function()? onTap;
+  final bool isEditable;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
     UiProvider uiProvider = Provider.of(context);
     return CustomInkWell(
-      onTap: onTap ?? () {
+      onTap: isEditable ? onTap ?? () {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(stream);
         uiProvider.fwController.open();
-      },
-      onLongPress: () {
-        
-      },
+      } :() {},
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,6 +104,17 @@ class StreamTileCollapsed extends StatelessWidget {
               ],
             ),
           ),
+          if (isEditable)
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: internalNavigatorKey.currentContext!,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => InfoItemOptions(infoItem: stream));
+            },
+            icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
+          )
         ],
       ),
     );
@@ -209,6 +220,16 @@ class StreamTileExpanded extends StatelessWidget {
             ),
           ),
         ),
+        IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: internalNavigatorKey.currentContext!,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => InfoItemOptions(infoItem: stream));
+          },
+          icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
+        )
       ],
     );
   }

@@ -50,10 +50,6 @@ class _MusicEqualizerSheetState extends State<MusicEqualizerSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(20)
-      ),
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.only(top: 16, bottom: 16),
       child: Column(
