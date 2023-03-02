@@ -130,22 +130,30 @@ class PlaylistTileExpanded extends StatelessWidget {
         contentProvider.loadVideoPlayer(playlist);
         uiProvider.fwController.open();
       },
-      child: Padding(
-        padding: const EdgeInsets.only(left: 12, right: 12),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: AspectRatio(
-            aspectRatio: 16/9,
-            child: _thumbnail(context)),
-        ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: AspectRatio(
+                aspectRatio: 16/9,
+                child: _thumbnail(context)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12),
+            child: _details(context),
+          )
+        ],
       ),
     );
   }
 
   Widget _thumbnail(context) {
     return Stack(
-      alignment: Alignment.bottomCenter,
       fit: StackFit.expand,
+      alignment: Alignment.bottomCenter,
       children: [
         CachedNetworkImage(
           fadeInDuration: const Duration(milliseconds: 300),
@@ -160,13 +168,11 @@ class PlaylistTileExpanded extends StatelessWidget {
         Align(
           alignment: Alignment.bottomCenter,
           child: Container(
-            margin: const EdgeInsets.all(4),
-            height: kToolbarHeight,
+            height: 25,
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(20)
             ),
-            child: _details(context)
+            child: const Center(child: Icon(Ionicons.list, size: 20, color: Colors.white)),
           ),
         )
       ],
@@ -174,40 +180,41 @@ class PlaylistTileExpanded extends StatelessWidget {
   }
 
   Widget _details(context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 18, right: 18),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${playlist.name}",
-                    maxLines: 2,
-                    style: smallTextStyle(context, bold: true),
-                  ),
-                  Text(
-                    "${playlist.streamCount} videos",
-                    style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
-                  )
-                ],
-              ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 50, width: 50,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(100)
+          ),
+          child: Icon(Ionicons.list, size: 20, color: Theme.of(context).iconTheme.color),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${playlist.name}",
+                  maxLines: 2,
+                  style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Contains ${playlist.streamCount} videos",
+                  style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
+                )
+              ],
             ),
           ),
-          const SizedBox(width: 12),
-          Icon(
-            Ionicons.list,
-            color: Theme.of(context).iconTheme.color,
-            size: 20,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
