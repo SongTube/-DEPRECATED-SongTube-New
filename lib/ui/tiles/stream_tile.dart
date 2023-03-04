@@ -41,8 +41,18 @@ class StreamTileCollapsed extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          Container(
             height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 6,
+                  offset: const Offset(0,0),
+                  color: Theme.of(context).shadowColor.withOpacity(0.1)
+                )
+              ],
+            ),
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [
@@ -138,8 +148,18 @@ class StreamTileExpanded extends StatelessWidget {
       },
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+          Container(
+            margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 6,
+                  offset: const Offset(0,0),
+                  color: Theme.of(context).shadowColor.withOpacity(0.1)
+                )
+              ],
+            ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: AspectRatio(

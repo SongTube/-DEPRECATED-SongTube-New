@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:line_icons/line_icon.dart';
@@ -43,6 +44,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
 
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(statusBarIconBrightness: Theme.of(context).brightness),
         title: Text('Library', style: bigTextStyle(context).copyWith(fontSize: 24)),
         shadowColor: Colors.transparent,
         backgroundColor: Colors.transparent,

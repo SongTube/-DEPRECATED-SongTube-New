@@ -115,22 +115,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         destinations: const [
           NavigationDestination(
             icon: Icon(Ionicons.home_outline),
-            selectedIcon: Icon(Ionicons.home),
+            selectedIcon: Icon(Ionicons.home, color: Colors.white),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Ionicons.musical_note_outline),
-            selectedIcon: Icon(Ionicons.musical_note),
+            selectedIcon: Icon(Ionicons.musical_note, color: Colors.white),
             label: 'Music',
           ),
           NavigationDestination(
             icon: Icon(Ionicons.cloud_download_outline),
-            selectedIcon: Icon(Ionicons.cloud_download),
+            selectedIcon: Icon(Ionicons.cloud_download, color: Colors.white),
             label: 'Downloads',
           ),
           NavigationDestination(
             icon: Icon(Ionicons.library_outline),
-            selectedIcon: Icon(Ionicons.library),
+            selectedIcon: Icon(Ionicons.library, color: Colors.white),
             label: 'Library',
           ),
         ],

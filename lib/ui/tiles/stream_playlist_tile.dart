@@ -33,8 +33,18 @@ class PlaylistTileCollapsed extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          Container(
             height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 6,
+                  offset: const Offset(0,0),
+                  color: Theme.of(context).shadowColor.withOpacity(0.1)
+                )
+              ],
+            ),
             child: AspectRatio(
               aspectRatio: 16/9,
               child: Stack(
@@ -147,8 +157,18 @@ class PlaylistTileExpanded extends StatelessWidget {
       },
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
+          Container(
+            margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 6,
+                  offset: const Offset(0,0),
+                  color: Theme.of(context).shadowColor.withOpacity(0.1)
+                )
+              ],
+            ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: AspectRatio(
@@ -187,7 +207,7 @@ class PlaylistTileExpanded extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor.withOpacity(0.7),
             ),
-            child: const Center(child: Icon(Ionicons.list, size: 20, color: Colors.white)),
+            child: Center(child: Icon(Ionicons.list, size: 20, color: Theme.of(context).iconTheme.color)),
           ),
         )
       ],
@@ -203,7 +223,15 @@ class PlaylistTileExpanded extends StatelessWidget {
           height: 50, width: 50,
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(100)
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 6,
+                offset: const Offset(0,0),
+                color: Theme.of(context).shadowColor.withOpacity(0.03)
+              )
+            ],
           ),
           child: Icon(Ionicons.list, size: 20, color: Theme.of(context).iconTheme.color),
         ),

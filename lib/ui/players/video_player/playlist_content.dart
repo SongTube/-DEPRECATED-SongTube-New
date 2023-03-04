@@ -86,7 +86,13 @@ class _VideoPlayerPlaylistContentState extends State<VideoPlayerPlaylistContent>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Ionicons.list, color: Theme.of(context).iconTheme.color),
+                    AnimatedBuilder(
+                      animation: panelController!.animationController,
+                      builder: (context, snapshot) {
+                        final iconColor = ColorTween(begin: Colors.white, end: Theme.of(context).iconTheme.color).animate(panelController!.animationController).value;
+                        return Icon(Ionicons.list, color: iconColor);
+                      }
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: AnimatedBuilder(
