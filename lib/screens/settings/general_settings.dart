@@ -38,20 +38,13 @@ class _GeneralSettingsState extends State<GeneralSettings> {
     return ListView(
       padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
       children: [
-        ListTile(
-          onTap: () => updateThemeMode(),
-          leading: SizedBox(
-            height: double.infinity,
-            child: Icon(LineIcons.moon, color: Theme.of(context).iconTheme.color),
-          ),
-          title: Text('Dark mode', style: subtitleTextStyle(context, bold: true)),
-          subtitle: Text('Enable/disable dark mode', style: tinyTextStyle(context, opacity: 0.7)),
-          trailing: CircularCheckbox(
-            value: uiProvider.themeMode == ThemeMode.dark,
-            onChange: (_) {
-              updateThemeMode();
-            },
-          ),
+        // Dark mode
+        SettingTileCheckbox(
+          leadingIcon: LineIcons.moon,
+          title: 'Dark mode',
+          subtitle: 'Enable/disable dark mode',
+          onChange: (_) => updateThemeMode(),
+          value: uiProvider.themeMode == ThemeMode.dark,
         ),
       ],
     );

@@ -21,7 +21,7 @@ class SettingTileCheckbox extends StatelessWidget {
       onTap: () => onChange(!value),
       leading: SizedBox(
         height: double.infinity,
-        child: Icon(leadingIcon, color: Theme.of(context).iconTheme.color),
+        child: Icon(leadingIcon, color: Theme.of(context).primaryColor),
       ),
       title: Text(title, style: subtitleTextStyle(context, bold: true)),
       subtitle: Text(subtitle, style: tinyTextStyle(context, opacity: 0.7)),
@@ -69,7 +69,7 @@ class _SettingTileSliderState extends State<SettingTileSlider> {
         ListTile(
           leading: SizedBox(
             height: double.infinity,
-            child: Icon(widget.leadingIcon, color: Theme.of(context).iconTheme.color),
+            child: Icon(widget.leadingIcon, color: Theme.of(context).primaryColor),
           ),
           title: Text(widget.title, style: subtitleTextStyle(context, bold: true)),
           subtitle: Text(widget.subtitle, style: tinyTextStyle(context, opacity: 0.7)),
@@ -146,7 +146,7 @@ class SettingTileDropdown extends StatelessWidget {
           child: ListTile(
             leading: SizedBox(
               height: double.infinity,
-              child: Icon(leadingIcon, color: Theme.of(context).iconTheme.color),
+              child: Icon(leadingIcon, color: Theme.of(context).primaryColor),
             ),
             title: Text(title, style: subtitleTextStyle(context, bold: true)),
             subtitle: Text(subtitle, style: tinyTextStyle(context, opacity: 0.7)),
