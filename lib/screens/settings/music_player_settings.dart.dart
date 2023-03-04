@@ -51,7 +51,7 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
           title: 'Backdrop opacity',
           subtitle: 'Change the colored backdrop opacity',
           leadingIcon: Icons.opacity_rounded,
-          value: AppSettings.musicPlayerBackdropOpacity,
+          value: AppSettings.musicPlayerBackdropOpacity*100,
           min: 0,
           max: 100,
           valueTrailingString: '%',
