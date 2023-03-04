@@ -205,8 +205,7 @@ class _SongTubeState extends State<SongTube> {
 
   // Change appbar colors on music player slide
   void onSlide(double position, MediaItem mediaItem) {
-    final iconColor = Theme.of(context).brightness == Brightness.light
-      ? Brightness.light : Brightness.dark;
+    final iconColor = Theme.of(internalNavigatorKey.currentContext!).brightness;
     final Color? textColor = SongItem.fromMediaItem(mediaItem).palette?.text;
     if (position > 0.95) {
       if (textColor != null) {

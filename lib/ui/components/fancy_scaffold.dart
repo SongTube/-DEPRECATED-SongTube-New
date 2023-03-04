@@ -47,7 +47,7 @@ class FloatingWidgetConfig {
     this.minHeight = kToolbarHeight * 1.6,
     this.isPanelVisible = true,
     this.margin = EdgeInsets.zero,
-    this.padding = const EdgeInsets.all(6),
+    this.padding = const EdgeInsets.all(4),
     this.enableGlobalPlayer = false
   });
 
@@ -56,7 +56,6 @@ class FloatingWidgetConfig {
 class FancyScaffold extends StatefulWidget {
 
   // Scaffold values
-  final PreferredSizeWidget? appBar;
   final Widget body;
   final Widget? bottomNavigationBar;
   final bool? resizeToAvoidBottomInset;
@@ -69,7 +68,6 @@ class FancyScaffold extends StatefulWidget {
   final FloatingWidgetConfig floatingWidgetConfig;
 
   const FancyScaffold({
-    this.appBar,
     required this.body,
     this.bottomNavigationBar,
     this.musicFloatingWidget,
@@ -164,7 +162,6 @@ class FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateMi
                 Scaffold(
                   backgroundColor: widget.backgroundColor,
                   resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-                  appBar: widget.appBar,
                   body: widget.floatingWidgetConfig.enableGlobalPlayer ? WillPopScope(
                     onWillPop: () async {
                       if (widget.floatingWidgetController!.navigatorKey.currentState?.canPop() ?? false) {

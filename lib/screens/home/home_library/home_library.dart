@@ -21,7 +21,9 @@ import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/download_provider.dart';
+import 'package:songtube/screens/settings.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:songtube/ui/ui_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -48,7 +50,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
         actions: [
           IconButton(
             onPressed: () {
-              // Open Settings
+              UiUtils.pushRouteAsync(internalNavigatorKey.currentContext!, const ConfigurationScreen());
             },
             icon: Icon(Iconsax.setting, color: Theme.of(context).primaryColor)
           )
