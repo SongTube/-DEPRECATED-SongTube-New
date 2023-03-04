@@ -50,7 +50,7 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
         SettingTileSlider(
           title: 'Backdrop opacity',
           subtitle: 'Change the colored backdrop opacity',
-          leadingIcon: Icons.blur_linear,
+          leadingIcon: Icons.opacity_rounded,
           value: AppSettings.musicPlayerBackdropOpacity,
           min: 0,
           max: 100,
