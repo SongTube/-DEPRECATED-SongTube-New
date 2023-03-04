@@ -122,3 +122,63 @@ class _SettingTileSliderState extends State<SettingTileSlider> {
   }
 
 }
+
+class SettingTileDropdown extends StatelessWidget {
+  const SettingTileDropdown({
+    required this.title,
+    required this.subtitle,
+    required this.leadingIcon,
+    required this.currentValue,
+    required this.onChange,
+    required this.items,
+    super.key});
+  final String title;
+  final String subtitle;
+  final IconData leadingIcon;
+  final String currentValue;
+  final Function(String?) onChange;
+  final List<DropdownMenuItem<String>> items;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: ListTile(
+            leading: SizedBox(
+              height: double.infinity,
+              child: Icon(leadingIcon, color: Theme.of(context).iconTheme.color),
+            ),
+            title: Text(title, style: subtitleTextStyle(context, bold: true)),
+            subtitle: Text(subtitle, style: tinyTextStyle(context, opacity: 0.7)),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _dropdown(context),
+        )
+      ],
+    );
+  }
+
+  Widget _dropdown(context) {
+    return SizedBox(
+      height: 30,
+      child: DropdownButton<String>(
+        value: currentValue,
+        iconSize: 18,
+        borderRadius: BorderRadius.circular(20),
+        iconEnabledColor: Theme.of(context).primaryColor,
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodyText1!.color,
+          fontFamily: 'Product Sans',
+          fontWeight: FontWeight.w600,
+          fontSize: 12
+        ),
+        underline: Container(),
+        items: items,
+        onChanged: onChange
+      ),
+    );
+  }
+
+}
