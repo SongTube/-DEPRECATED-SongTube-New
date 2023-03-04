@@ -34,6 +34,8 @@ class SongTile extends StatefulWidget {
 
 class _SongTileState extends State<SongTile> {
 
+  Color get dominantColor => widget.song.palette?.vibrant ?? widget.song.palette?.dominant ?? Theme.of(context).textTheme.bodyText1!.color!;
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<MediaItem?>(
@@ -45,7 +47,7 @@ class _SongTileState extends State<SongTile> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             decoration: BoxDecoration(
-              color: widget.disablePlayingBackground ? Colors.transparent : isPlaying ? widget.song.palette!.dominant!.withOpacity(0.1) : Colors.transparent,
+              color: widget.disablePlayingBackground ? Colors.transparent : isPlaying ? dominantColor.withOpacity(0.1) : Colors.transparent,
               borderRadius: BorderRadius.circular(20)
             ),
             child: ListTile(
@@ -136,8 +138,7 @@ class _SongTileState extends State<SongTile> {
                 stream: audioHandler.playbackState,
                 builder: (context, state) {
                   bool isPaused = !(state.data?.playing ?? true);
-                  return MiniMusicVisualizer(color: MediaQuery.of(context).platformBrightness == Brightness.dark && (widget.song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
-                    ? widget.song.palette?.text ?? accentColor : widget.song.palette?.vibrant ?? accentColor, width: 2, height: 12, pause: isPaused);
+                  return MiniMusicVisualizer(color: dominantColor, width: 2, height: 12, pause: isPaused);
                 }
               ))
           : Bounce(
