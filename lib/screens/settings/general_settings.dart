@@ -36,7 +36,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.only(left: 12, right: 12),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
       children: [
         ListTile(
           onTap: () => updateThemeMode(),

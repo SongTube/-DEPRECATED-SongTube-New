@@ -17,7 +17,7 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.only(left: 12, right: 12),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
       children: [
         // Music Player blur background
         SettingTileCheckbox(
@@ -61,7 +61,7 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
           }
         ),
         const SizedBox(height: 12),
-        
+
       ],
     );
   }
