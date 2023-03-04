@@ -6,6 +6,7 @@ import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/song_item.dart';
 import 'package:songtube/providers/download_provider.dart';
@@ -38,6 +39,32 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
 
   // Current Song
   SongItem get song => SongItem.fromMediaItem(audioHandler.mediaItem.value!);
+
+  // Player Colors
+  Color get textColor {
+    final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
+    if (AppSettings.enableMusicPlayerBlur) {
+      if ((song.palette?.dominant ?? Colors.black).computeLuminance() < 0.2) {
+        return song.palette?.text ?? defaultColor;
+      } else {
+        return song.palette?.text ?? defaultColor;
+      }
+    } else {
+      return defaultColor;
+    }
+  }
+  Color get dominantColor {
+    final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
+    if (AppSettings.enableMusicPlayerBlur) {
+      if ((song.palette?.dominant ?? Colors.black).computeLuminance() < 0.2) {
+        return song.palette?.text ?? defaultColor;
+      } else {
+        return song.palette?.text ?? defaultColor;
+      }
+    } else {
+      return song.palette?.vibrant ?? song.palette?.dominant ?? defaultColor;
+    }
+  }
 
   // Drag Value for song Seek
   double? dragValue;
@@ -216,7 +243,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Ionicons.repeat_outline,
             size: 16,
-            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.6)
+            color: textColor.withOpacity(0.6)
           ),
           onPressed: () => audioHandler.skipToNext()
         ),
@@ -226,7 +253,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Icons.arrow_back_ios,
             size: 16,
-            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.8)
+            color: textColor.withOpacity(0.6)
           ),
           onPressed: () => audioHandler.skipToPrevious()
         ),
@@ -247,12 +274,10 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                 width: 60,
                 child: playing
                   ? Icon(Ionicons.pause, size: 32, 
-                      color: MediaQuery.of(context).platformBrightness == Brightness.dark && (song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
-                        ? song.palette?.text ?? accentColor : song.palette?.vibrant ?? accentColor
+                      color: dominantColor
                     )
                   : Icon(Ionicons.play, size: 32,
-                      color: MediaQuery.of(context).platformBrightness == Brightness.dark && (song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
-                        ? song.palette?.text ?? accentColor : song.palette?.vibrant ?? accentColor
+                      color: dominantColor
                     )
               ),
             );
@@ -265,7 +290,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Icons.arrow_forward_ios,
             size: 16,
-            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.8)
+            color: textColor.withOpacity(0.6)
           ),
           onPressed: () => audioHandler.skipToNext()
         ),
@@ -275,7 +300,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
           icon: Icon(
             Ionicons.shuffle_outline,
             size: 16,
-            color: song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.6)
+            color: textColor.withOpacity(0.6)
           ),
           onPressed: () => audioHandler.skipToNext()
         ),
@@ -312,7 +337,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                           child: Text(
                             snapshot.data?.title ?? '',
                             key: ValueKey(snapshot.data?.title),
-                            style: bigTextStyle(context).copyWith(fontWeight: FontWeight.w900).copyWith(color: song.palette?.text),
+                            style: bigTextStyle(context).copyWith(fontWeight: FontWeight.w900).copyWith(color: textColor),
                             maxLines: 1,
                             softWrap: false,
                             overflow: TextOverflow.fade,
@@ -332,7 +357,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                         return Text(
                           snapshot.data?.artist ?? '',
                           key: ValueKey(snapshot.data?.artist),
-                          style: subtitleTextStyle(context, opacity: 0.7).copyWith(color: song.palette?.text.withOpacity(0.7)),
+                          style: subtitleTextStyle(context, opacity: 0.7).copyWith(color: textColor.withOpacity(0.7)),
                           maxLines: 1,
                           softWrap: false,
                           overflow: TextOverflow.fade,
@@ -356,7 +381,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                 child: Icon(
                   isFavorite ? Ionicons.heart : Ionicons.heart_outline,
                   key: ValueKey(song.id+isFavorite.toString()),
-                  color: isFavorite ? Colors.red : song.palette?.text ?? Theme.of(context).iconTheme.color!.withOpacity(0.6),
+                  color: isFavorite ? Colors.red : textColor,
                 ),
               ),
             )
@@ -390,9 +415,8 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                   trackHeight: 2,
                 ),
                 child: Slider(
-                  activeColor: MediaQuery.of(context).platformBrightness == Brightness.dark && (song.palette?.vibrant ?? Colors.black).computeLuminance() < 0.2
-                    ? song.palette?.text ?? accentColor : song.palette?.vibrant ?? accentColor,
-                  inactiveColor: song.palette?.text.withOpacity(0.1) ?? Colors.black12.withOpacity(0.1),
+                  activeColor: dominantColor,
+                  inactiveColor: textColor.withOpacity(0.06),
                   min: 0.0,
                   max: duration.inMilliseconds.toDouble(),
                   value: duration == Duration.zero ? 0 : max(0.0, min(
@@ -423,12 +447,12 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                 children: <Widget>[
                   Text(
                     "${position.inMinutes}:${(position.inSeconds.remainder(60).toString().padLeft(2, '0'))}",
-                    style: tinyTextStyle(context, opacity: 0.6).copyWith(color: song.palette?.text),
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(color: textColor),
                   ),
                   const Spacer(),
                   Text(
                     "${duration.inMinutes}:${(duration.inSeconds.remainder(60).toString().padLeft(2, '0'))}",
-                    style: tinyTextStyle(context, opacity: 0.6).copyWith(color: song.palette?.text),
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(color: textColor),
                   )
                 ],
               ),

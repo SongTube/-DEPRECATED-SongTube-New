@@ -42,6 +42,20 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
   // Current Song
   SongItem get song => SongItem.fromMediaItem(audioHandler.mediaItem.value!);
 
+  // Player Colors
+  Color get textColor {
+    final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
+    if (AppSettings.enableMusicPlayerBlur) {
+      if ((song.palette?.dominant ?? Colors.black).computeLuminance() < 0.2) {
+        return song.palette?.text ?? defaultColor;
+      } else {
+        return song.palette?.text ?? defaultColor;
+      }
+    } else {
+      return defaultColor;
+    }
+  }
+
   @override
   void initState() {
     audioHandler.mediaItem.listen((event) {
@@ -197,7 +211,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
             onPressed: () {
               uiProvider.fwController.close();
             },
-            icon: Icon(Icons.expand_more_rounded, color: song.palette?.text ?? Theme.of(context).iconTheme.color)
+            icon: Icon(Icons.expand_more_rounded, color: textColor)
           ),
           // Now Playing Text
           Expanded(
@@ -206,7 +220,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
                 child: Text(
                   mediaProvider.currentPlaylistName ?? 'Unknown Playlist',
-                  style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: song.palette?.text)
+                  style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: textColor)
                 ),
               ),
             ),
@@ -222,7 +236,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 backgroundColor: Colors.transparent,
                 builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap));
             },
-            icon: Icon(Icons.graphic_eq_outlined, color: song.palette?.text ?? Theme.of(context).iconTheme.color)
+            icon: Icon(Icons.graphic_eq_outlined, color: textColor)
           ),
           const SizedBox(width: 16)
         ],
