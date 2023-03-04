@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icon.dart';
@@ -64,23 +65,30 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: textStyle(context)
-        ),
-        titleSpacing: 0,
-        leading: IconButton(
-          icon: Icon(Iconsax.arrow_left, color: Theme.of(context).iconTheme.color),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-      ),
       body: Column(
         children: [
+          SizedBox(height: MediaQuery.of(context).padding.top),
+          SizedBox(
+            height: kToolbarHeight,
+            child: Row(
+              children: [
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: Icon(Iconsax.arrow_left, color: Theme.of(context).iconTheme.color),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    "Settings",
+                    style: textStyle(context)
+                  ),
+                ),
+              ],
+            ),
+          ),
           _tabs(),
           Divider(height: 1, color: Theme.of(context).dividerColor),
           Expanded(
