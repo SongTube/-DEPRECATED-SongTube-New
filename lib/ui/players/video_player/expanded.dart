@@ -9,7 +9,6 @@ class VideoPlayerExpanded extends StatefulWidget {
     required this.content,
     super.key});
   final ContentWrapper content;
-
   @override
   State<VideoPlayerExpanded> createState() => _VideoPlayerExpandedState();
 }

@@ -19,7 +19,6 @@ class VideoPlayerPlaylistContent extends StatefulWidget {
     required this.content,
     super.key});
   final ContentWrapper content;
-
   @override
   State<VideoPlayerPlaylistContent> createState() => _VideoPlayerPlaylistContentState();
 }

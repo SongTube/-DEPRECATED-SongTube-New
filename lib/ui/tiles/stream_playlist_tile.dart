@@ -100,7 +100,7 @@ class PlaylistTileCollapsed extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
-                    "${playlist.streamCount} videos",
+                    playlist.streamCount.isNegative ? ' ' : "${playlist.streamCount} videos",
                     style: tinyTextStyle(context, opacity: 0.7),
                     overflow: TextOverflow.clip,
                     maxLines: 1,

@@ -24,24 +24,14 @@ class CustomSnackBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(20)
+        color: Theme.of(context).cardColor,
       ),
-      margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.all(8).copyWith(left: 8, right: 8),
-      child: Column(
-        children: [
-          const SizedBox(height: 4),
-          Align(
-            alignment: Alignment.center,
-            child: BottomSheetPhill(color: Colors.white.withOpacity(0.6))),
-          ListTile(
-            contentPadding: const EdgeInsets.only(bottom: 0, left: 12, right: 12, top: 6),
-            leading: Icon(icon, color: Colors.white),
-            title: Text(title, style: textStyle(context, bold: true).copyWith(color: Colors.white.withOpacity(0.8), fontSize: 16)),
-            trailing: trailing,
-          ),
-        ],
+      child: ListTile(
+        contentPadding: const EdgeInsets.only(bottom: 0, left: 12, right: 12, top: 6),
+        leading: Icon(icon, color: Theme.of(context).primaryColor),
+        title: Text(title, style: textStyle(context, bold: true).copyWith(fontSize: 16)),
+        trailing: trailing,
       ),
     );
   }
