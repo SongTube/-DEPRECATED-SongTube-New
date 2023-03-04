@@ -52,7 +52,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
         actions: [
           IconButton(
             onPressed: () {
-              UiUtils.pushRouteAsync(internalNavigatorKey.currentContext!, const ConfigurationScreen());
+              UiUtils.pushRouteAsync(context, const ConfigurationScreen());
             },
             icon: Icon(Iconsax.setting, color: Theme.of(context).primaryColor)
           )

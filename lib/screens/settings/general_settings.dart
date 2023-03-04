@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/circular_check_box.dart';
+import 'package:songtube/ui/tiles/setting_tile.dart';
 
 import '../../ui/text_styles.dart';
 

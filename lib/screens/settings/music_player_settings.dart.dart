@@ -3,6 +3,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/ui/components/circular_check_box.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:songtube/ui/tiles/setting_tile.dart';
 
 class MusicPlayerSettings extends StatefulWidget {
   const MusicPlayerSettings({super.key});
@@ -18,25 +19,49 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
     return ListView(
       padding: const EdgeInsets.only(left: 12, right: 12),
       children: [
-        ListTile(
-          leading: SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.blur_on, color: Theme.of(context).iconTheme.color),
-          ),
-          onTap: () {
-            AppSettings.enableMusicPlayerBlur = !AppSettings.enableMusicPlayerBlur;
+        // Music Player blur background
+        SettingTileCheckbox(
+          title: 'Blur Background',
+          subtitle: 'Add blurred artwork background',
+          value: AppSettings.enableMusicPlayerBlur,
+          onChange: (value) {
+            AppSettings.enableMusicPlayerBlur = value;
             setState(() {});
           },
-          title: Text('Blur Background', style: subtitleTextStyle(context, bold: true)),
-          subtitle: Text('Add blurred artwork background', style: tinyTextStyle(context, opacity: 0.7)),
-          trailing: CircularCheckbox(
-            value: AppSettings.enableMusicPlayerBlur,
-            onChange: (value) {
-              AppSettings.enableMusicPlayerBlur = value;
-              setState(() {});
-            },
-          ),
-        )
+          leadingIcon: Icons.blur_on,
+        ),
+        const SizedBox(height: 12),
+        // Music Player blur background intensity
+        SettingTileSlider(
+          title: 'Blur intensity',
+          subtitle: 'Change the blur intensity of the artwork background',
+          leadingIcon: Icons.blur_linear,
+          value: AppSettings.musicPlayerBlurStrenght,
+          min: 0.00001,
+          max: 100,
+          valueTrailingString: '%',
+          onChange: (value) {
+            AppSettings.musicPlayerBlurStrenght = value;
+            setState(() {});
+          }
+        ),
+        const SizedBox(height: 12),
+        // Music Player blur background intensity
+        SettingTileSlider(
+          title: 'Backdrop opacity',
+          subtitle: 'Change the colored backdrop opacity',
+          leadingIcon: Icons.blur_linear,
+          value: AppSettings.musicPlayerBackdropOpacity,
+          min: 0,
+          max: 100,
+          valueTrailingString: '%',
+          onChange: (value) {
+            AppSettings.musicPlayerBackdropOpacity = value/100;
+            setState(() {});
+          }
+        ),
+        const SizedBox(height: 12),
+        
       ],
     );
   }
