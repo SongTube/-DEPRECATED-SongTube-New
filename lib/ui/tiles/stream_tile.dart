@@ -12,7 +12,6 @@ import 'package:songtube/screens/channel.dart';
 import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
-import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/sheets/info_item_options.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/ui_utils.dart';
@@ -39,14 +38,17 @@ class StreamTileCollapsed extends StatelessWidget {
     ContentProvider contentProvider = Provider.of(context);
     UiProvider uiProvider = Provider.of(context);
     return CustomInkWell(
-      onTap: isEditable ? onTap ?? () {
-        uiProvider.currentPlayer = CurrentPlayer.video;
-        contentProvider.loadVideoPlayer(stream);
-        uiProvider.fwController.open();
-      } :() {},
+      onTap: isEditable
+          ? onTap ??
+              () {
+                uiProvider.currentPlayer = CurrentPlayer.video;
+                contentProvider.loadVideoPlayer(stream);
+                uiProvider.fwController.open();
+              }
+          : () {},
       onLongPress: () {
-        UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
-      },
+      UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
+    },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,10 +64,11 @@ class StreamTileCollapsed extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: AspectRatio(
-                    aspectRatio: 16/9,
+                    aspectRatio: 16 / 9,
                     child: ImageFade(
                       fadeDuration: const Duration(milliseconds: 300),
-                      placeholder: const ShimmerContainer(height: null, width: null),
+                      placeholder:
+                          const ShimmerContainer(height: null, width: null),
                       image: NetworkImage(stream.thumbnails!.hqdefault),
                       fit: BoxFit.fitWidth,
                     ),
@@ -75,15 +78,15 @@ class StreamTileCollapsed extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 6, right: 6),
-                    padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
+                    padding:
+                        const EdgeInsets.all(3).copyWith(left: 8, right: 8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(100)
-                    ),
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(100)),
                     child: Text(
-                      "${Duration(seconds: stream.duration!).inMinutes}:${Duration(seconds: stream.duration!).inSeconds.remainder(60).toString().padRight(2, "0")}",
-                      style: tinyTextStyle(context, bold: false).copyWith(color: Colors.white, letterSpacing: 0.4, fontSize: 10)
-                    ),
+                      Text(UiUtils.timeFormatter(stream.duration!),
+                        style: tinyTextStyle(context, bold: false)
+                            .copyWith(color: Colors.white, letterSpacing: 0.4, fontSize: 10)),
                   ),
                 )
               ],
@@ -96,8 +99,7 @@ class StreamTileCollapsed extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.only(
-                    left: 8, right: 8,
-                    top: 4, bottom: 0),
+                      left: 8, right: 8, top: 4, bottom: 0),
                   child: Text(
                     stream.name ?? '',
                     style: smallTextStyle(context).copyWith(fontWeight: FontWeight.normal),
@@ -114,29 +116,29 @@ class StreamTileCollapsed extends StatelessWidget {
                     maxLines: 1,
                   ),
                 ),
-                Builder(
-                  builder: (context) {
-                    final DateTime? date = stream.date != null ? DateTime.parse(stream.date!) : null;
-                    return Container(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                        date != null ? timeago.format(date, locale: 'en') : '',
-                        style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w500),
-                        overflow: TextOverflow.clip,
-                        maxLines: 1,
-                      ),
-                    );
-                  }
-                ),
-              ],
+              Builder(
+                builder: (context) {
+                  final DateTime? date = stream.date != null ? DateTime.parse(stream.date!) : null;
+                  return Container(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(
+                      date != null ? timeago.format(date, locale: 'en') : '',
+                      style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w500),
+                      overflow: TextOverflow.clip,
+                      maxLines: 1,
+                    ),
+                  );
+                }
+              ),
+             ],
             ),
           ),
           if (isEditable)
-          IconButton(
-            onPressed: () {
-              UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
-            },
-            icon: Icon(Icons.more_vert, size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8))
+            IconButton(
+                onPressed: () {
+                  UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
+                },
+                icon: Icon(Icons.more_vert, size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8))
           )
         ],
       ),
@@ -145,10 +147,7 @@ class StreamTileCollapsed extends StatelessWidget {
 }
 
 class StreamTileExpanded extends StatelessWidget {
-  const StreamTileExpanded({
-    required this.stream,
-    this.onDelete,
-    super.key});
+  const StreamTileExpanded({required this.stream,this.onDelete, super.key});
   final StreamInfoItem stream;
   final Function()? onDelete;
   @override
@@ -174,7 +173,7 @@ class StreamTileExpanded extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: AspectRatio(
-                aspectRatio: 16/9,
+                aspectRatio: 16 / 9,
                 child: _thumbnail(context),
               ),
             ),
@@ -196,26 +195,25 @@ class StreamTileExpanded extends StatelessWidget {
         CachedNetworkImage(
           fadeInDuration: const Duration(milliseconds: 300),
           placeholder: (context, _) {
-            return Container(color: Theme.of(context).cardColor.withOpacity(0.6));
+            return Container(
+                color: Theme.of(context).cardColor.withOpacity(0.6));
           },
           imageUrl: stream.thumbnails?.maxresdefault ?? '',
           fit: BoxFit.cover,
           errorWidget: (context, error, stackTrace) =>
-            Image.network(stream.thumbnails!.hqdefault, fit: BoxFit.cover),
+              Image.network(stream.thumbnails!.hqdefault, fit: BoxFit.cover),
         ),
         Align(
           alignment: Alignment.bottomRight,
           child: Container(
-            margin: const EdgeInsets.only(right: 6, bottom: 6),
-            padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(100)
-            ),
-            child: Text(
-              "${Duration(seconds: stream.duration!).inMinutes}:${Duration(seconds: stream.duration!).inSeconds.remainder(60).toString().padRight(2, "0")}",
-              style: tinyTextStyle(context, bold: false).copyWith(color: Colors.white, letterSpacing: 0.4, fontSize: 10)
-            )
+              margin: const EdgeInsets.only(right: 6, bottom: 6),
+              padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
+              decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(100)),
+              child: Text(UiUtils.timeFormatter(stream.duration!),
+                  style: tinyTextStyle(context, bold: false).copyWith(color: Colors.white, letterSpacing: 0.4, fontSize: 10)
+              )
           ),
         ),
       ],
@@ -229,9 +227,9 @@ class StreamTileExpanded extends StatelessWidget {
       children: [
         ChannelImage(channelUrl: stream.uploaderUrl, heroId: stream.id!, channelName: stream.uploaderName ?? '', highQuality: true, onTap: () {
           UiUtils.pushRouteAsync(context, ChannelPage(infoItem: ChannelInfoItem(
-            stream.uploaderUrl,
-            stream.uploaderName,
-            '', '', null, -1
+              stream.uploaderUrl,
+              stream.uploaderName,
+              '', '', null, -1
           )));
         }),
         const SizedBox(width: 12),
@@ -257,13 +255,12 @@ class StreamTileExpanded extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () {
-            UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
-          },
-          icon: Icon(Icons.more_vert, size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8))
-        )
+            onPressed: () {
+              UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
+            },
+            icon: Icon(Icons.more_vert,
+                size: 20, color: Theme.of(context).iconTheme.color)!.withOpacity(0.8))
       ],
     );
   }
-
 }

@@ -121,4 +121,15 @@ class UiUtils {
       builder: (context) => InfoItemOptions(infoItem: infoItem, onDelete: onDelete));
   }
 
+  // Format to HH:MM:SS
+  static String timeFormatter(int time) {
+    var duration = Duration(seconds: time);
+    var hour = duration.inHours;
+    var minute = duration.inMinutes.remainder(60);
+    var second = duration.inSeconds.remainder(60);
+
+    return "${hour == 0 ? "" : "$hour:"}"
+        "${(hour != 0 && minute <= 9) ? "0$minute" : minute}"
+        ":${second <= 9 ? "0$second" : "$second"}";
+  }
 }
