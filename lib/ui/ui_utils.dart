@@ -2,22 +2,22 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/id_helper.dart';
-import 'package:songtube/main.dart';
-import 'package:songtube/providers/media_provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:songtube/providers/ui_provider.dart';
 
 class UiUtils {
-  
-  static Future<dynamic> pushRouteAsync(BuildContext context, Widget widget, {BuildContext? providerContext}) async {
+  static Future<dynamic> pushRouteAsync(BuildContext context, Widget widget,
+      {BuildContext? providerContext}) async {
     // Media Provider, which contains the controller for the FancyScaffold
-    final uiProvider = Provider.of<UiProvider>(providerContext ?? context, listen: false);
+    final uiProvider =
+        Provider.of<UiProvider>(providerContext ?? context, listen: false);
     // Previous values for the FancyScaffold position variables
-    final navbarAnimationValue = uiProvider.fwController.navbarAnimationController.value;
+    final navbarAnimationValue =
+        uiProvider.fwController.navbarAnimationController.value;
     final navbarScrollStatus = uiProvider.fwController.navbarScrolledDown;
     uiProvider.fwController.lockNotificationListener = true;
     // Set FancyScaffold position variables so that the MediaPlayer
@@ -32,28 +32,31 @@ class UiUtils {
     // Once the pushed route has been removed, restore FancyScaffold position variables
     // so that we restore the MediaPlayer bottom padding with animation
     uiProvider.fwController.navbarScrolledDown = navbarScrollStatus;
-    uiProvider.fwController.navbarAnimationController.animateTo(navbarAnimationValue);
+    uiProvider.fwController.navbarAnimationController
+        .animateTo(navbarAnimationValue);
     uiProvider.fwController.lockNotificationListener = false;
     return result;
   }
 
   static Color desaturateColor(Color color, {double desaturateValue = 0.8}) {
     HSVColor hsvColor = HSVColor.fromColor(color);
-    HSVColor desaturated = HSVColor.fromAHSV(hsvColor.alpha, hsvColor.hue, desaturateValue, hsvColor.value);
+    HSVColor desaturated = HSVColor.fromAHSV(
+        hsvColor.alpha, hsvColor.hue, desaturateValue, hsvColor.value);
     return desaturated.toColor();
   }
 
   /// Returns a file path string associated to this channel name which
   /// represents the avatar image as [File] type, if the avatar image does
-  /// not exist it will be downloaded and written to its file and if it 
+  /// not exist it will be downloaded and written to its file and if it
   /// does exist this function will just return that file path string.
-  /// 
+  ///
   /// If you want to update the cached image, save and return a new image,
   /// set [updateAvatar] to true.
-  static Future<String?> getAvatarUrl(String channelName, String channelUrl, {bool updateAvatar = false}) async {
-
+  static Future<String?> getAvatarUrl(String channelName, String channelUrl,
+      {bool updateAvatar = false}) async {
     // Create our dirs and define our avatar file path
-    Directory avatarDir = Directory("${(await getApplicationDocumentsDirectory()).path}/avatarDir/");
+    Directory avatarDir = Directory(
+        "${(await getApplicationDocumentsDirectory()).path}/avatarDir/");
     if (!(await avatarDir.exists())) avatarDir.create(recursive: true);
     File avatarImage = File("${avatarDir.path}/$channelName");
 
@@ -61,7 +64,8 @@ class UiUtils {
     if (await avatarImage.exists() && !updateAvatar) return avatarImage.path;
 
     // Extract the avatar image from the channel url provided using our Isolate
-    String? id = (await IdHelper.getIdFromChannelUrl(channelUrl))?.split("/").last;
+    String? id =
+        (await IdHelper.getIdFromChannelUrl(channelUrl))?.split("/").last;
     if (id == null) return null;
     ReceivePort receivePort = ReceivePort();
     await Isolate.spawn(_getChannelLogoUrlIsolate, receivePort.sendPort);
@@ -77,7 +81,10 @@ class UiUtils {
       if (response.statusCode != 200) return null;
       await avatarImage.writeAsBytes(response.bodyBytes);
       client.close();
-    } catch (_) { client.close(); return null; }
+    } catch (_) {
+      client.close();
+      return null;
+    }
 
     // Return newly created avatar Image, any other request to the same
     // Channel avatar image will just return this cached image
@@ -104,4 +111,15 @@ class UiUtils {
     }
   }
 
+  // HH:MM:SS
+  static String timeFormatter(int time) {
+    var duration = Duration(seconds: time);
+    var hour = duration.inHours;
+    var minute = duration.inMinutes.remainder(60);
+    var second = duration.inSeconds.remainder(60);
+
+    return "${hour == 0 ? "" : "$hour:"}"
+        "${(hour != 0 && minute <= 9) ? "0$minute" : minute}"
+        ":${second <= 9 ? "0$second" : "$second"}";
+  }
 }

@@ -11,18 +11,15 @@ import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
-import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/sheets/info_item_options.dart';
 import 'package:songtube/ui/text_styles.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:songtube/ui/ui_utils.dart';
 
 class StreamTileCollapsed extends StatelessWidget {
-  const StreamTileCollapsed({
-    required this.stream,
-    this.onTap,
-    this.isEditable = true,
-    super.key});
+  const StreamTileCollapsed(
+      {required this.stream, this.onTap, this.isEditable = true, super.key});
   final StreamInfoItem stream;
+
   /// By default, onTap loads this video on the content provider, but
   /// if onTap is set, you can run override that default behavior
   final Function()? onTap;
@@ -32,11 +29,14 @@ class StreamTileCollapsed extends StatelessWidget {
     ContentProvider contentProvider = Provider.of(context);
     UiProvider uiProvider = Provider.of(context);
     return CustomInkWell(
-      onTap: isEditable ? onTap ?? () {
-        uiProvider.currentPlayer = CurrentPlayer.video;
-        contentProvider.loadVideoPlayer(stream);
-        uiProvider.fwController.open();
-      } :() {},
+      onTap: isEditable
+          ? onTap ??
+              () {
+                uiProvider.currentPlayer = CurrentPlayer.video;
+                contentProvider.loadVideoPlayer(stream);
+                uiProvider.fwController.open();
+              }
+          : () {},
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,10 +47,9 @@ class StreamTileCollapsed extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               boxShadow: [
                 BoxShadow(
-                  blurRadius: 6,
-                  offset: const Offset(0,0),
-                  color: Theme.of(context).shadowColor.withOpacity(0.1)
-                )
+                    blurRadius: 6,
+                    offset: const Offset(0, 0),
+                    color: Theme.of(context).shadowColor.withOpacity(0.1))
               ],
             ),
             child: Stack(
@@ -59,10 +58,11 @@ class StreamTileCollapsed extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: AspectRatio(
-                    aspectRatio: 16/9,
+                    aspectRatio: 16 / 9,
                     child: ImageFade(
                       fadeDuration: const Duration(milliseconds: 300),
-                      placeholder: const ShimmerContainer(height: null, width: null),
+                      placeholder:
+                          const ShimmerContainer(height: null, width: null),
                       image: NetworkImage(stream.thumbnails!.hqdefault),
                       fit: BoxFit.fitWidth,
                     ),
@@ -72,15 +72,14 @@ class StreamTileCollapsed extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 6, right: 6),
-                    padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
+                    padding:
+                        const EdgeInsets.all(3).copyWith(left: 8, right: 8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(100)
-                    ),
-                    child: Text(
-                      "${Duration(seconds: stream.duration!).inMinutes}:${Duration(seconds: stream.duration!).inSeconds.remainder(60).toString().padRight(2, "0")}",
-                      style: tinyTextStyle(context).copyWith(color: Colors.white)
-                    ),
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(100)),
+                    child: Text(UiUtils.timeFormatter(stream.duration!),
+                        style: tinyTextStyle(context)
+                            .copyWith(color: Colors.white)),
                   ),
                 )
               ],
@@ -93,8 +92,7 @@ class StreamTileCollapsed extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.only(
-                    left: 8, right: 8,
-                    top: 4, bottom: 4),
+                      left: 8, right: 8, top: 4, bottom: 4),
                   child: Text(
                     stream.name ?? '',
                     style: smallTextStyle(context),
@@ -115,16 +113,16 @@ class StreamTileCollapsed extends StatelessWidget {
             ),
           ),
           if (isEditable)
-          IconButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: internalNavigatorKey.currentContext!,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => InfoItemOptions(infoItem: stream));
-            },
-            icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
-          )
+            IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: internalNavigatorKey.currentContext!,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => InfoItemOptions(infoItem: stream));
+                },
+                icon: Icon(Icons.more_vert,
+                    size: 18, color: Theme.of(context).iconTheme.color))
         ],
       ),
     );
@@ -132,9 +130,7 @@ class StreamTileCollapsed extends StatelessWidget {
 }
 
 class StreamTileExpanded extends StatelessWidget {
-  const StreamTileExpanded({
-    required this.stream,
-    super.key});
+  const StreamTileExpanded({required this.stream, super.key});
   final StreamInfoItem stream;
   @override
   Widget build(BuildContext context) {
@@ -154,16 +150,15 @@ class StreamTileExpanded extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               boxShadow: [
                 BoxShadow(
-                  blurRadius: 6,
-                  offset: const Offset(0,0),
-                  color: Theme.of(context).shadowColor.withOpacity(0.1)
-                )
+                    blurRadius: 6,
+                    offset: const Offset(0, 0),
+                    color: Theme.of(context).shadowColor.withOpacity(0.1))
               ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: AspectRatio(
-                aspectRatio: 16/9,
+                aspectRatio: 16 / 9,
                 child: _thumbnail(context),
               ),
             ),
@@ -185,27 +180,24 @@ class StreamTileExpanded extends StatelessWidget {
         CachedNetworkImage(
           fadeInDuration: const Duration(milliseconds: 300),
           placeholder: (context, _) {
-            return Container(color: Theme.of(context).cardColor.withOpacity(0.6));
+            return Container(
+                color: Theme.of(context).cardColor.withOpacity(0.6));
           },
           imageUrl: stream.thumbnails?.maxresdefault ?? '',
           fit: BoxFit.cover,
           errorWidget: (context, error, stackTrace) =>
-            Image.network(stream.thumbnails!.hqdefault, fit: BoxFit.cover),
+              Image.network(stream.thumbnails!.hqdefault, fit: BoxFit.cover),
         ),
         Align(
           alignment: Alignment.bottomRight,
           child: Container(
-            margin: const EdgeInsets.only(right: 12, bottom: 12),
-            padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(100)
-            ),
-            child: Text(
-              "${Duration(seconds: stream.duration!).inMinutes}:${Duration(seconds: stream.duration!).inSeconds.remainder(60).toString().padRight(2, "0")}",
-              style: tinyTextStyle(context).copyWith(color: Colors.white)
-            )
-          ),
+              margin: const EdgeInsets.only(right: 12, bottom: 12),
+              padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
+              decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(100)),
+              child: Text(UiUtils.timeFormatter(stream.duration!),
+                  style: tinyTextStyle(context).copyWith(color: Colors.white))),
         ),
       ],
     );
@@ -228,30 +220,31 @@ class StreamTileExpanded extends StatelessWidget {
                 Text(
                   "${stream.name}",
                   maxLines: 2,
-                  style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
+                  style: smallTextStyle(context)
+                      .copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   "${stream.uploaderName} ${stream.viewCount != -1 ? " • ${NumberFormat.compact().format(stream.viewCount)} views" : ""}"
-                      " ${stream.uploadDate == null ? "" : " • ${stream.uploadDate!}"}",
-                  style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
+                  " ${stream.uploadDate == null ? "" : " • ${stream.uploadDate!}"}",
+                  style: tinyTextStyle(context, opacity: 0.6).copyWith(
+                      letterSpacing: 0.4, fontWeight: FontWeight.w500),
                 )
               ],
             ),
           ),
         ),
         IconButton(
-          onPressed: () {
-            showModalBottomSheet(
-              context: internalNavigatorKey.currentContext!,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => InfoItemOptions(infoItem: stream));
-          },
-          icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
-        )
+            onPressed: () {
+              showModalBottomSheet(
+                  context: internalNavigatorKey.currentContext!,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => InfoItemOptions(infoItem: stream));
+            },
+            icon: Icon(Icons.more_vert,
+                size: 18, color: Theme.of(context).iconTheme.color))
       ],
     );
   }
-
 }
