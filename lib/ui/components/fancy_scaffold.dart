@@ -151,6 +151,7 @@ class FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateMi
   @override
   Widget build(BuildContext context) {
     widget.floatingWidgetController?._addState(this);
+    final systemBottomPadding = ((deviceInfo.version.sdkInt ?? 28) >= 29 ? MediaQuery.of(context).padding.bottom : 0);
     return AnimatedBuilder(
       animation: floatingWidgetAnimationController,
       builder: (context, mainChild) {
@@ -183,10 +184,20 @@ class FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateMi
                   bottomNavigationBar: widget.bottomNavigationBar != null ? Container(
                     width: double.infinity,
                     color: Colors.transparent,
-                    height: 80 * navigationBarAnimationController.value,
-                    child: SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: widget.bottomNavigationBar
+                    height: (80 * navigationBarAnimationController.value) + systemBottomPadding,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            child: widget.bottomNavigationBar
+                          ),
+                        ),
+                        Container(
+                          height: systemBottomPadding.roundToDouble(),
+                          color: Theme.of(context).cardColor,
+                        )
+                      ],
                     ),
                   ) : null,
                 ),
@@ -200,7 +211,7 @@ class FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateMi
                           Builder(
                             builder: (context) {
                               return Padding(
-                                padding: EdgeInsets.only(bottom: 80 * navigationBarAnimationController.value),
+                                padding: EdgeInsets.only(bottom: (80 * navigationBarAnimationController.value) + (systemBottomPadding * (1 - floatingWidgetAnimationController.value))),
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: (1 -floatingWidgetAnimationController.value) * widget.floatingWidgetConfig.padding.horizontal,

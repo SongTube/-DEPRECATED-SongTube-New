@@ -27,13 +27,13 @@ class _GeneralSettingsState extends State<GeneralSettings> {
       if (uiProvider.themeMode != ThemeMode.system) {
         uiProvider.updateThemeMode(ThemeMode.system);
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          systemNavigationBarColor: Theme.of(context).canvasColor,
+          systemNavigationBarColor: Colors.transparent,
           systemNavigationBarIconBrightness: Theme.of(context).brightness
         ));
       } else {
         uiProvider.updateThemeMode(ThemeMode.light);
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
-          systemNavigationBarColor: Colors.white,
+          systemNavigationBarColor: Colors.transparent,
           systemNavigationBarIconBrightness: Theme.of(context).brightness
         ));
       }
@@ -41,7 +41,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
       if (uiProvider.themeMode == ThemeMode.dark) {
         uiProvider.updateThemeMode(ThemeMode.light);
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
-          systemNavigationBarColor: Colors.white,
+          systemNavigationBarColor: Colors.transparent,
           systemNavigationBarIconBrightness: Theme.of(context).brightness
         ));
       } else {

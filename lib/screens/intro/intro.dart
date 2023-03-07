@@ -28,7 +28,7 @@ class _IntroScreenState extends State<IntroScreen> {
       SystemUiOverlayStyle(
         systemNavigationBarColor: pageIndex == 0
           ? accentColor
-          : Theme.of(context).cardColor,
+          : Colors.transparent,
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: pageIndex == 0
           ? Brightness.light
@@ -47,7 +47,7 @@ class _IntroScreenState extends State<IntroScreen> {
       SystemUiOverlayStyle(
         systemNavigationBarColor: pageIndex == 0
           ? accentColor
-          : Theme.of(context).cardColor,
+          : Colors.transparent,
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: pageIndex == 0
           ? Brightness.light

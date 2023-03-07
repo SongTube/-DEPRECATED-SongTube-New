@@ -36,6 +36,19 @@ void main() async {
   // Initialize App Settings
   await AppSettings.initSettings();
 
+  // Set System UI Mode
+  if ((deviceInfo.version.sdkInt ?? 28) >= 29) {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge
+    );
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        statusBarColor: Colors.transparent 
+      )
+    );
+  }
+
   // Run App
   runApp(const SongTube());
 }

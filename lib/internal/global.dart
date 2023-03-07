@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +11,7 @@ import '../services/audio_service.dart';
 Future<void> initGlobals() async {
   sharedPreferences = await SharedPreferences.getInstance();
   songArtworkPath = await getApplicationDocumentsDirectory();
+  deviceInfo = await DeviceInfoPlugin().androidInfo;
   audioHandler = await AudioService.init(builder: () =>
     StAudioHandler(),
     config: const AudioServiceConfig(
@@ -21,6 +23,9 @@ Future<void> initGlobals() async {
 
 // App Custom Accent Color
 const accentColor = Color.fromARGB(255, 229, 12, 73);
+
+// Platform Details
+late AndroidDeviceInfo deviceInfo;
 
 // Shared Preferences for user settings and app caching and stuff
 late SharedPreferences sharedPreferences;
