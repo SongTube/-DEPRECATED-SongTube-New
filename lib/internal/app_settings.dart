@@ -18,6 +18,9 @@ const musicPlayerBackdropOpacityKey = 'musicPlayerBlurOpacity';
 const musicPlayerBlurStrenghtKey = 'musicPlayerBlurStrenght';
 const musicPlayerArtworkZoomKey = 'musicPlayerArtworkZoom';
 
+// Download Keys
+const maxSimultaneousDownloadsKey = 'maxSimultaneousDownloads';
+
 // Watch History Status
 const enableWatchHistoryKey = 'enableWatchHistory';
 
@@ -36,6 +39,12 @@ class AppSettings extends ChangeNotifier {
       final defaultVideoDirectory = await AndroidPathProvider.moviesPath;
       await sharedPreferences.setString(videoDirectoryKey, defaultVideoDirectory);
     }
+  }
+
+  // Downloads Settings
+  static int get maxSimultaneousDownloads => sharedPreferences.getInt(maxSimultaneousDownloadsKey) ?? 3;
+  static set maxSimultaneousDownloads(int value) {
+    sharedPreferences.setInt(maxSimultaneousDownloadsKey, value);
   }
 
   // Watch History

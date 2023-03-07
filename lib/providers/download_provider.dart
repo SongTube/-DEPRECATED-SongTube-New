@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/colors_palette.dart';
@@ -32,7 +33,7 @@ class DownloadProvider extends ChangeNotifier {
   List<SongItem> downloadedSongs = [];
 
   // Max simultaneous downloads
-  int maxSimultaneousDownloads = 2;
+  int maxSimultaneousDownloads = AppSettings.maxSimultaneousDownloads;
 
   // Refresh metadata of given song
   Future<void> refreshSong(String id) async {
@@ -111,6 +112,8 @@ class DownloadProvider extends ChangeNotifier {
   }
 
   void checkQueue() {
+    // Update simultaneous downloads size
+    maxSimultaneousDownloads = AppSettings.maxSimultaneousDownloads;
     if (queue.isEmpty) return;
     final maxDownloads = queue.length <= maxSimultaneousDownloads
       ? queue.length : maxSimultaneousDownloads;

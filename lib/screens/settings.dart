@@ -24,11 +24,11 @@ class ConfigurationScreen extends StatefulWidget {
 class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerProviderStateMixin {
 
   // TabBar Controller
-  late TabController tabController = TabController(length: 4, vsync: this);
+  late TabController tabController = TabController(length: 3, vsync: this);
 
   final List<Widget> pages = const [
     GeneralSettings(),
-    CustomizationSettings(),
+    // CustomizationSettings(),
     DownloadSettings(),
     MusicPlayerSettings()
   ];
@@ -52,7 +52,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
           // General Settings
           Tab(child: Text('General')),
           // Customization Settings
-          Tab(child: Text('Customization')),
+          // Tab(child: Text('Customization')),
           // Download Settings
           Tab(child: Text('Downloads')),
           // Music Player Settings

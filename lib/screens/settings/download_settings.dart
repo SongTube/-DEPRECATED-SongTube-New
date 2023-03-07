@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/ui/tiles/setting_tile.dart';
 
@@ -17,6 +18,21 @@ class _DownloadSettingsState extends State<DownloadSettings> {
     return ListView(
       padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
       children: [
+        // Simultaneous download count
+        SettingTileSlider(
+          title: 'Simultaneous Downloads',
+          subtitle: 'Define how many downloads can happen at the same time',
+          leadingIcon: Ionicons.cloud_download_outline,
+          value: AppSettings.maxSimultaneousDownloads.roundToDouble(),
+          min: 1,
+          max: 6,
+          valueTrailingString: ' items',
+          onChange: (double value) async {
+            AppSettings.maxSimultaneousDownloads = value.round();
+            setState(() {});
+          },
+        ),
+        const SizedBox(height: 12),
         // Instant Download Format
         SettingTileDropdown(
           title: 'Instant Download Format',
