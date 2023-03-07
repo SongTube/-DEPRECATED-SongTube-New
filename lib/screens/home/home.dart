@@ -9,6 +9,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/screens/home/home_default/home_default.dart';
@@ -28,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   // Bottom Navigation Bar Current Index
-  int bottomNavigationBarIndex = 0;
+  int bottomNavigationBarIndex = AppSettings.defaultLandingPage;
 
   final List<Widget> screens = const [
     HomeDefault(),

@@ -7,7 +7,7 @@ class CircularCheckbox extends StatelessWidget {
     required this.onChange,
     super.key});
   final bool value;
-  final Function(bool) onChange;
+  final Function(bool)? onChange;
   @override
   Widget build(BuildContext context) {
     return RoundCheckBox(
@@ -18,9 +18,10 @@ class CircularCheckbox extends StatelessWidget {
       borderColor: Theme.of(context).dividerColor,
       border: Border.all(width: 0.5, color: Theme.of(context).dividerColor),
       isChecked: value,
-      onTap: (e) {
-        onChange(e!);
-      },
+      disabledColor: Colors.transparent,
+      onTap: onChange != null ? (e) {
+        onChange!(e!);
+      } : null,
     );
   }
 }

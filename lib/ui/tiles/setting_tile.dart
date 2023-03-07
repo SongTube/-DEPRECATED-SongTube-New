@@ -9,25 +9,28 @@ class SettingTileCheckbox extends StatelessWidget {
     required this.leadingIcon,
     required this.value,
     required this.onChange,
+    this.enabled = true,
     super.key});
   final String title;
   final String subtitle;
   final IconData leadingIcon;
   final bool value;
   final Function(bool) onChange;
+  final bool enabled;
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      enabled: enabled,
       onTap: () => onChange(!value),
       leading: SizedBox(
         height: double.infinity,
-        child: Icon(leadingIcon, color: Theme.of(context).primaryColor),
+        child: Icon(leadingIcon, color: enabled ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.6)),
       ),
-      title: Text(title, style: subtitleTextStyle(context, bold: true)),
-      subtitle: Text(subtitle, style: tinyTextStyle(context, opacity: 0.7)),
+      title: Text(title, style: subtitleTextStyle(context, bold: true).copyWith(color: enabled ? null : Colors.grey.withOpacity(0.6))),
+      subtitle: Text(subtitle, style: tinyTextStyle(context, opacity: 0.7).copyWith(color: enabled ? null : Colors.grey.withOpacity(0.6))),
       trailing: CircularCheckbox(
         value: value,
-        onChange: onChange
+        onChange: enabled ? onChange : null
       ),
     );
   }

@@ -18,6 +18,9 @@ const musicPlayerBackdropOpacityKey = 'musicPlayerBlurOpacity';
 const musicPlayerBlurStrenghtKey = 'musicPlayerBlurStrenght';
 const musicPlayerArtworkZoomKey = 'musicPlayerArtworkZoom';
 
+// Home Screen Settings
+const defaultLandingPageKey = 'defaultLandingPage';
+
 // Download Keys
 const maxSimultaneousDownloadsKey = 'maxSimultaneousDownloads';
 
@@ -39,6 +42,12 @@ class AppSettings extends ChangeNotifier {
       final defaultVideoDirectory = await AndroidPathProvider.moviesPath;
       await sharedPreferences.setString(videoDirectoryKey, defaultVideoDirectory);
     }
+  }
+
+  // Home Screen Settings
+  static int get defaultLandingPage => sharedPreferences.getInt(defaultLandingPageKey) ?? 0;
+  static set defaultLandingPage(int value) {
+    sharedPreferences.setInt(defaultLandingPageKey, value);
   }
 
   // Downloads Settings
