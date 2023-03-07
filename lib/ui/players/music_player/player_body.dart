@@ -43,7 +43,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
   // Player Colors
   Color get textColor {
     final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
-    if (AppSettings.enableMusicPlayerBlur) {
+    if (AppSettings().enableMusicPlayerBlur) {
       if ((song.palette?.dominant ?? Colors.black).computeLuminance() < 0.2) {
         return song.palette?.text ?? defaultColor;
       } else {
@@ -55,7 +55,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
   }
   Color get dominantColor {
     final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
-    if (AppSettings.enableMusicPlayerBlur) {
+    if (AppSettings().enableMusicPlayerBlur) {
       if ((song.palette?.dominant ?? Colors.black).computeLuminance() < 0.2) {
         return song.palette?.text ?? defaultColor;
       } else {

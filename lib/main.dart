@@ -81,6 +81,9 @@ class _SongTubeState extends State<SongTube> {
         ChangeNotifierProvider<DownloadProvider>(
           create: (context) => DownloadProvider()
         ),
+        ChangeNotifierProvider<AppSettings>(
+          create: (context) => AppSettings()
+        ),
       ],
       child: Builder(
         builder: (context) {
@@ -205,13 +208,14 @@ class _SongTubeState extends State<SongTube> {
 
   // Change appbar colors on music player slide
   void onSlide(double position, MediaItem mediaItem) {
+    AppSettings appSettings = Provider.of(internalNavigatorKey.currentContext!, listen: false);
     final iconColor = Theme.of(internalNavigatorKey.currentContext!).brightness;
     final Color? textColor = SongItem.fromMediaItem(mediaItem).palette?.text;
     if (position > 0.95) {
       if (textColor != null) {
         SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
-            statusBarIconBrightness: AppSettings.enableMusicPlayerBlur ? textColor == Colors.black
+            statusBarIconBrightness: appSettings.enableMusicPlayerBlur ? textColor == Colors.black
               ? Brightness.dark : Brightness.light : iconColor,
           ),
         );

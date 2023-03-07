@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:songtube/internal/app_settings.dart';
 import 'package:songtube/ui/components/circular_check_box.dart';
 import 'package:songtube/ui/text_styles.dart';
@@ -16,6 +17,7 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
 
   @override
   Widget build(BuildContext context) {
+    AppSettings appSettings = Provider.of(context);
     return ListView(
       padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
       children: [
@@ -23,10 +25,9 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
         SettingTileCheckbox(
           title: 'Blur Background',
           subtitle: 'Add blurred artwork background',
-          value: AppSettings.enableMusicPlayerBlur,
+          value: appSettings.enableMusicPlayerBlur,
           onChange: (value) {
-            AppSettings.enableMusicPlayerBlur = value;
-            setState(() {});
+            appSettings.enableMusicPlayerBlur = value;
           },
           leadingIcon: Icons.blur_on,
         ),
@@ -36,13 +37,12 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
           title: 'Blur intensity',
           subtitle: 'Change the blur intensity of the artwork background',
           leadingIcon: Icons.blur_linear,
-          value: AppSettings.musicPlayerBlurStrenght,
+          value: appSettings.musicPlayerBlurStrenght,
           min: 0.00001,
           max: 100,
           valueTrailingString: '%',
           onChange: (value) {
-            AppSettings.musicPlayerBlurStrenght = value;
-            setState(() {});
+            appSettings.musicPlayerBlurStrenght = value;
           }
         ),
         const SizedBox(height: 12),
@@ -51,17 +51,28 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
           title: 'Backdrop opacity',
           subtitle: 'Change the colored backdrop opacity',
           leadingIcon: Icons.opacity_rounded,
-          value: AppSettings.musicPlayerBackdropOpacity*100,
+          value: appSettings.musicPlayerBackdropOpacity*100,
           min: 0,
           max: 100,
           valueTrailingString: '%',
           onChange: (value) {
-            AppSettings.musicPlayerBackdropOpacity = value/100;
-            setState(() {});
+            appSettings.musicPlayerBackdropOpacity = value/100;
           }
         ),
         const SizedBox(height: 12),
-
+        // Music Player Artwork Zoom
+        SettingTileSlider(
+          title: 'Artwork Scaling',
+          subtitle: 'Scale out the music player artwork & background images',
+          leadingIcon: Icons.zoom_out_map,
+          value: appSettings.musicPlayerArtworkZoom*100,
+          min: 100,
+          max: 150,
+          valueTrailingString: '%',
+          onChange: (value) {
+            appSettings.musicPlayerArtworkZoom = value/100;
+          }
+        ),
       ],
     );
   }

@@ -45,7 +45,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
   // Player Colors
   Color get textColor {
     final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
-    if (AppSettings.enableMusicPlayerBlur) {
+    if (AppSettings().enableMusicPlayerBlur) {
       if ((song.palette?.dominant ?? Colors.black).computeLuminance() < 0.2) {
         return song.palette?.text ?? defaultColor;
       } else {
@@ -68,7 +68,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
           if (textColor != null) {
             SystemChrome.setSystemUIOverlayStyle(
               SystemUiOverlayStyle(
-                statusBarIconBrightness: AppSettings.enableMusicPlayerBlur ? textColor == Colors.black
+                statusBarIconBrightness: AppSettings().enableMusicPlayerBlur ? textColor == Colors.black
                   ? Brightness.dark : Brightness.light : iconColor,
               ),
             );
@@ -81,6 +81,9 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    AppSettings appSettings = Provider.of(context);
+    // Use full res artwork when blur strenght is low to avoid showing user low res image
+    final useArtwork = appSettings.musicPlayerBlurStrenght <= 3;
     // Playlist exception filter
     const playlistExceptionFilter = <String>[
       'Music',
@@ -110,13 +113,13 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
               children: [
                 // Blurred Background
                 BackgroundCarousel(
-                  enabled: AppSettings.enableMusicPlayerBlur,
-                  backgroundImage: thumbnailFile(song.id),
-                  backdropColor: AppSettings.enableMusicPlayerBlur
+                  enabled: appSettings.enableMusicPlayerBlur,
+                  backgroundImage: useArtwork ? artworkFile(song.id) : thumbnailFile(song.id),
+                  backdropColor: appSettings.enableMusicPlayerBlur
                     ? song.palette!.dominant ?? Theme.of(context).scaffoldBackgroundColor
                     : Theme.of(context).scaffoldBackgroundColor,
-                  backdropOpacity: AppSettings.musicPlayerBackdropOpacity,
-                  blurIntensity: AppSettings.musicPlayerBlurStrenght,
+                  backdropOpacity: appSettings.musicPlayerBackdropOpacity,
+                  blurIntensity: appSettings.musicPlayerBlurStrenght,
                   transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
                 ),
                 // Player UI
@@ -175,7 +178,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Show Playlist', style: tinyTextStyle(context, bold: true)),
+                    Text('Show Playlist', style: tinyTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: textColor)),
                     Icon(Icons.expand_less, color: Theme.of(context).iconTheme.color, size: 18)
                   ],
                 ),
@@ -220,6 +223,8 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
                 child: Text(
                   mediaProvider.currentPlaylistName ?? 'Unknown Playlist',
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
                   style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: textColor)
                 ),
               ),
