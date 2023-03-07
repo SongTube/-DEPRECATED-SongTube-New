@@ -7,12 +7,13 @@ import 'package:songtube/internal/media_utils.dart';
 
 // Song Thumnnails Directory
 late Directory songArtworkPath;
+late Directory songThumbnailPath;
 
 // Artwork Getter
 File artworkFile(String id) => File('${songArtworkPath.path}/${MediaUtils.removeToxicSymbols((id.split('/').last).replaceAll(' ', '').trim())}-hq');
 
 // Thumbnail Getter
-File thumbnailFile(String id) => File('${songArtworkPath.path}/${MediaUtils.removeToxicSymbols((id.split('/').last).replaceAll(' ', '').trim())}-lq');
+File thumbnailFile(String id) => File('${songThumbnailPath.path}/${MediaUtils.removeToxicSymbols((id.split('/').last).replaceAll(' ', '').trim())}-lq');
 
 class ArtworkManager {
 

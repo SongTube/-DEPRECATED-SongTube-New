@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,11 @@ import '../services/audio_service.dart';
 // Initialize All Global Variables
 Future<void> initGlobals() async {
   sharedPreferences = await SharedPreferences.getInstance();
-  songArtworkPath = await getApplicationDocumentsDirectory();
+  songArtworkPath = Directory('${(await getApplicationDocumentsDirectory()).path}/artworks');
+  if (!(await songArtworkPath.exists())) {
+    await songArtworkPath.create();
+  }
+  songThumbnailPath = (await getApplicationDocumentsDirectory());
   deviceInfo = await DeviceInfoPlugin().androidInfo;
   audioHandler = await AudioService.init(builder: () =>
     StAudioHandler(),

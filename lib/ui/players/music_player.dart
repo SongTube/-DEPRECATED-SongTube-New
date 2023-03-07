@@ -42,6 +42,12 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
   // Current Song
   SongItem get song => SongItem.fromMediaItem(audioHandler.mediaItem.value!);
 
+  // Image Getter
+  Future<File> getAlbumImage() async {
+    await ArtworkManager.writeArtwork(song.id);
+    return artworkFile(song.id);
+  }
+
   // Player Colors
   Color get textColor {
     final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
@@ -112,15 +118,20 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
             child: Stack(
               children: [
                 // Blurred Background
-                BackgroundCarousel(
-                  enabled: appSettings.enableMusicPlayerBlur,
-                  backgroundImage: useArtwork ? artworkFile(song.id) : thumbnailFile(song.id),
-                  backdropColor: appSettings.enableMusicPlayerBlur
-                    ? song.palette!.dominant ?? Theme.of(context).scaffoldBackgroundColor
-                    : Theme.of(context).scaffoldBackgroundColor,
-                  backdropOpacity: appSettings.musicPlayerBackdropOpacity,
-                  blurIntensity: appSettings.musicPlayerBlurStrenght,
-                  transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
+                FutureBuilder<File>(
+                  future: getAlbumImage(),
+                  builder: (context, snapshot) {
+                    return BackgroundCarousel(
+                      enabled: appSettings.enableMusicPlayerBlur,
+                      backgroundImage: useArtwork ? snapshot.data : thumbnailFile(song.id),
+                      backdropColor: appSettings.enableMusicPlayerBlur
+                        ? song.palette!.dominant ?? Theme.of(context).scaffoldBackgroundColor
+                        : Theme.of(context).scaffoldBackgroundColor,
+                      backdropOpacity: appSettings.musicPlayerBackdropOpacity,
+                      blurIntensity: appSettings.musicPlayerBlurStrenght,
+                      transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
+                    );
+                  }
                 ),
                 // Player UI
                 Container(

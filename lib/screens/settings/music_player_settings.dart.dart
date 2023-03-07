@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/ui/components/circular_check_box.dart';
+import 'package:songtube/ui/sheets/snack_bar.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/tiles/setting_tile.dart';
 
@@ -73,6 +79,37 @@ class _MusicPlayerSettingsState extends State<MusicPlayerSettings> {
             appSettings.musicPlayerArtworkZoom = value/100;
           }
         ),
+        const SizedBox(height: 12),
+        // Restore thumbnails and artworks
+        SettingTile(
+          title: 'Restore thumbnails',
+          subtitle: 'Force thumbnails and artwork generation process',
+          leadingIcon: LineIcons.imageFile,
+          onTap: () async {
+            showSnackbar(
+              customSnackBar: CustomSnackBar(
+                leading: SizedBox(
+                  width: 24, height: 24,
+                  child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor)),
+                ),
+              title: 'Restoring artworks...'));
+            final completer = Completer();
+            final files = <File>[];
+            songArtworkPath.list().listen((event) {
+              files.add(File(event.path));
+            }, onDone: () => completer.complete());
+            await completer.future;
+            for (final item in files) {
+              await item.delete();
+            }
+            imageCache.clearLiveImages();
+            imageCache.clear();
+            showSnackbar(
+              customSnackBar: const CustomSnackBar(
+                icon: Icons.check,
+                title: 'Restoring artworks is done!'));
+          }
+        )
       ],
     );
   }

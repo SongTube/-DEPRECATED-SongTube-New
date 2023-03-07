@@ -14,7 +14,7 @@ import 'package:transparent_image/transparent_image.dart';
 
 class BackgroundCarousel extends StatefulWidget {
   final bool enabled;
-  final File backgroundImage;
+  final File? backgroundImage;
   final bool enableBlur;
   final double blurIntensity;
   final Color backdropColor;
@@ -76,9 +76,9 @@ class _BackgroundCarouselState extends State<BackgroundCarousel> with TickerProv
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: widget.enableBlur ? ImageFade(
-                    image: widget.backgroundImage.path.isEmpty
-                      ? MemoryImage(kTransparentImage) as ImageProvider
-                      : FileImage(widget.backgroundImage),
+                    image: widget.backgroundImage != null
+                      ? FileImage(widget.backgroundImage!)
+                      : MemoryImage(kTransparentImage) as ImageProvider,
                     height: double.infinity,
                     width: double.infinity,
                     fit: BoxFit.cover,

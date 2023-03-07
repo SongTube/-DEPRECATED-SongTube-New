@@ -19,7 +19,7 @@ class SettingTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       enabled: enabled,
-      onTap: () => onTap,
+      onTap: () => onTap(),
       leading: SizedBox(
         height: double.infinity,
         child: Icon(leadingIcon, color: enabled ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.6)),
