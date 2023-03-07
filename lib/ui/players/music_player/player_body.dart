@@ -330,6 +330,7 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
                       stream: audioHandler.mediaItem,
                       builder: (context, snapshot) {
                         return MarqueeWidget(
+                          currentSong: snapshot.data,
                           animationDuration: const Duration(seconds: 10),
                           backDuration: const Duration(seconds: 5),
                           pauseDuration: const Duration(seconds: 2),
