@@ -46,7 +46,9 @@ class _GeneralSettingsState extends State<GeneralSettings> {
         ));
       } else {
         uiProvider.updateThemeMode(ThemeMode.dark);
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+          systemNavigationBarColor: Colors.transparent
+        ));
       }
     }
     setState(() {});

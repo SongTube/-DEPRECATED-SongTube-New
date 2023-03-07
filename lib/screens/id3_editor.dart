@@ -39,6 +39,12 @@ class ID3Editor extends StatefulWidget {
 
 class _ID3EditorState extends State<ID3Editor> {
 
+  // Default image getter
+  Future<File> getAlbumImage() async {
+    await ArtworkManager.writeArtwork(widget.song.id);
+    return artworkFile(widget.song.id);
+  }
+
   AudioTags tags = AudioTags();
   AudioTags originalTags = AudioTags();
 
@@ -86,15 +92,15 @@ class _ID3EditorState extends State<ID3Editor> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            icon: Icon(Iconsax.arrow_left, color: Theme.of(context).iconTheme.color)
+                            icon: const Icon(Iconsax.arrow_left, color: Colors.white)
                           ), 
-                          Text('Tags Editor', style: textStyle(context)),
+                          Text('Tags Editor', style: textStyle(context).copyWith(color: Colors.white)),
                           const Spacer(),
                           IconButton(
                             onPressed: () {
                               manualWriteTags();
                             },
-                            icon: Icon(Iconsax.search_normal, color: Theme.of(context).iconTheme.color),
+                            icon: const Icon(Iconsax.search_normal, color: Colors.white),
                           ), 
                         ],
                       ),
@@ -112,17 +118,11 @@ class _ID3EditorState extends State<ID3Editor> {
               child: _textfields(),
             ),
           ),
-          StreamBuilder<MediaItem?>(
-            stream: audioHandler.mediaItem,
-            builder: (context, snapshot) {
-              final playerOpened = snapshot.data != null;
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.ease,
-                margin: EdgeInsets.only(bottom: playerOpened ? (kToolbarHeight * 1.6)+34 : 0),
-                child: _floatingButtons());
-            }
-          )
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.ease,
+            margin: const EdgeInsets.only(bottom: 34),
+            child: _floatingButtons())
         ],
       ),
     );
@@ -145,7 +145,7 @@ class _ID3EditorState extends State<ID3Editor> {
             fit: BoxFit.cover,
           ),
           Container(
-            color: Theme.of(context).cardColor.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.5),
           )
         ],
       ),
@@ -293,6 +293,7 @@ class _ID3EditorState extends State<ID3Editor> {
   }
 
   void loadTagsControllers() async {
+    final artwork = await getAlbumImage();
     final audioTags = await tagger.AudioTagger.extractAllTags(widget.song.id);
     tags.titleController.text = audioTags?.title ?? widget.song.title;
     tags.albumController.text = audioTags?.album ?? widget.song.album!;
@@ -302,7 +303,7 @@ class _ID3EditorState extends State<ID3Editor> {
     tags.discController.text = audioTags?.disc ?? '';
     tags.trackController.text = audioTags?.track ?? '';
     setState(() {});
-    tags.artwork = artworkFile(widget.song.id).path;
+    tags.artwork = artwork.path;
     originalTags = tags;
     setState(() {});
   }
