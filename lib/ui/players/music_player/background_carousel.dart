@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 // Packages
 import 'package:image_fade/image_fade.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:transparent_image/transparent_image.dart';
 

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';

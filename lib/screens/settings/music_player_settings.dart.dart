@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/ui/components/circular_check_box.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/tiles/setting_tile.dart';
