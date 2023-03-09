@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/media_item_models.dart';
@@ -42,6 +42,26 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
   // Current Song
   SongItem get song => SongItem.fromMediaItem(audioHandler.mediaItem.value!);
 
+  // Image Getter
+  Future<File> getAlbumImage() async {
+    await ArtworkManager.writeArtwork(song.id);
+    return artworkFile(song.id);
+  }
+
+  // Player Colors
+  Color get textColor {
+    final defaultColor = Theme.of(context).textTheme.bodyText1!.color!;
+    if (AppSettings().enableMusicPlayerBlur) {
+      if ((song.palette?.dominant ?? Colors.black).computeLuminance() < 0.2) {
+        return song.palette?.text ?? defaultColor;
+      } else {
+        return song.palette?.text ?? defaultColor;
+      }
+    } else {
+      return defaultColor;
+    }
+  }
+
   @override
   void initState() {
     audioHandler.mediaItem.listen((event) {
@@ -54,7 +74,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
           if (textColor != null) {
             SystemChrome.setSystemUIOverlayStyle(
               SystemUiOverlayStyle(
-                statusBarIconBrightness: AppSettings.enableMusicPlayerBlur ? textColor == Colors.black
+                statusBarIconBrightness: AppSettings().enableMusicPlayerBlur ? textColor == Colors.black
                   ? Brightness.dark : Brightness.light : iconColor,
               ),
             );
@@ -67,6 +87,9 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    AppSettings appSettings = Provider.of(context);
+    // Use full res artwork when blur strenght is low to avoid showing user low res image
+    final useArtwork = appSettings.musicPlayerBlurStrenght <= 3;
     // Playlist exception filter
     const playlistExceptionFilter = <String>[
       'Music',
@@ -95,15 +118,20 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
             child: Stack(
               children: [
                 // Blurred Background
-                BackgroundCarousel(
-                  enabled: AppSettings.enableMusicPlayerBlur,
-                  backgroundImage: thumbnailFile(song.id),
-                  backdropColor: AppSettings.enableMusicPlayerBlur
-                    ? song.palette!.dominant ?? Theme.of(context).scaffoldBackgroundColor
-                    : Theme.of(context).scaffoldBackgroundColor,
-                  backdropOpacity: AppSettings.musicPlayerBackdropOpacity,
-                  blurIntensity: AppSettings.musicPlayerBlurStrenght,
-                  transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
+                FutureBuilder<File>(
+                  future: getAlbumImage(),
+                  builder: (context, snapshot) {
+                    return BackgroundCarousel(
+                      enabled: appSettings.enableMusicPlayerBlur,
+                      backgroundImage: useArtwork ? snapshot.data : thumbnailFile(song.id),
+                      backdropColor: appSettings.enableMusicPlayerBlur
+                        ? song.palette!.dominant ?? Theme.of(context).scaffoldBackgroundColor
+                        : Theme.of(context).scaffoldBackgroundColor,
+                      backdropOpacity: appSettings.musicPlayerBackdropOpacity,
+                      blurIntensity: appSettings.musicPlayerBlurStrenght,
+                      transparency: Tween<double>(begin: 0, end: 1).animate(uiProvider.fwController.animationController).value,
+                    );
+                  }
                 ),
                 // Player UI
                 Container(
@@ -161,7 +189,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Show Playlist', style: tinyTextStyle(context, bold: true)),
+                    Text('Show Playlist', style: tinyTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: textColor)),
                     Icon(Icons.expand_less, color: Theme.of(context).iconTheme.color, size: 18)
                   ],
                 ),
@@ -197,7 +225,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
             onPressed: () {
               uiProvider.fwController.close();
             },
-            icon: Icon(Icons.expand_more_rounded, color: song.palette?.text ?? Theme.of(context).iconTheme.color)
+            icon: Icon(Icons.expand_more_rounded, color: textColor)
           ),
           // Now Playing Text
           Expanded(
@@ -206,7 +234,9 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
                 child: Text(
                   mediaProvider.currentPlaylistName ?? 'Unknown Playlist',
-                  style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: song.palette?.text)
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  style: subtitleTextStyle(context, bold: true).copyWith(letterSpacing: 1, color: textColor)
                 ),
               ),
             ),
@@ -222,7 +252,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 backgroundColor: Colors.transparent,
                 builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap));
             },
-            icon: Icon(Icons.graphic_eq_outlined, color: song.palette?.text ?? Theme.of(context).iconTheme.color)
+            icon: Icon(Icons.graphic_eq_outlined, color: textColor)
           ),
           const SizedBox(width: 16)
         ],

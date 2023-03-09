@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:android_path_provider/android_path_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:songtube/internal/ffmpeg/converter.dart';
 import 'package:songtube/internal/global.dart';
 
@@ -15,11 +16,18 @@ const videoDirectoryKey = 'video_directory';
 const enableMusicPlayerBlurKey = 'enablePlayerBlurKey';
 const musicPlayerBackdropOpacityKey = 'musicPlayerBlurOpacity';
 const musicPlayerBlurStrenghtKey = 'musicPlayerBlurStrenght';
+const musicPlayerArtworkZoomKey = 'musicPlayerArtworkZoom';
+
+// Home Screen Settings
+const defaultLandingPageKey = 'defaultLandingPage';
+
+// Download Keys
+const maxSimultaneousDownloadsKey = 'maxSimultaneousDownloads';
 
 // Watch History Status
 const enableWatchHistoryKey = 'enableWatchHistory';
 
-class AppSettings {
+class AppSettings extends ChangeNotifier {
 
   // Initialize App Settings
   static Future<void> initSettings() async {
@@ -34,6 +42,18 @@ class AppSettings {
       final defaultVideoDirectory = await AndroidPathProvider.moviesPath;
       await sharedPreferences.setString(videoDirectoryKey, defaultVideoDirectory);
     }
+  }
+
+  // Home Screen Settings
+  static int get defaultLandingPage => sharedPreferences.getInt(defaultLandingPageKey) ?? 0;
+  static set defaultLandingPage(int value) {
+    sharedPreferences.setInt(defaultLandingPageKey, value);
+  }
+
+  // Downloads Settings
+  static int get maxSimultaneousDownloads => sharedPreferences.getInt(maxSimultaneousDownloadsKey) ?? 3;
+  static set maxSimultaneousDownloads(int value) {
+    sharedPreferences.setInt(maxSimultaneousDownloadsKey, value);
   }
 
   // Watch History
@@ -85,22 +105,32 @@ class AppSettings {
   }
 
   // MusicPlayer Settings
-  static bool get enableMusicPlayerBlur {
+  bool get enableMusicPlayerBlur {
     return sharedPreferences.getBool(enableMusicPlayerBlurKey) ?? true;
   }
-  static set enableMusicPlayerBlur(bool value) {
+  set enableMusicPlayerBlur(bool value) {
     sharedPreferences.setBool(enableMusicPlayerBlurKey, value);
+    notifyListeners();
   }
-  static double get musicPlayerBackdropOpacity {
+  double get musicPlayerBackdropOpacity {
     return sharedPreferences.getDouble(musicPlayerBackdropOpacityKey) ?? 0.2;
   }
-  static set musicPlayerBackdropOpacity(double value) {
+  set musicPlayerBackdropOpacity(double value) {
     sharedPreferences.setDouble(musicPlayerBackdropOpacityKey, value);
+    notifyListeners();
   }
-  static double get musicPlayerBlurStrenght {
+  double get musicPlayerBlurStrenght {
     return sharedPreferences.getDouble(musicPlayerBlurStrenghtKey) ?? 50;
   }
-  static set musicPlayerBlurStrenght(double value) {
+  set musicPlayerBlurStrenght(double value) {
     sharedPreferences.setDouble(musicPlayerBlurStrenghtKey, value);
+    notifyListeners();
+  }
+  double get musicPlayerArtworkZoom {
+    return sharedPreferences.getDouble(musicPlayerArtworkZoomKey) ?? 1;
+  }
+  set musicPlayerArtworkZoom(double value) {
+    sharedPreferences.setDouble(musicPlayerArtworkZoomKey, value);
+    notifyListeners();
   }
 }

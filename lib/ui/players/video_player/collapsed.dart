@@ -31,7 +31,7 @@ class _VideoPlayerCollapsedState extends State<VideoPlayerCollapsed> {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 widget.content.infoItem is StreamInfoItem ? (widget.content.infoItem.name ?? '') : (widget.content.videoDetails?.videoInfo.name ?? ''),

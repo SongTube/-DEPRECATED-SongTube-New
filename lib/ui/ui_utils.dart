@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,10 @@ class UiUtils {
     uiProvider.fwController.navbarScrolledDown = navbarScrollStatus;
     uiProvider.fwController.navbarAnimationController.animateTo(navbarAnimationValue);
     uiProvider.fwController.lockNotificationListener = false;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarIconBrightness: Theme.of(context).brightness,
+      statusBarIconBrightness: Theme.of(context).brightness,
+    ));
     return result;
   }
 

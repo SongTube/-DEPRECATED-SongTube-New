@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:line_icons/line_icon.dart';
@@ -21,7 +22,9 @@ import 'package:songtube/internal/models/download/download_info.dart';
 import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/download_provider.dart';
+import 'package:songtube/screens/settings.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:songtube/ui/ui_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,6 +44,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
 
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(statusBarIconBrightness: Theme.of(context).brightness),
         title: Text('Library', style: bigTextStyle(context).copyWith(fontSize: 24)),
         shadowColor: Colors.transparent,
         backgroundColor: Colors.transparent,
@@ -48,7 +52,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
         actions: [
           IconButton(
             onPressed: () {
-              // Open Settings
+              UiUtils.pushRouteAsync(context, const ConfigurationScreen());
             },
             icon: Icon(Iconsax.setting, color: Theme.of(context).primaryColor)
           )

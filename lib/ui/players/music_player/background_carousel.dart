@@ -7,12 +7,14 @@ import 'package:flutter/material.dart';
 
 // Packages
 import 'package:image_fade/image_fade.dart';
+import 'package:provider/provider.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class BackgroundCarousel extends StatefulWidget {
   final bool enabled;
-  final File backgroundImage;
+  final File? backgroundImage;
   final bool enableBlur;
   final double blurIntensity;
   final Color backdropColor;
@@ -60,6 +62,7 @@ class _BackgroundCarouselState extends State<BackgroundCarousel> with TickerProv
     //     animationController.forward();
     //   }
     // }
+    AppSettings appSettings = Provider.of(context);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: widget.enabled ? Opacity(
@@ -68,18 +71,21 @@ class _BackgroundCarouselState extends State<BackgroundCarousel> with TickerProv
           borderRadius: BorderRadius.circular(30),
           child: Stack(
             children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: widget.enableBlur ? ImageFade(
-                  image: widget.backgroundImage.path.isEmpty
-                    ? MemoryImage(kTransparentImage) as ImageProvider
-                    : FileImage(widget.backgroundImage),
-                  height: double.infinity,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ) : Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                )
+              Transform.scale(
+                scale: appSettings.musicPlayerArtworkZoom,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: widget.enableBlur ? ImageFade(
+                    image: widget.backgroundImage != null
+                      ? FileImage(widget.backgroundImage!)
+                      : MemoryImage(kTransparentImage) as ImageProvider,
+                    height: double.infinity,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ) : Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                  )
+                ),
               ),
               AnimatedBuilder(
                 animation: animationController,

@@ -3,7 +3,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/enums/download_type.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/audio_tags.dart';

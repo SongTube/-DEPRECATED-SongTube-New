@@ -10,7 +10,7 @@ import 'package:newpipeextractor_dart/utils/url.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/enums/download_status.dart';
 import 'package:songtube/internal/enums/download_type.dart';

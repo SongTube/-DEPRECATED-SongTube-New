@@ -17,7 +17,7 @@ class VideoPlayer extends StatefulWidget {
   State<VideoPlayer> createState() => _VideoPlayerState();
 }
 
-class _VideoPlayerState extends State<VideoPlayer> {
+class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin {
   
   // Content Provider
   ContentProvider get contentProvider => Provider.of(context);
@@ -27,6 +27,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   // Current Content
   ContentWrapper get content => contentProvider.playingContent!;
+
+  // Aspect Ratio of video
+  double get aspectRatio => (contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio != null
+    ? contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio ?? 16/9
+    : 16/9).clamp(1, 16/9);
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +84,6 @@ class _VideoPlayerState extends State<VideoPlayer> {
                           builder: (context, child) {
                             return Builder(
                               builder: (context) {
-                                final aspectRatio = contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio != null
-                                  ? contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio ?? 16/9
-                                  : 16/9;
                                 const initialHeight = kToolbarHeight * 1.18;
                                 final initialWidth = initialHeight*aspectRatio;
                                 final finalWidth = MediaQuery.of(context).size.width-24;
@@ -99,22 +101,21 @@ class _VideoPlayerState extends State<VideoPlayer> {
                                     begin: BoxConstraints.tightFor(width: initialWidth, height: initialHeight),
                                     end: BoxConstraints.tightFor(width: finalWidth, height: finalHeight))
                                       .evaluate(uiProvider.fwController.animationController),
-                                  child: AnimatedSize(
-                                    duration: const Duration(milliseconds: 150),
-                                    child: AspectRatio(
-                                      aspectRatio: aspectRatio,
-                                      child: child
-                                    ),
-                                  )
+                                  child: child
                                 );
                               }
                             );
                           },
-                          child: VideoPlayerWidget(
-                            content: content,
-                            onAspectRatioUpdate: (aspectRatio) {
-                              setState(() {});
-                            },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: VideoPlayerWidget(
+                              content: content,
+                              onAspectRatioUpdate: (aspectRatio) {
+                                setState(() {
+
+                                });
+                              },
+                            ),
                           )
                         ),
                         // Song Title and Artist

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/song_item.dart';
 import 'package:songtube/languages/languages.dart';
@@ -35,6 +35,19 @@ void main() async {
 
   // Initialize App Settings
   await AppSettings.initSettings();
+
+  // Set System UI Mode
+  if ((deviceInfo.version.sdkInt ?? 28) >= 29) {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge
+    );
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        statusBarColor: Colors.transparent 
+      )
+    );
+  }
 
   // Run App
   runApp(const SongTube());
@@ -80,6 +93,9 @@ class _SongTubeState extends State<SongTube> {
         ),
         ChangeNotifierProvider<DownloadProvider>(
           create: (context) => DownloadProvider()
+        ),
+        ChangeNotifierProvider<AppSettings>(
+          create: (context) => AppSettings()
         ),
       ],
       child: Builder(
@@ -205,14 +221,14 @@ class _SongTubeState extends State<SongTube> {
 
   // Change appbar colors on music player slide
   void onSlide(double position, MediaItem mediaItem) {
-    final iconColor = Theme.of(context).brightness == Brightness.light
-      ? Brightness.light : Brightness.dark;
+    AppSettings appSettings = Provider.of(internalNavigatorKey.currentContext!, listen: false);
+    final iconColor = Theme.of(internalNavigatorKey.currentContext!).brightness;
     final Color? textColor = SongItem.fromMediaItem(mediaItem).palette?.text;
     if (position > 0.95) {
       if (textColor != null) {
         SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
-            statusBarIconBrightness: AppSettings.enableMusicPlayerBlur ? textColor == Colors.black
+            statusBarIconBrightness: appSettings.enableMusicPlayerBlur ? textColor == Colors.black
               ? Brightness.dark : Brightness.light : iconColor,
           ),
         );

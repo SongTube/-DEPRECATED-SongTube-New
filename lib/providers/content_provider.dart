@@ -6,7 +6,7 @@ import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:newpipeextractor_dart/extractors/search.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/internal/app_settings.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/channel_data.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';

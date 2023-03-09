@@ -38,15 +38,28 @@ class ChannelImage extends StatelessWidget {
             },
             child: Hero(
               tag: "$channelUrl + $heroId",
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: FadeInImage(
-                  fadeInDuration: const Duration(milliseconds: 300),
-                  placeholder: MemoryImage(kTransparentImage),
-                  image: FileImage(snapshot.data!),
-                  fit: BoxFit.cover,
-                  height: expand ? 80 : 50,
-                  width: expand ? 80 : 50,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 6,
+                      offset: const Offset(0,0),
+                      color: Theme.of(context).shadowColor.withOpacity(0.1)
+                    )
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: FadeInImage(
+                    fadeInDuration: const Duration(milliseconds: 300),
+                    placeholder: MemoryImage(kTransparentImage),
+                    image: FileImage(snapshot.data!),
+                    fit: BoxFit.cover,
+                    height: expand ? 80 : 50,
+                    width: expand ? 80 : 50,
+                  ),
                 ),
               ),
             ),

@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/main.dart';
+import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
@@ -19,6 +20,7 @@ import 'package:songtube/ui/players/video_player/comments.dart';
 import 'package:songtube/ui/players/video_player/suggestions.dart';
 import 'package:songtube/ui/menus/download_content_menu.dart';
 import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
+import 'package:songtube/ui/sheets/snack_bar.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -31,6 +33,7 @@ class VideoPlayerContent extends StatelessWidget {
   Widget build(BuildContext context) {
     DownloadProvider downloadProvider = Provider.of(context);
     VideoInfo? videoInfo = content.videoDetails?.videoInfo;
+    ContentProvider contentProvider = Provider.of(context);
     final views = videoInfo != null ? "${NumberFormat.compact().format(videoInfo.viewCount)} views" : '-1';
     final date = content.videoDetails?.videoInfo.uploadDate ?? "";
     return CustomScrollView(
@@ -120,13 +123,22 @@ class VideoPlayerContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // Like Button
-              TextIconButton(
-                icon: const Icon(LineIcons.thumbsUp),
-                text: videoInfo != null && (videoInfo.likeCount != -1 && videoInfo.likeCount != null)
-                  ? NumberFormat.compact().format(videoInfo.likeCount) : 'Like',
-                onTap: () {
-                  
-                },
+              Builder(
+                builder: (context) {
+                  final hasVideo = contentProvider.favoriteVideos.any((element) => element.id == videoInfo?.id);
+                  return TextIconButton(
+                    icon: Icon(LineIcons.thumbsUp, color: hasVideo ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color),
+                    text: hasVideo ? 'Liked' : 'Like',
+                    onTap: () {
+                      showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
+                      if (hasVideo) {
+                        contentProvider.removeVideoFromFavorites(videoInfo!.id!);
+                      } else {
+                        contentProvider.saveVideoToFavorites(content.videoDetails!.toStreamInfoItem());
+                      }
+                    },
+                  );
+                }
               ),
               // Dislike Button
               TextIconButton(

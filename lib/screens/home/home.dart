@@ -9,6 +9,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/screens/home/home_default/home_default.dart';
@@ -28,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   // Bottom Navigation Bar Current Index
-  int bottomNavigationBarIndex = 0;
+  int bottomNavigationBarIndex = AppSettings.defaultLandingPage;
 
   final List<Widget> screens = const [
     HomeDefault(),
@@ -81,8 +82,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        systemNavigationBarColor: Theme.of(context).cardColor,
-        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Theme.of(context).brightness
       )
     );
@@ -115,22 +114,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         destinations: const [
           NavigationDestination(
             icon: Icon(Ionicons.home_outline),
-            selectedIcon: Icon(Ionicons.home),
+            selectedIcon: Icon(Ionicons.home, color: Colors.white),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Ionicons.musical_note_outline),
-            selectedIcon: Icon(Ionicons.musical_note),
+            selectedIcon: Icon(Ionicons.musical_note, color: Colors.white),
             label: 'Music',
           ),
           NavigationDestination(
             icon: Icon(Ionicons.cloud_download_outline),
-            selectedIcon: Icon(Ionicons.cloud_download),
+            selectedIcon: Icon(Ionicons.cloud_download, color: Colors.white),
             label: 'Downloads',
           ),
           NavigationDestination(
             icon: Icon(Ionicons.library_outline),
-            selectedIcon: Icon(Ionicons.library),
+            selectedIcon: Icon(Ionicons.library, color: Colors.white),
             label: 'Library',
           ),
         ],

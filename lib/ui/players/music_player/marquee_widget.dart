@@ -1,17 +1,19 @@
 // Flutter
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 
 class MarqueeWidget extends StatefulWidget {
   final Widget child;
   final Axis direction;
   final Duration animationDuration, backDuration, pauseDuration;
-
+  final MediaItem? currentSong;
   const MarqueeWidget({
     required this.child,
     this.direction = Axis.horizontal,
     this.animationDuration = const Duration(milliseconds: 3000),
     this.backDuration = const Duration(milliseconds: 800),
     this.pauseDuration = const Duration(milliseconds: 800),
+    required this.currentSong,
     Key? key,
   }) : super(key: key);
 
@@ -20,6 +22,17 @@ class MarqueeWidget extends StatefulWidget {
 }
 
 class _MarqueeWidgetState extends State<MarqueeWidget> {
+  
+  @override
+  void didUpdateWidget(covariant MarqueeWidget oldWidget) {
+    if (oldWidget.currentSong?.id != widget.currentSong?.id) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+      }
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
   ScrollController scrollController = ScrollController(initialScrollOffset: 0);
 
   @override

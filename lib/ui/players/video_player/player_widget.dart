@@ -316,30 +316,30 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   Widget _videoPlayer() {
     UiProvider uiProvider = Provider.of(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          VideoPlayer(controller!),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: showAutoplay
-              ? autoplayOverlay()
-              : AnimatedBuilder(
-                  animation: uiProvider.fwController.animationController,
-                  builder: (context, child) {
-                    return Opacity(
-                      opacity: (uiProvider.fwController.animationController.value - (1 - uiProvider.fwController.animationController.value)) > 0
-                        ? (uiProvider.fwController.animationController.value - (1 - uiProvider.fwController.animationController.value)) : 0,
-                      child: child,
-                    );
-                  },
-                  child: _playbackControlsOverlay(),
-                ),
-          )
-        ],
-      ));
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AspectRatio(
+          aspectRatio: controller?.value.aspectRatio ?? 16/9,
+          child: VideoPlayer(controller!)),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: showAutoplay
+            ? autoplayOverlay()
+            : AnimatedBuilder(
+                animation: uiProvider.fwController.animationController,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: (uiProvider.fwController.animationController.value - (1 - uiProvider.fwController.animationController.value)) > 0
+                      ? (uiProvider.fwController.animationController.value - (1 - uiProvider.fwController.animationController.value)) : 0,
+                    child: child,
+                  );
+                },
+                child: _playbackControlsOverlay(),
+              ),
+        )
+      ],
+    );
   }
 
   Widget _thumbnail() {

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
@@ -34,6 +35,7 @@ class _ArtworkCarouselState extends State<ArtworkCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    AppSettings appSettings = Provider.of(context);
     return AnimatedBuilder(
       animation: widget.animationController,
       builder: (context, child) {
@@ -55,17 +57,20 @@ class _ArtworkCarouselState extends State<ArtworkCarousel> {
           ),
         );
       },
-      child: FutureBuilder<File>(
-        future: getAlbumImage(),
-        builder: (context, snapshot) {
-          return ImageFade(
-            placeholder: const SizedBox(),
-            image: snapshot.hasData
-              ? FileImage(snapshot.data!)
-              : MemoryImage(kTransparentImage) as ImageProvider,
-            fit: BoxFit.cover,
-          );
-        }
+      child: Transform.scale(
+        scale: appSettings.musicPlayerArtworkZoom,
+        child: FutureBuilder<File>(
+          future: getAlbumImage(),
+          builder: (context, snapshot) {
+            return ImageFade(
+              placeholder: const SizedBox(),
+              image: snapshot.hasData
+                ? FileImage(snapshot.data!)
+                : MemoryImage(kTransparentImage) as ImageProvider,
+              fit: BoxFit.cover,
+            );
+          }
+        ),
       ),
     );
   }
