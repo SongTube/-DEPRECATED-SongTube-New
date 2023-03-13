@@ -97,7 +97,25 @@ class _GeneralSettingsState extends State<GeneralSettings> {
               child: Text(landingPageName(index)),
             );
           })
-        )
+        ),
+        // Automatic Picture-in-Picture mode
+        const SizedBox(height: 12),
+        SettingTileCheckbox(
+          leadingIcon: Icons.picture_in_picture_alt_outlined,
+          title: 'Picture in Picture mode',
+          subtitle: 'Enable/disable automatic video picture in picture mode',
+          onChange: (value) => setState(() => AppSettings.enableAutoPictureInPictureMode = value),
+          value: AppSettings.enableAutoPictureInPictureMode,
+        ),
+        // Background Playback (Alpha)
+        const SizedBox(height: 12),
+        SettingTileCheckbox(
+          leadingIcon: LineIcons.playCircle,
+          title: 'Background Playback (Alpha)',
+          subtitle: 'Toggle background playback feature. Due to plugin limitations, only current video can be played in the background',
+          onChange: (value) => setState(() => AppSettings.enableBackgroundPlayback = value),
+          value: AppSettings.enableBackgroundPlayback,
+        ),
       ],
     );
   }
