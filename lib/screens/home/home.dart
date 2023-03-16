@@ -8,9 +8,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/screens/home/home_default/home_default.dart';
 import 'package:songtube/screens/home/home_downloads/home_downloads.dart';
@@ -58,6 +60,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Provider.of<MediaProvider>(context, listen: false).fetchMedia();
         if (kDebugMode) {
           print('App resumed');
+          if (AppSettings.enableBackgroundPlayback) {
+            ContentProvider contentProvider = Provider.of(context, listen: false);
+            audioHandler.customAction('stopBackgroundPlayback').then((data) {
+              final controller = contentProvider.playingContent!.videoPlayerController.videoPlayerController!;
+              final position = Duration(seconds: data['position']);
+              if (position == controller.value.position) {
+                controller.play();
+              } else {
+                controller.seekTo(position).then((_) {
+                  controller.play();
+                });
+              }}
+            );
+          }
         }
         break;
       case AppLifecycleState.inactive:
@@ -68,6 +84,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         if (kDebugMode) {
           print('App paused');
+        }
+        if (AppSettings.enableBackgroundPlayback) {
+          ContentProvider contentProvider = Provider.of(context, listen: false);
+          final playing = contentProvider.playingContent != null
+            && (contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.isPlaying ?? false);
+          if (playing) {
+            contentProvider.playingContent!.videoPlayerController.videoPlayerController!.pause().then((_) {
+              final controller = contentProvider.playingContent!.videoPlayerController.videoPlayerController!.value;
+              audioHandler.customAction('initBackgroundPlayback', {
+                'position': controller.position.inSeconds,
+                'audioUrl': contentProvider.playingContent!.videoDetails!.audioWithBestAacQuality!.url,
+                'videoStream': contentProvider.playingContent!.videoDetails!.toStreamInfoItem().toMap(),
+              });
+            });
+          }
         }
         break;
       case AppLifecycleState.detached:

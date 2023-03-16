@@ -1,6 +1,9 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:newpipeextractor_dart/extractors/videos.dart';
+import 'package:newpipeextractor_dart/models/videoInfo.dart';
+import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 
 MediaControl playControl = const MediaControl(
   androidIcon: 'drawable/ic_play_arrow',
@@ -38,9 +41,13 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     _listenForSequenceStateChanges();
   }
 
+  // Video Player Background Playback stuff
+  bool backgroundPlaybackEnabled = false;
+
   late final _player = AudioPlayer(audioPipeline: AudioPipeline(
     androidAudioEffects: [ equalizer, loudnessEnhancer ]));
   final _playlist = ConcatenatingAudioSource(children: []);
+  final VideoExtractor extractor = VideoExtractor();
 
   // Equalizer
   AndroidEqualizer equalizer = AndroidEqualizer();
@@ -91,7 +98,9 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   UriAudioSource _createAudioSource(MediaItem mediaItem) {
     return AudioSource.uri(
-      Uri(path: mediaItem.id),
+      !backgroundPlaybackEnabled
+        ? Uri(path: mediaItem.id)
+        : Uri.parse(mediaItem.id),
       tag: MediaItem(
         id: mediaItem.id,
         title: mediaItem.title,
@@ -99,7 +108,9 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         album: mediaItem.album,
         genre: mediaItem.genre,
         duration: mediaItem.duration,
-        artUri: Uri.parse('file://${mediaItem.artUri.toString()}'),
+        artUri: !backgroundPlaybackEnabled
+          ? Uri.parse('file://${mediaItem.artUri.toString()}')
+          : mediaItem.artUri,
         extras: mediaItem.extras,
       )
     );
@@ -155,10 +166,14 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   Future<void> seek(Duration position) => _player.seek(position);
 
   @override
-  Future<void> skipToNext() => _player.seekToNext();
+  Future<void> skipToNext() async {
+    _player.seekToNext();
+  }
 
   @override
-  Future<void> skipToPrevious() => _player.seekToPrevious();
+  Future<void> skipToPrevious() async {
+    _player.seekToPrevious();
+  }
 
   @override
   Future<void> skipToQueueItem(int index) async {
@@ -250,9 +265,38 @@ class StAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       final gain = extras['gain'] as double;
       loudnessEnhancer.setTargetGain(gain);
     }
+    if (name == 'initBackgroundPlayback') {
+      backgroundPlaybackEnabled = true;
+      final position = Duration(seconds: extras!['position']);
+      final audioUrl = extras['audioUrl'];
+      final youtubeStream = StreamInfoItem.fromMap(extras['videoStream']);
+      final youtubeVideo = YoutubeVideo(videoInfo: VideoInfo.fromStreamInfoItem(youtubeStream));
+      final audioSource = MediaItem(
+        id: audioUrl,
+        title: youtubeVideo.videoInfo.name!,
+        duration: Duration(milliseconds: youtubeVideo.videoInfo.length!),
+        artUri: Uri.parse(youtubeVideo.videoInfo.thumbnailUrl!)
+      );
+      // Resume Playback
+      await stop();
+      await _player.setAudioSource(_createAudioSource(audioSource), initialPosition: position, preload: false);
+      mediaItem.add(audioSource);
+      play();
+    }
+    if (name == 'stopBackgroundPlayback') {
+      backgroundPlaybackEnabled = false;
+      await stop();
+      return {
+        'position': _player.position.inSeconds,
+      };
+    }
     return null;
   }
 
+  /// Play next item in queue for Background Playback
+  void backgroundPlaybackGoNext() {
+    
+  }
 
   /// Get MediaPlayer Controls
   List<MediaControl> getControls() {

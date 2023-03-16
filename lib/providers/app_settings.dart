@@ -27,6 +27,12 @@ const maxSimultaneousDownloadsKey = 'maxSimultaneousDownloads';
 // Watch History Status
 const enableWatchHistoryKey = 'enableWatchHistory';
 
+// Background Playback Key (Alpha Feature)
+const enableBackgroundPlaybackKey = 'enableBackgroundPlayback';
+
+// Auto Picture in Picture mode
+const enableAutoPictureInPictureModeKey = 'enableAutoPictureInPictureMode';
+
 class AppSettings extends ChangeNotifier {
 
   // Initialize App Settings
@@ -132,5 +138,17 @@ class AppSettings extends ChangeNotifier {
   set musicPlayerArtworkZoom(double value) {
     sharedPreferences.setDouble(musicPlayerArtworkZoomKey, value);
     notifyListeners();
+  }
+
+  // Background Playback (Alpha)
+  static bool get enableBackgroundPlayback => sharedPreferences.getBool(enableBackgroundPlaybackKey) ?? false;
+  static set enableBackgroundPlayback(bool value) {
+    sharedPreferences.setBool(enableBackgroundPlaybackKey, value);
+  }
+
+  // Auto Picture in Picture mode
+  static bool get enableAutoPictureInPictureMode => sharedPreferences.getBool(enableAutoPictureInPictureModeKey) ?? true;
+  static set enableAutoPictureInPictureMode(bool value) {
+    sharedPreferences.setBool(enableAutoPictureInPictureModeKey, value);
   }
 }
