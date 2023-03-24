@@ -36,10 +36,13 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
     ? contentProvider.playingContent?.videoPlayerController.videoPlayerController?.value.aspectRatio ?? 16/9
     : 16/9).clamp(1, 16/9);
 
+  // State Key for video player
+  final playerKey = const GlobalObjectKey<State>('videoPlayerKey');
+
   @override
   Widget build(BuildContext context) {
     final player = VideoPlayerWidget(
-      key: const GlobalObjectKey<State>('videoPlayerKey'),
+      key: playerKey,
       content: content,
       pipEnabled: false,
       onAspectRatioUpdate: (aspectRatio) {
@@ -48,12 +51,17 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
         });
       },
       onEnterPip: () async {
-        await FlutterPip.enterPictureInPictureMode();
+        FlutterPip.enterPictureInPictureMode();
       },
     );
     return Material(
       color: Colors.transparent,
       child: PipWidget(
+        onSuspending: () {
+          if (AppSettings.enableAutoPictureInPictureMode) {
+            FlutterPip.enterPictureInPictureMode();
+          }
+        },
         pictureInPictureChild: player,
         child: AnimatedBuilder(
           animation: uiProvider.fwController.animationController,
