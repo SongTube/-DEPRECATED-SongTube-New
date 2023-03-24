@@ -147,9 +147,6 @@ class ContentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Save playlist to favorites
-
-
   // Save video to Watch History
   Future<void> saveToHistory(StreamInfoItem video) async {
     if (AppSettings.enableWatchHistory) {
