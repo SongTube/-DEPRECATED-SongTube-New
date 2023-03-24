@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pip/flutter_pip.dart';
+import 'package:flutter_pip/models/pip_ratio.dart';
 import 'package:flutter_pip/platform_channel/channel.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:newpipeextractor_dart/models/video.dart';
@@ -39,6 +40,12 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
   // State Key for video player
   final playerKey = const GlobalObjectKey<State>('videoPlayerKey');
 
+  // Function to enter PiP mode
+  void enterPipMode() {
+    final size = Provider.of<ContentProvider>(context, listen: false).playingContent?.videoPlayerController.videoPlayerController?.value.size;
+    FlutterPip.enterPictureInPictureMode(pipRatio: size != null ? PipRatio(width: size.width.round(), height: size.height.round()) : null);
+  }
+
   @override
   Widget build(BuildContext context) {
     final player = VideoPlayerWidget(
@@ -50,16 +57,14 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
           
         });
       },
-      onEnterPip: () async {
-        FlutterPip.enterPictureInPictureMode();
-      },
+      onEnterPip: () => enterPipMode()
     );
     return Material(
       color: Colors.transparent,
       child: PipWidget(
         onSuspending: () {
-          if (AppSettings.enableAutoPictureInPictureMode) {
-            FlutterPip.enterPictureInPictureMode();
+          if (AppSettings.enableAutoPictureInPictureMode && !AppSettings.enableBackgroundPlayback) {
+            enterPipMode();
           }
         },
         pictureInPictureChild: player,
