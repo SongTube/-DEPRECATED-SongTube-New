@@ -1,6 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:songtube/internal/global.dart';
 import 'package:songtube/ui/text_styles.dart';
 
 class VideoPlayerAppBar extends StatelessWidget {
@@ -36,34 +37,21 @@ class VideoPlayerAppBar extends StatelessWidget {
           if (!audioOnly)
           const SizedBox(width: 12),
           if (!audioOnly)
-          FutureBuilder(
-            future: DeviceInfoPlugin().androidInfo, 
-            builder: (context, AsyncSnapshot<AndroidDeviceInfo> info) {
-              if (info.hasData) {
-                if ((info.data?.version.sdkInt ?? 0) >= 26) {
-                  return GestureDetector(
-                    onTap: onEnterPipMode,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      color: Colors.transparent,
-                      child: const Icon(
-                        MdiIcons.pictureInPictureBottomRightOutline,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  );
-                } else {
-                  return Container(
+          Builder(
+            builder: (context) {
+              if (isPictureInPictureSupported) {
+                return GestureDetector(
+                  onTap: onEnterPipMode,
+                  child: Container(
                     padding: const EdgeInsets.all(4),
                     color: Colors.transparent,
                     child: const Icon(
                       MdiIcons.pictureInPictureBottomRightOutline,
-                      color: Colors.transparent,
+                      color: Colors.white,
                       size: 18,
                     ),
-                  );
-                }
+                  ),
+                );
               } else {
                 return Container(
                   padding: const EdgeInsets.all(4),
