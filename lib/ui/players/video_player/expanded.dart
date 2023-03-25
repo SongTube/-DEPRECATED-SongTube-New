@@ -26,7 +26,7 @@ class _VideoPlayerExpandedState extends State<VideoPlayerExpanded> {
   }
 
   Widget _videoBody() {
-    return VideoPlayerContent(content: widget.content);
+    return VideoPlayerContent(content: widget.content, videoDetails: widget.content.videoDetails);
   }
 
   Widget _playlistBody() {

@@ -36,7 +36,7 @@ class _VideoPlayerPlaylistContentState extends State<VideoPlayerPlaylistContent>
         // Video Content
         Padding(
           padding: const EdgeInsets.only(bottom: 1),
-          child: VideoPlayerContent(content: widget.content),
+          child: VideoPlayerContent(content: widget.content, videoDetails: widget.content.videoDetails),
         ),
         // Playlist Content
         LayoutBuilder(

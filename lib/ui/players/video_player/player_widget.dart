@@ -28,9 +28,13 @@ class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({
     required this.content,
     required this.onAspectRatioUpdate,
+    required this.pipEnabled,
+    required this.onEnterPip,
     super.key});
   final ContentWrapper content;
   final Function(double) onAspectRatioUpdate;
+  final bool pipEnabled;
+  final Function() onEnterPip;
   @override
   State<VideoPlayerWidget> createState() => VideoPlayerWidgetState();
 }
@@ -41,7 +45,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   // Player Variables (width is set automatically)
   bool finishedPlaying = false;
   bool isPlaying = false;
-  bool hideControls = false;
+  bool hideControls = true;
   bool videoEnded = false;
   bool buffering = true;
   bool isSeeking = false;
@@ -555,7 +559,10 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                         }));
                       },
                     onEnterPipMode: () {
-
+                      setState(() {
+                        hideControls = true;
+                      });
+                      widget.onEnterPip();
                     },
                   ),
                 ),

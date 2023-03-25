@@ -102,8 +102,8 @@ class _GeneralSettingsState extends State<GeneralSettings> {
         const SizedBox(height: 12),
         SettingTileCheckbox(
           leadingIcon: Icons.picture_in_picture_alt_outlined,
-          title: 'Picture in Picture mode',
-          subtitle: 'Enable/disable automatic video picture in picture mode',
+          title: 'Picture in Picture',
+          subtitle: 'Automatically enters PiP mode upon tapping home button while watching a video',
           onChange: (value) => setState(() => AppSettings.enableAutoPictureInPictureMode = value),
           value: AppSettings.enableAutoPictureInPictureMode,
         ),
