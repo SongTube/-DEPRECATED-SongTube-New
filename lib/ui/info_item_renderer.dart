@@ -10,9 +10,11 @@ class InfoItemRenderer extends StatelessWidget {
   const InfoItemRenderer({
     required this.infoItem,
     this.expandItem = false,
+    this.editable = true,
     super.key});
   final dynamic infoItem;
   final bool expandItem;
+  final bool editable;
   @override
   Widget build(BuildContext context) {
     if (infoItem is ChannelInfoItem) {
@@ -27,7 +29,7 @@ class InfoItemRenderer extends StatelessWidget {
       if (expandItem) {
         return PlaylistTileExpanded(playlist: infoItem);
       } else {
-        return PlaylistTileCollapsed(playlist: infoItem);
+        return PlaylistTileCollapsed(playlist: infoItem, isEditable: editable);
       }
     } else {
       return const SizedBox();

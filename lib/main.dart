@@ -37,7 +37,7 @@ void main() async {
   await AppSettings.initSettings();
 
   // Set System UI Mode
-  if ((deviceInfo.version.sdkInt ?? 28) >= 29) {
+  if ((deviceInfo.version.sdkInt ?? 28) >= 29 && false) {
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.edgeToEdge
     );

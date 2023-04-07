@@ -76,15 +76,6 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
   bool get hidePlayerBody => showComments;
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return _playerBody(constraints);
-      }
-    );
-  }
-
-  @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final url = widget.videoDetails?.videoInfo.url;
@@ -112,6 +103,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
     super.didUpdateWidget(oldWidget);
   }
 
+  // Load video comments
   void loadComments(String url) {
     setState(() {
       comments.clear();
@@ -121,11 +113,14 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
         comments = value;
         if (value.isEmpty) {
           commentsAvailable = false;
+        } else {
+          commentsAvailable = true;
         }
       });
     });
   }
 
+  // Load video suggestions
   void loadSuggestions(String url) {
     setState(() {
       relatedStreams.clear();
@@ -141,7 +136,30 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
     });
   }
 
-  Widget _playerBody(BoxConstraints constraints) {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      child:  _body()
+    );
+  }
+
+  Widget _body() {
+    if (showComments) {
+      return VideoPlayerCommentsExpanded(
+        comments: comments..sort((a, b) => b.likeCount!.compareTo(a.likeCount!)),
+        onBack: () => showComments = false,
+        onSeek: (position) {
+          widget.content.videoPlayerController.videoPlayerController?.seekTo(position);
+        });
+    } else if (showDescription) {
+      return const SizedBox();
+    } else {
+      return _playerBody();
+    }
+  }
+
+  Widget _playerBody() {
     return ListView(
       padding: EdgeInsets.zero,
       physics: const BouncingScrollPhysics(),
@@ -152,24 +170,30 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
         const SizedBox(height: 6),
         // Action Buttons (Like, dislike, download, etc...)
         _playerActions(),
-        Padding(
-          padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
-          child: VideoPlayerComments(
-            comments: comments,
-            commentsAvailable: commentsAvailable,
+        GestureDetector(
+          onTap: () {
+            showComments = true;
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
+            child: VideoPlayerCommentsCollapsed(
+              comments: comments..sort((a, b) => b.likeCount!.compareTo(a.likeCount!)),
+              commentsAvailable: commentsAvailable,
+            ),
           ),
         ),
         const SizedBox(height: 12),
         // Video Suggestions
-        VideoPlayerSuggestions(suggestions: relatedStreams)
+        VideoPlayerSuggestions(suggestions: relatedStreams, bottomPadding: widget.content.infoItem is PlaylistInfoItem)
       ],
     );
   }
 
   Widget _playerTitle() {
+    StreamInfoItem? infoItem = widget.content.infoItem is StreamInfoItem ? widget.content.infoItem : null;
     VideoInfo? videoInfo = widget.content.videoDetails?.videoInfo;
-    final views = videoInfo != null ? "${NumberFormat.compact().format(videoInfo.viewCount)} views" : '-1';
-    final date = widget.content.videoDetails?.videoInfo.uploadDate ?? "";
+    final views = (infoItem?.viewCount != null || videoInfo != null) ? "${NumberFormat.compact().format(infoItem?.viewCount ?? videoInfo?.viewCount)} views" : '-1';
+    final date = infoItem?.date ?? widget.content.videoDetails?.videoInfo.uploadDate ?? "";
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -180,14 +204,13 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 4),
-              Text(videoInfo?.name ?? '', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
-              Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(infoItem?.name ?? videoInfo?.name ?? '', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
+              Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.1, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 12),
               // Channel Details
               CustomInkWell(
                 onTap: () {
-                
+                  
                 },
                 child: Row(
                   children: [
@@ -216,7 +239,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            videoInfo?.uploaderName ?? '',
+                            infoItem?.uploaderName ?? videoInfo?.uploaderName ?? '',
                             style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.w900),
                           ),
                           Text('SUBSCRIBE',

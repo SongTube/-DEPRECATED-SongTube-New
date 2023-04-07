@@ -118,7 +118,7 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
                               return AnimatedSize(
                                 duration: const Duration(milliseconds: 150),
                                 child: Container(
-                                  margin: const EdgeInsets.only(left: 12, right: 12).copyWith(
+                                  margin: const EdgeInsets.only(left: 11.5, right: 11.5).copyWith(
                                     top: Tween<double>(begin: 11.5, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value,
                                     bottom: Tween<double>(begin: 11.5, end: 0).animate(uiProvider.fwController.animationController).value
                                   ),

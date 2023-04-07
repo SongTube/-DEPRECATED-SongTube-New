@@ -6,8 +6,10 @@ import 'package:songtube/ui/info_item_renderer.dart';
 class VideoPlayerSuggestions extends StatefulWidget {
   const VideoPlayerSuggestions({
     required this.suggestions,
+    required this.bottomPadding,
     super.key});
   final List<dynamic> suggestions;
+  final bool bottomPadding;
   @override
   State<VideoPlayerSuggestions> createState() => VideoPlayerSuggestionsState();
 }
@@ -27,7 +29,7 @@ class VideoPlayerSuggestionsState extends State<VideoPlayerSuggestions> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.only(bottom: widget.bottomPadding ? kToolbarHeight+32 : 0),
       itemCount: widget.suggestions.length,
       itemBuilder: (context, index) {
         return Padding(

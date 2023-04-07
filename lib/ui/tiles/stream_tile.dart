@@ -97,7 +97,7 @@ class StreamTileCollapsed extends StatelessWidget {
                     top: 4, bottom: 4),
                   child: Text(
                     stream.name ?? '',
-                    style: smallTextStyle(context),
+                    style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
                     overflow: TextOverflow.clip,
                     maxLines: 2,
                   ),
@@ -106,7 +106,7 @@ class StreamTileCollapsed extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
                     "${stream.uploaderName}  ${NumberFormat.compact().format(stream.viewCount) != '-1' ? '•  ${NumberFormat.compact().format(stream.viewCount)} views' : ''}",
-                    style: tinyTextStyle(context, opacity: 0.7),
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
                     overflow: TextOverflow.clip,
                     maxLines: 1,
                   ),

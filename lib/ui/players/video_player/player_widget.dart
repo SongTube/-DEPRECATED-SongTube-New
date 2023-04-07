@@ -395,7 +395,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                     }
                     handleSeek(seekNewPosition);
                     setState(() => showReverse = true);
-                    Future.delayed(const Duration(milliseconds: 250), ()
+                    Future.delayed(const Duration(milliseconds: 500), ()
                       => setState(() => showReverse = false));
                   }
                 },
@@ -445,7 +445,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   if (controller?.value.isInitialized ?? false) {
                     handleSeek((currentPosition ?? const Duration(seconds: 0)) + const Duration(seconds: 10));
                     setState(() => showForward = true);
-                    Future.delayed(const Duration(milliseconds: 300), ()
+                    Future.delayed(const Duration(milliseconds: 500), ()
                       => setState(() => showForward = false));
                   }
                 },
@@ -504,7 +504,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
                     child: showReverse
-                      ? const Icon(Icons.replay_10_outlined,
+                      ? const Icon(Icons.replay_10_rounded,
                           color: Colors.white,
                           size: 40)
                       : Container()
@@ -520,7 +520,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
                     child: showForward
-                      ? const Icon(Icons.forward_10_outlined,
+                      ? const Icon(Icons.forward_10_rounded,
                           color: Colors.white,
                           size: 40)
                       : Container()
@@ -544,7 +544,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   alignment: Alignment.topLeft,
                   child: VideoPlayerAppBar(
                     audioOnly: false,
-                    currentQuality: currentQuality?.resolution ?? '',
+                    currentQuality: currentQuality,
                     videoTitle: widget.content.videoDetails?.videoInfo.name ?? '',
                     onChangeQuality: () {
                       showModalBottomSheet(
