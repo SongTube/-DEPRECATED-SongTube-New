@@ -34,7 +34,7 @@ class _VideoPlayerCommentsCollapsedState extends State<VideoPlayerCommentsCollap
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: Container(
-        margin: EdgeInsets.only(top: widget.commentsAvailable ? 6 : 0),
+        margin: EdgeInsets.only(top: widget.commentsAvailable ? 12 : 0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: widget.commentsAvailable ? Theme.of(context).cardColor : Colors.transparent,
@@ -267,7 +267,7 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
                 const SizedBox(height: 2),
                 Builder(
                   builder: (context) {
-                    final strings = processForTimestamps(comment.commentText!);
+                    final strings = Timestamp.parseStringForTimestamps(comment.commentText!);
                     Paint timestampPaint = Paint()
                       ..color = Theme.of(context).primaryColor.withOpacity(0.3)
                       ..style = PaintingStyle.fill
@@ -329,63 +329,6 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  // Parse duration from String
-  Duration parseDuration(String string) {
-    final durationList = string.split(':');
-    final Duration duration;
-    if (durationList.length == 2) {
-      final minutes = int.parse(durationList.first);
-      final seconds = int.parse(durationList[1]);
-      duration = Duration(minutes: minutes, seconds: seconds);
-    } else {
-      final hours = int.parse(durationList.first);
-      final minutes = int.parse(durationList[1]);
-      final seconds = int.parse(durationList[2]);
-      duration = Duration(hours: hours, minutes: minutes, seconds: seconds);
-    }
-    return duration;
-  }
-
-  // Process comment to extract timestamps
-  List<dynamic> processForTimestamps(String message) {
-    final parsedStrings = <dynamic>[];
-    // Split our message into separate words in a list
-    final strings = message.split(' ');
-    for (final item in strings) {
-      // If this word contains ":", this might be a timestamp
-      if (item.contains(':')) {
-        // Some words might not be separated by a empty space but by a new line, in this case we need to split
-        // our word again, count and save the new lines, then we check if we have a timestamp
-        if (item.contains('\n')) {
-          final newLineCount = '\n'.allMatches(item);
-          final newLineItems = item.split('\n');
-          String text = newLineItems.first;
-          for (var _ in newLineCount) {
-            text = '$text\n';
-          }
-          final durationText = newLineItems.last;
-          parsedStrings.add(text);
-          try {
-            final duration = parseDuration(durationText);
-            parsedStrings.add(Timestamp(text: durationText, duration: duration));
-          } catch (_) {
-            parsedStrings.add(text);
-          }
-        } else {
-          try {
-            final duration = parseDuration(item);
-            parsedStrings.add(Timestamp(text: item, duration: duration));
-          } catch (_) {
-            parsedStrings.add(item);
-          }
-        }
-      } else {
-        parsedStrings.add(item);
-      }
-    }
-    return parsedStrings;
   }
 
 }

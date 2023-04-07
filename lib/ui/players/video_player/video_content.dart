@@ -25,6 +25,7 @@ import 'package:songtube/ui/menus/download_content_menu.dart';
 import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/sheets/snack_bar.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:collection/collection.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class VideoPlayerContent extends StatefulWidget {
@@ -272,72 +273,82 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
     DownloadProvider downloadProvider = Provider.of(context);
     VideoInfo? videoInfo = widget.content.videoDetails?.videoInfo;
     ContentProvider contentProvider = Provider.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // Like Button
-        Builder(
-          builder: (context) {
-            final hasVideo = contentProvider.favoriteVideos.any((element) => element.id == videoInfo?.id);
-            return TextIconButton(
-              icon: Icon(LineIcons.thumbsUp, color: hasVideo ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color),
-              text: hasVideo ? 'Liked' : 'Like',
-              onTap: () {
-                showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
-                if (hasVideo) {
-                  contentProvider.removeVideoFromFavorites(videoInfo!.id!);
-                } else {
-                  contentProvider.saveVideoToFavorites(widget.content.videoDetails!.toStreamInfoItem());
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      height: 42,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(left: 12, right: 12),
+        children: [
+          // Like Button
+          Builder(
+            builder: (context) {
+              final hasVideo = contentProvider.favoriteVideos.any((element) => element.id == videoInfo?.id);
+              return TextIconSlimButton(
+                icon: Icon(LineIcons.thumbsUp, color: hasVideo ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color, size: 20),
+                text: hasVideo ? 'Liked' : 'Like',
+                onTap: () {
+                  showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
+                  if (hasVideo) {
+                    contentProvider.removeVideoFromFavorites(videoInfo!.id!);
+                  } else {
+                    contentProvider.saveVideoToFavorites(widget.content.videoDetails!.toStreamInfoItem());
+                  }
+                },
+              );
+            }
+          ),
+          const SizedBox(width: 12),
+          // Like Button
+          TextIconSlimButton(
+            icon: const Icon(LineIcons.share),
+            text: 'Share',
+            onTap: () {
+              Share.share(videoInfo!.url!);
+            },
+          ),
+          const SizedBox(width: 12),
+          // Like Button
+          TextIconSlimButton(
+            icon: const Icon(Ionicons.add_outline),
+            text: 'Playlist',
+            onTap: () {
+              showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
+                return AddToStreamPlaylist(stream: widget.content.videoDetails!.toStreamInfoItem());
+              });
+            },
+          ),
+          const SizedBox(width: 12),
+          // Like Button
+          Builder(
+            builder: (context) {
+              final downloading = downloadProvider.queue.any((element) => element.downloadInfo.url == videoInfo?.url);
+              final downloadItem = downloadProvider.queue.firstWhereOrNull((element) => element.downloadInfo.url == videoInfo?.url);
+              final downloaded = downloadProvider.downloadedSongs.any((element) => element.videoId == videoInfo?.url);
+              return StreamBuilder<double?>(
+                stream: downloadItem?.downloadProgress,
+                builder: (context, snapshot) {
+                  final progress = snapshot.data;
+                  final currentProgress = progress != null ? (progress*100).round().toString() : '';
+                  return TextIconSlimButton(
+                    icon: Icon(LineIcons.alternateCloudDownload, color: Theme.of(context).iconTheme.color),
+                    text: downloading ? 'Downloading... ${currentProgress.isNotEmpty ? '$currentProgress%' : ''}' : downloaded ? 'Downloaded' : 'Download',
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: internalNavigatorKey.currentContext!,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => DownloadContentMenu(content: widget.content));
+                    },
+                    backgroundColor: (downloading || downloaded) ? Theme.of(context).primaryColor.withOpacity(downloaded ? 1.0 : 0.5) : null,
+                  );
                 }
-              },
-            );
-          }
-        ),
-        // Dislike Button
-        TextIconButton(
-          icon: const Icon(LineIcons.thumbsDown),
-          text: videoInfo != null && videoInfo.dislikeCount != -1
-            ? NumberFormat.compact().format(videoInfo.dislikeCount) : 'Dislike',
-          onTap: () {
-      
-          },
-        ),
-        // Like Button
-        TextIconButton(
-          icon: const Icon(LineIcons.share),
-          text: 'Share',
-          onTap: () {
-            Share.share(videoInfo!.url!);
-          },
-        ),
-        // Like Button
-        TextIconButton(
-          icon: const Icon(Ionicons.add_outline),
-          text: 'Playlist',
-          onTap: () {
-            showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
-              return AddToStreamPlaylist(stream: widget.content.videoDetails!.toStreamInfoItem());
-            });
-          },
-        ),
-        // Like Button
-        Builder(
-          builder: (context) {
-            final downloading = downloadProvider.queue.any((element) => element.downloadInfo.url == videoInfo?.url);
-            return TextIconButton(
-              icon: Icon(LineIcons.download, color: downloading ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color),
-              text: downloading ? 'Downloading...' : 'Download',
-              onTap: () {
-                showModalBottomSheet(
-                  context: internalNavigatorKey.currentContext!,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => DownloadContentMenu(content: widget.content));
-              },
-            );
-          }
-        ),
-      ],
+              );
+            }
+          ),
+        ],
+      ),
     );
   }
 
