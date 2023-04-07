@@ -20,6 +20,7 @@ import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/components/text_icon_button.dart';
 import 'package:songtube/ui/players/video_player/comments.dart';
+import 'package:songtube/ui/players/video_player/description.dart';
 import 'package:songtube/ui/players/video_player/suggestions.dart';
 import 'package:songtube/ui/menus/download_content_menu.dart';
 import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
@@ -146,15 +147,20 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
   }
 
   Widget _body() {
-    if (showComments) {
+    if (showComments && widget.content.videoDetails != null) {
       return VideoPlayerCommentsExpanded(
         comments: comments..sort((a, b) => b.likeCount!.compareTo(a.likeCount!)),
         onBack: () => showComments = false,
         onSeek: (position) {
           widget.content.videoPlayerController.videoPlayerController?.seekTo(position);
         });
-    } else if (showDescription) {
-      return const SizedBox();
+    } else if (showDescription && widget.content.videoDetails != null) {
+      return VideoPlayerDescription(
+        info: widget.content.videoDetails!.videoInfo,
+        onBack: () => showDescription = false,
+        onSeek: (position) {
+          widget.content.videoPlayerController.videoPlayerController?.seekTo(position);
+        });
     } else {
       return _playerBody();
     }
@@ -260,7 +266,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
         ),
         IconButton(
           onPressed: () {
-            // TODO SHOW VIDEO DETAILS
+            showDescription = true;
           },
           icon: Icon(Icons.expand_more, color: Theme.of(context).primaryColor)
         ),

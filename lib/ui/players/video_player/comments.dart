@@ -13,6 +13,7 @@ import 'package:newpipeextractor_dart/models/videoInfo.dart';
 import 'package:songtube/internal/models/timestamp.dart';
 import 'package:songtube/ui/animations/show_up.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
+import 'package:songtube/ui/components/linkify_text.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/text_styles.dart';
 
@@ -265,37 +266,7 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 2),
-                Builder(
-                  builder: (context) {
-                    final strings = Timestamp.parseStringForTimestamps(comment.commentText!);
-                    Paint timestampPaint = Paint()
-                      ..color = Theme.of(context).primaryColor.withOpacity(0.3)
-                      ..style = PaintingStyle.fill
-                      ..strokeCap = StrokeCap.butt;
-                    return RichText(
-                      text: TextSpan(
-                        style: smallTextStyle(context, opacity: 0.8),
-                        children: List.generate(strings.length, (index) {
-                          final string = strings[index];
-                          if (string is Timestamp) {
-                            return TextSpan(
-                              style: smallTextStyle(context, bold: true, opacity: 0.8).copyWith(color: Theme.of(context).primaryColor, background: timestampPaint),
-                              text: string.text.contains('\n') ? string.text : ' ${string.text} ',
-                              recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                  onSeek(string.duration);
-                                },
-                              );
-                            } else {
-                              string as String;
-                              return TextSpan(text: string.endsWith('\n') ? string : '$string ');
-                            }
-                          }
-                        )
-                      )
-                    );
-                  }
-                ),
+                LinkifyText(text: comment.commentText!),
                 const SizedBox(height: 8),
                 // Like count
                 Container(
