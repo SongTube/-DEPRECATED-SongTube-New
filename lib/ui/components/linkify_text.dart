@@ -45,7 +45,7 @@ class LinkifyText extends StatelessWidget {
                   text: string.contains('\n') ? string : ' $string ',
                   recognizer: onLinkTap != null ? (TapGestureRecognizer()
                   ..onTap = () {
-                      launchUrlString(string);
+                      onLinkTap!(string);
                     }) : null
                 );
               } else {

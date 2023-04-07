@@ -6,6 +6,7 @@ import 'package:newpipeextractor_dart/models/videoInfo.dart';
 import 'package:songtube/ui/animations/show_up.dart';
 import 'package:songtube/ui/components/linkify_text.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class VideoPlayerDescription extends StatelessWidget {
   const VideoPlayerDescription({
@@ -65,7 +66,14 @@ class VideoPlayerDescription extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
-                  child: LinkifyText(text: info.description!, style: smallTextStyle(context, opacity: 0.8)),
+                  child: LinkifyText(text: info.description!, style: smallTextStyle(context, opacity: 0.8),
+                    onTimestampTap: (duration) {
+                      onSeek(duration);
+                    },
+                    onLinkTap: (link) {
+                      launchUrlString(link);
+                    },
+                  ),
                 ),
               ],
             ),

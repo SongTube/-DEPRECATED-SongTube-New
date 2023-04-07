@@ -266,7 +266,10 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 2),
-                LinkifyText(text: comment.commentText!),
+                LinkifyText(
+                  text: comment.commentText!,
+                  onTimestampTap: onSeek,
+                ),
                 const SizedBox(height: 8),
                 // Like count
                 Container(
