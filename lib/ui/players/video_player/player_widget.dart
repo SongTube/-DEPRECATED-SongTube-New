@@ -312,9 +312,12 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     widget.content.videoPlayerController._addState(this);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
-      child: controller != null
-        ? _videoPlayer()
-        : _thumbnail(),
+      child: Container(
+        color: Colors.black,
+        child: controller != null
+          ? _videoPlayer()
+          : _thumbnail(),
+      ),
     );
   }
 
