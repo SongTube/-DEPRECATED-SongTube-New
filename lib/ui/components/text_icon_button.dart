@@ -38,3 +38,46 @@ class TextIconButton extends StatelessWidget {
     );
   }
 }
+
+class TextIconSlimButton extends StatelessWidget {
+  const TextIconSlimButton({
+    required this.icon,
+    required this.text,
+    this.onTap,
+    this.selected,
+    this.selectedIcon,
+    this.backgroundColor,
+    super.key});
+  final Icon icon;
+  final String text;
+  final Function()? onTap;
+  final Icon? selectedIcon;
+  final bool? selected;
+  final Color? backgroundColor;
+  @override
+  Widget build(BuildContext context) {
+    return CustomInkWell(
+      borderRadius: BorderRadius.circular(25),
+      onTap: onTap,
+      child: AnimatedContainer(
+        padding: const EdgeInsets.only(top: 4, bottom: 4, left: 12, right: 12),
+        duration: const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: backgroundColor ?? Theme.of(context).cardColor,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: (selected ?? false) ? selectedIcon ?? icon : icon),
+            const SizedBox(width: 6),
+            Text(text, style: tinyTextStyle(context, bold: true).copyWith(letterSpacing: 0.5))
+          ],
+        ),
+      ),
+    );
+  }
+}

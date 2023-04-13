@@ -63,16 +63,19 @@ class PlaylistTileCollapsed extends StatelessWidget {
                     ),
                   ),
                   Align(
-                    alignment: Alignment.bottomCenter,
+                    alignment: Alignment.bottomRight,
                     child: Container(
                       height: 25,
-                      width: double.infinity,
+                      width: 42,
+                      margin: const EdgeInsets.only(bottom: 6, right: 6),
                       padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor.withOpacity(0.8),
+                        color: Theme.of(context).cardColor,
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(15),
-                          bottomRight: Radius.circular(15)
+                          bottomRight: Radius.circular(15),
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15)
                         )
                       ),
                       child: Center(child: Icon(Ionicons.list, color: Theme.of(context).iconTheme.color, size: 16))
@@ -93,7 +96,7 @@ class PlaylistTileCollapsed extends StatelessWidget {
                     top: 4, bottom: 4),
                   child: Text(
                     playlist.name ?? '',
-                    style: smallTextStyle(context),
+                    style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
                     overflow: TextOverflow.clip,
                     maxLines: 2,
                   ),
@@ -102,7 +105,7 @@ class PlaylistTileCollapsed extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
                     "${playlist.uploaderName}",
-                    style: tinyTextStyle(context, opacity: 0.7),
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
                     overflow: TextOverflow.clip,
                     maxLines: 1,
                   ),
@@ -111,7 +114,7 @@ class PlaylistTileCollapsed extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
                     playlist.streamCount.isNegative ? ' ' : "${playlist.streamCount} videos",
-                    style: tinyTextStyle(context, opacity: 0.7),
+                    style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
                     overflow: TextOverflow.clip,
                     maxLines: 1,
                   ),

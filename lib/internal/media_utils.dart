@@ -222,6 +222,7 @@ class MediaUtils {
       thumbnailPath: thumbnailFile(path),
       duration: duration,
       lastModified: stats.changed,
+      videoId: info.url,
       palette: palette != null ? ColorsPalette(
         dominant: palette.dominantColor?.color,
         vibrant: palette.vibrantColor?.color,

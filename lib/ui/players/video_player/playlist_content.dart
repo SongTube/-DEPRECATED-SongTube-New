@@ -47,9 +47,9 @@ class _VideoPlayerPlaylistContentState extends State<VideoPlayerPlaylistContent>
             enableBackdrop: true,
             collapsedColor: Theme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(20),
-            backdropColor: Theme.of(context).cardColor,
+            backdropColor: Theme.of(context).scaffoldBackgroundColor,
             backdropOpacity: 1,
-            color: Theme.of(context).scaffoldBackgroundColor,
+            color: Theme.of(context).cardColor,
             maxHeight: constraints.maxHeight,
             child: panelController == null ? const SizedBox() : _currentPlaylist(),
 
@@ -69,7 +69,7 @@ class _VideoPlayerPlaylistContentState extends State<VideoPlayerPlaylistContent>
         children: [
           // Playlist Details
           SizedBox(
-            height: kToolbarHeight*1.5-32,
+            height: kToolbarHeight*1.5-16,
             child: Column(
               children: [
                 AnimatedBuilder(
@@ -144,32 +144,47 @@ class _VideoPlayerPlaylistContentState extends State<VideoPlayerPlaylistContent>
           ),
           // Playlist Videos
           Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: widget.content.playlistDetails != null ? ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(top: 16, right: 16),
-                itemCount: widget.content.playlistDetails!.streams!.length,
-                itemBuilder: (context, index) {
-                  final stream = widget.content.playlistDetails!.streams![index];
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    decoration: BoxDecoration(
-                      color: widget.content.selectedPlaylistIndex == index ? Theme.of(context).primaryColor.withOpacity(0.2) : Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.circular(20)
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: StreamTileCollapsed(
-                      onTap: () {
-                        contentProvider.loadNextPlaylistVideo(override: stream);
-                      },
-                      stream: stream));
-                },
-              ) : const SizedBox(),
-            ),
+            child: AnimatedBuilder(
+              animation: panelController!.animationController,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: Tween<double>(begin: 0, end: 1).animate(panelController!.animationController).value,
+                  child: child,
+                );
+              },
+              child: _playlistVideos(),
+            )
           )
         ],
       ),
+    );
+  }
+
+  Widget _playlistVideos() {
+    ContentProvider contentProvider = Provider.of<ContentProvider>(context);
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: widget.content.playlistDetails != null ? ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(right: 16),
+        itemCount: widget.content.playlistDetails!.streams!.length,
+        itemBuilder: (context, index) {
+          final stream = widget.content.playlistDetails!.streams![index];
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+              color: widget.content.selectedPlaylistIndex == index ? Theme.of(context).primaryColor.withOpacity(0.2) : Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(20)
+            ),
+            padding: const EdgeInsets.all(8),
+            margin: const EdgeInsets.only(bottom: 8),
+            child: StreamTileCollapsed(
+              onTap: () {
+                contentProvider.loadNextPlaylistVideo(override: stream);
+              },
+              stream: stream));
+        },
+      ) : const SizedBox(),
     );
   }
 

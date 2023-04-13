@@ -54,6 +54,7 @@ class DownloadProvider extends ChangeNotifier {
         thumbnailPath: thumbnailFile(id),
         duration: oldSong.duration,
         id: id,
+        videoId: oldSong.id,
         modelId: metadata.title,
         title: metadata.title,
         palette: ColorsPalette(

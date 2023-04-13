@@ -20,11 +20,13 @@ import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/components/text_icon_button.dart';
 import 'package:songtube/ui/players/video_player/comments.dart';
+import 'package:songtube/ui/players/video_player/description.dart';
 import 'package:songtube/ui/players/video_player/suggestions.dart';
 import 'package:songtube/ui/menus/download_content_menu.dart';
 import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/sheets/snack_bar.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:collection/collection.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class VideoPlayerContent extends StatefulWidget {
@@ -76,15 +78,6 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
   bool get hidePlayerBody => showComments;
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return _playerBody(constraints);
-      }
-    );
-  }
-
-  @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final url = widget.videoDetails?.videoInfo.url;
@@ -112,6 +105,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
     super.didUpdateWidget(oldWidget);
   }
 
+  // Load video comments
   void loadComments(String url) {
     setState(() {
       comments.clear();
@@ -121,11 +115,14 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
         comments = value;
         if (value.isEmpty) {
           commentsAvailable = false;
+        } else {
+          commentsAvailable = true;
         }
       });
     });
   }
 
+  // Load video suggestions
   void loadSuggestions(String url) {
     setState(() {
       relatedStreams.clear();
@@ -141,7 +138,35 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
     });
   }
 
-  Widget _playerBody(BoxConstraints constraints) {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      child:  _body()
+    );
+  }
+
+  Widget _body() {
+    if (showComments && widget.content.videoDetails != null) {
+      return VideoPlayerCommentsExpanded(
+        comments: comments..sort((a, b) => b.likeCount!.compareTo(a.likeCount!)),
+        onBack: () => showComments = false,
+        onSeek: (position) {
+          widget.content.videoPlayerController.videoPlayerController?.seekTo(position);
+        });
+    } else if (showDescription && widget.content.videoDetails != null) {
+      return VideoPlayerDescription(
+        info: widget.content.videoDetails!.videoInfo,
+        onBack: () => showDescription = false,
+        onSeek: (position) {
+          widget.content.videoPlayerController.videoPlayerController?.seekTo(position);
+        });
+    } else {
+      return _playerBody();
+    }
+  }
+
+  Widget _playerBody() {
     return ListView(
       padding: EdgeInsets.zero,
       physics: const BouncingScrollPhysics(),
@@ -152,24 +177,30 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
         const SizedBox(height: 6),
         // Action Buttons (Like, dislike, download, etc...)
         _playerActions(),
-        Padding(
-          padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
-          child: VideoPlayerComments(
-            comments: comments,
-            commentsAvailable: commentsAvailable,
+        GestureDetector(
+          onTap: () {
+            showComments = true;
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
+            child: VideoPlayerCommentsCollapsed(
+              comments: comments..sort((a, b) => b.likeCount!.compareTo(a.likeCount!)),
+              commentsAvailable: commentsAvailable,
+            ),
           ),
         ),
         const SizedBox(height: 12),
         // Video Suggestions
-        VideoPlayerSuggestions(suggestions: relatedStreams)
+        VideoPlayerSuggestions(suggestions: relatedStreams, bottomPadding: widget.content.infoItem is PlaylistInfoItem)
       ],
     );
   }
 
   Widget _playerTitle() {
+    StreamInfoItem? infoItem = widget.content.infoItem is StreamInfoItem ? widget.content.infoItem : null;
     VideoInfo? videoInfo = widget.content.videoDetails?.videoInfo;
-    final views = videoInfo != null ? "${NumberFormat.compact().format(videoInfo.viewCount)} views" : '-1';
-    final date = widget.content.videoDetails?.videoInfo.uploadDate ?? "";
+    final views = (infoItem?.viewCount != null || videoInfo != null) ? "${NumberFormat.compact().format(infoItem?.viewCount ?? videoInfo?.viewCount)} views" : '-1';
+    final date = infoItem?.date ?? widget.content.videoDetails?.videoInfo.uploadDate ?? "";
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -180,14 +211,13 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 4),
-              Text(videoInfo?.name ?? '', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
-              Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.7), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(infoItem?.name ?? videoInfo?.name ?? '', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
+              Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.1, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 12),
               // Channel Details
               CustomInkWell(
                 onTap: () {
-                
+                  
                 },
                 child: Row(
                   children: [
@@ -216,7 +246,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            videoInfo?.uploaderName ?? '',
+                            infoItem?.uploaderName ?? videoInfo?.uploaderName ?? '',
                             style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.w900),
                           ),
                           Text('SUBSCRIBE',
@@ -236,7 +266,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
         ),
         IconButton(
           onPressed: () {
-            // TODO SHOW VIDEO DETAILS
+            showDescription = true;
           },
           icon: Icon(Icons.expand_more, color: Theme.of(context).primaryColor)
         ),
@@ -249,72 +279,82 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
     DownloadProvider downloadProvider = Provider.of(context);
     VideoInfo? videoInfo = widget.content.videoDetails?.videoInfo;
     ContentProvider contentProvider = Provider.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // Like Button
-        Builder(
-          builder: (context) {
-            final hasVideo = contentProvider.favoriteVideos.any((element) => element.id == videoInfo?.id);
-            return TextIconButton(
-              icon: Icon(LineIcons.thumbsUp, color: hasVideo ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color),
-              text: hasVideo ? 'Liked' : 'Like',
-              onTap: () {
-                showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
-                if (hasVideo) {
-                  contentProvider.removeVideoFromFavorites(videoInfo!.id!);
-                } else {
-                  contentProvider.saveVideoToFavorites(widget.content.videoDetails!.toStreamInfoItem());
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      height: 42,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(left: 12, right: 12),
+        children: [
+          // Like Button
+          Builder(
+            builder: (context) {
+              final hasVideo = contentProvider.favoriteVideos.any((element) => element.id == videoInfo?.id);
+              return TextIconSlimButton(
+                icon: Icon(LineIcons.thumbsUp, color: hasVideo ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color, size: 20),
+                text: hasVideo ? 'Liked' : 'Like',
+                onTap: () {
+                  showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
+                  if (hasVideo) {
+                    contentProvider.removeVideoFromFavorites(videoInfo!.id!);
+                  } else {
+                    contentProvider.saveVideoToFavorites(widget.content.videoDetails!.toStreamInfoItem());
+                  }
+                },
+              );
+            }
+          ),
+          const SizedBox(width: 12),
+          // Like Button
+          TextIconSlimButton(
+            icon: const Icon(LineIcons.share),
+            text: 'Share',
+            onTap: () {
+              Share.share(videoInfo!.url!);
+            },
+          ),
+          const SizedBox(width: 12),
+          // Like Button
+          TextIconSlimButton(
+            icon: const Icon(Ionicons.add_outline),
+            text: 'Playlist',
+            onTap: () {
+              showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
+                return AddToStreamPlaylist(stream: widget.content.videoDetails!.toStreamInfoItem());
+              });
+            },
+          ),
+          const SizedBox(width: 12),
+          // Like Button
+          Builder(
+            builder: (context) {
+              final downloading = downloadProvider.queue.any((element) => element.downloadInfo.url == videoInfo?.url);
+              final downloadItem = downloadProvider.queue.firstWhereOrNull((element) => element.downloadInfo.url == videoInfo?.url);
+              final downloaded = downloadProvider.downloadedSongs.any((element) => element.videoId == videoInfo?.url);
+              return StreamBuilder<double?>(
+                stream: downloadItem?.downloadProgress,
+                builder: (context, snapshot) {
+                  final progress = snapshot.data;
+                  final currentProgress = progress != null ? (progress*100).round().toString() : '';
+                  return TextIconSlimButton(
+                    icon: Icon(LineIcons.alternateCloudDownload, color: Theme.of(context).iconTheme.color),
+                    text: downloading ? 'Downloading... ${currentProgress.isNotEmpty ? '$currentProgress%' : ''}' : downloaded ? 'Downloaded' : 'Download',
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: internalNavigatorKey.currentContext!,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => DownloadContentMenu(content: widget.content));
+                    },
+                    backgroundColor: (downloading || downloaded) ? Theme.of(context).primaryColor.withOpacity(downloaded ? 1.0 : 0.5) : null,
+                  );
                 }
-              },
-            );
-          }
-        ),
-        // Dislike Button
-        TextIconButton(
-          icon: const Icon(LineIcons.thumbsDown),
-          text: videoInfo != null && videoInfo.dislikeCount != -1
-            ? NumberFormat.compact().format(videoInfo.dislikeCount) : 'Dislike',
-          onTap: () {
-      
-          },
-        ),
-        // Like Button
-        TextIconButton(
-          icon: const Icon(LineIcons.share),
-          text: 'Share',
-          onTap: () {
-            Share.share(videoInfo!.url!);
-          },
-        ),
-        // Like Button
-        TextIconButton(
-          icon: const Icon(Ionicons.add_outline),
-          text: 'Playlist',
-          onTap: () {
-            showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
-              return AddToStreamPlaylist(stream: widget.content.videoDetails!.toStreamInfoItem());
-            });
-          },
-        ),
-        // Like Button
-        Builder(
-          builder: (context) {
-            final downloading = downloadProvider.queue.any((element) => element.downloadInfo.url == videoInfo?.url);
-            return TextIconButton(
-              icon: Icon(LineIcons.download, color: downloading ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color),
-              text: downloading ? 'Downloading...' : 'Download',
-              onTap: () {
-                showModalBottomSheet(
-                  context: internalNavigatorKey.currentContext!,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => DownloadContentMenu(content: widget.content));
-              },
-            );
-          }
-        ),
-      ],
+              );
+            }
+          ),
+        ],
+      ),
     );
   }
 

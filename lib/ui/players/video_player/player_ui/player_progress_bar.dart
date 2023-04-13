@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/models/streamSegment.dart';
 import 'package:songtube/ui/text_styles.dart';
 
@@ -55,28 +56,34 @@ class _VideoPlayerProgressBarState extends State<VideoPlayerProgressBar> with Ti
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 12, left: 12, right: 12, bottom: 8),
+      padding: const EdgeInsets.only(top: 12, left: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             children: [
-              const SizedBox(width: 12),
-              Text(
-                "${widget.position.inMinutes.toString().padLeft(2, '0')}:${widget.position.inSeconds.remainder(60).toString().padLeft(2, '0')}",
-                style: tinyTextStyle(context)
+              SizedBox(
+                width: 40,
+                child: Center(
+                  child: Text(
+                    "${widget.position.inMinutes.toString().padLeft(2, '0')}:${widget.position.inSeconds.remainder(60).toString().padLeft(2, '0')}",
+                    style: tinyTextStyle(context, bold: true).copyWith(color: Colors.white, letterSpacing: 1)
+                  ),
+                ),
               ),
+              const SizedBox(width: 8),
               Expanded(
                 child: SizedBox(
                   height: 10,
                   child: SliderTheme(
-                    data: const SliderThemeData(
-                      thumbShape: RoundSliderThumbShape(
+                    data: SliderThemeData(
+                      thumbShape: const RoundSliderThumbShape(
                         enabledThumbRadius: 5,
                         disabledThumbRadius: 3
                       ),
                       trackHeight: 1,
+                      overlayShape: SliderComponentShape.noOverlay
                     ),
                     child: Slider(
                       activeColor: Colors.white,
@@ -123,32 +130,25 @@ class _VideoPlayerProgressBarState extends State<VideoPlayerProgressBar> with Ti
                   ),
                 ),
               ),
-              Text(
-                "${widget.duration.inMinutes.toString().padLeft(2, '0')}:${widget.duration.inSeconds.remainder(60).toString().padLeft(2, '0')}",
-                style: tinyTextStyle(context).copyWith(color: Colors.white)
-              ),
-              const SizedBox(width: 12),
-              // Audio Only Switch
-              GestureDetector(
-                onTap: widget.onAudioOnlySwitch,
-                child: Container(
-                  color: Colors.transparent,
-                  child: Icon(
-                    widget.audioOnly
-                      ? Icons.music_note_outlined : Icons.music_off_outlined,
-                    color: Colors.white,
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 40,
+                child: Center(
+                  child: Text(
+                    "${widget.duration.inMinutes.toString().padLeft(2, '0')}:${widget.duration.inSeconds.remainder(60).toString().padLeft(2, '0')}",
+                    style: tinyTextStyle(context, bold: true).copyWith(color: Colors.white, letterSpacing: 1)
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
               // FullScreen Button
               GestureDetector(
                 onTap: widget.onFullScreenTap,
                 child: Container(
+                  padding: const EdgeInsets.only(left: 12, bottom: 8, right: 16, top: 8),
                   color: Colors.transparent,
                   child: Icon(
                     MediaQuery.of(context).orientation == Orientation.portrait
-                      ? Icons.fullscreen_outlined : Icons.fullscreen_exit_outlined,
+                      ? Icons.fullscreen_rounded : Icons.fullscreen_exit_rounded,
                     color: Colors.white,
                   ),
                 ),

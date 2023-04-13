@@ -37,7 +37,7 @@ class InfoItemOptions extends StatelessWidget {
             child: BottomSheetPhill()),
           Padding(
             padding: const EdgeInsets.all(8.0).copyWith(left: 16, right: 16),
-            child: InfoItemRenderer(infoItem: infoItem),
+            child: InfoItemRenderer(infoItem: infoItem, editable: false),
           ),
           Divider(indent: 12, endIndent: 12, color: Theme.of(context).dividerColor),
           if (infoItem is PlaylistInfoItem)

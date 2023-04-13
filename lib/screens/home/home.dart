@@ -113,7 +113,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarIconBrightness: Theme.of(context).brightness
+        statusBarIconBrightness: Theme.of(context).brightness,
+        statusBarColor: Theme.of(context).scaffoldBackgroundColor,
+        systemNavigationBarColor: Theme.of(context).cardColor
       )
     );
     return FancyScaffold(
