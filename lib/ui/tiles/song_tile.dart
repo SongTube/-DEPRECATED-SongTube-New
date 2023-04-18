@@ -64,12 +64,12 @@ class _SongTileState extends State<SongTile> {
               leading: _leading(),
               title: Text(
                 widget.song.title,
-                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
+                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.normal),
                 maxLines: 1,
               ),
               subtitle: Text(
                 widget.song.artist!,
-                style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
+                style: tinyTextStyle(context, opacity: 0.6).copyWith(fontWeight: FontWeight.w500),
                 maxLines: 1,
               ),
               trailing: _trailing(media)

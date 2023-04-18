@@ -12,10 +12,12 @@ class ChannelImage extends StatelessWidget {
     required this.channelUrl,
     required this.heroId,
     this.expand = false,
+    this.size,
     super.key});
   final String? channelUrl;
   final String heroId;
   final bool expand;
+  final double? size;
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<File>(
@@ -41,7 +43,7 @@ class ChannelImage extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: Theme.of(context).dividerColor, width: 0.5),
+                  border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.08), width: 1.5),
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 6,
@@ -57,8 +59,8 @@ class ChannelImage extends StatelessWidget {
                     placeholder: MemoryImage(kTransparentImage),
                     image: FileImage(snapshot.data!),
                     fit: BoxFit.cover,
-                    height: expand ? 80 : 50,
-                    width: expand ? 80 : 50,
+                    height: size ?? (expand ? 80 : 50),
+                    width: size ?? (expand ? 80 : 50),
                   ),
                 ),
               ),

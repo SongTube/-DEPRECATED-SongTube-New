@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                     padding: const EdgeInsets.only(bottom: 12, top: 12),
                     child: Row(
                       children: [
-                        Text('Albums', style: subtitleTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4)),
+                        Text('Albums', style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.4)),
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: CustomInkWell(
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                               // Switch to Albums tab
                               widget.onSwitchIndex(3);
                             },
-                            child: Text('  •  See more', style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4, color: Theme.of(context).primaryColor))
+                            child: Text('  •  See more', style: tinyTextStyle(context).copyWith(fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor))
                           ),
                         ),
                       ],
@@ -128,8 +128,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                     padding: const EdgeInsets.only(bottom: 12, top: 12),
                     child: Row(
                       children: [
-                        Text('Most Played', style: subtitleTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4)),
-                        Text('  •  See more', style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4, color: Theme.of(context).primaryColor)),
+                        Text('Most Played', style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.4)),
+                        Text('  •  See more', style: tinyTextStyle(context).copyWith(fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor))
                       ],
                     ),
                   ),

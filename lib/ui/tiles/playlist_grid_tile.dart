@@ -66,13 +66,13 @@ class PlaylistGridTile extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
-                                  style: tinyTextStyle(context).copyWith(color: (playlist.songs.first.palette?.text.withOpacity(0.9) ?? Colors.white))
+                                  style: tinyTextStyle(context).copyWith(color: (playlist.songs.first.palette?.text.withOpacity(0.8) ?? Colors.white))
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Icon(Iconsax.music_playlist, color: playlist.songs.first.palette?.text.withOpacity(0.9) ?? Colors.white, size: 16)
+                          Icon(Iconsax.music_playlist, color: playlist.songs.first.palette?.text.withOpacity(0.8) ?? Colors.white, size: 16)
                         ],
                       ),
                     ),

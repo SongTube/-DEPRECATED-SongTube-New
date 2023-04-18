@@ -6,10 +6,8 @@ import 'package:songtube/ui/info_item_renderer.dart';
 class VideoPlayerSuggestions extends StatefulWidget {
   const VideoPlayerSuggestions({
     required this.suggestions,
-    required this.bottomPadding,
     super.key});
   final List<dynamic> suggestions;
-  final bool bottomPadding;
   @override
   State<VideoPlayerSuggestions> createState() => VideoPlayerSuggestionsState();
 }
@@ -26,22 +24,18 @@ class VideoPlayerSuggestionsState extends State<VideoPlayerSuggestions> {
   }
 
   Widget _suggestionsList() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.only(bottom: widget.bottomPadding ? kToolbarHeight+32 : 0),
-      itemCount: widget.suggestions.length,
-      itemBuilder: (context, index) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
           child: InfoItemRenderer(infoItem: widget.suggestions[index], expandItem: false),
         );
-      },
+      }, childCount: widget.suggestions.length),
     );
   }
 
   Widget _suggestionsShimmer() {
-    return const SizedBox();
+    return const SliverToBoxAdapter(child: SizedBox());
   }
 
 }

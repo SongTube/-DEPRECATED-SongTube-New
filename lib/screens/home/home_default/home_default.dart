@@ -66,7 +66,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
               height: kToolbarHeight-8,
               child: _appBar()),
             _tabs(),
-            Divider(height: 1, color: Theme.of(context).dividerColor),
+            Divider(height: 1.5, color: Theme.of(context).dividerColor.withOpacity(0.08), thickness: 1.5),
             Expanded(
               child: Stack(
                 children: [
@@ -191,12 +191,11 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
         isScrollable: true,
         labelColor: Theme.of(context).textTheme.bodyText1!.color,
         unselectedLabelColor: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.8),
-        labelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.0),
-        unselectedLabelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+        labelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.4),
+        unselectedLabelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.normal, letterSpacing: 0.4),
         physics: const BouncingScrollPhysics(),
         indicatorSize: TabBarIndicatorSize.label,
-        indicatorColor: Theme.of(context).textTheme.bodyText1!.color,
-        indicator: RoundedTabIndicator(color: Theme.of(context).textTheme.bodyText1!.color!, height: 4, radius: 100, bottomMargin: 0),
+        indicator: RoundedTabIndicator(color: Theme.of(context).primaryColor, height: 3, radius: 100, bottomMargin: 0),
         tabs: [
           if (contentProvider.searchContent != null || contentProvider.searchingContent)
           const Tab(child: Text('Search')),

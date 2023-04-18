@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pip/models/pip_ratio.dart';
+import 'package:flutter_pip/platform_channel/channel.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:newpipeextractor_dart/extractors/comments.dart';
 import 'package:newpipeextractor_dart/extractors/videos.dart';
 import 'package:newpipeextractor_dart/models/infoItems/video.dart';
@@ -167,31 +170,33 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
   }
 
   Widget _playerBody() {
-    return ListView(
-      padding: EdgeInsets.zero,
+    return CustomScrollView(
       physics: const BouncingScrollPhysics(),
-      children: [
-        const SizedBox(height: 12),
+      slivers: [
+        const SliverToBoxAdapter(child: SizedBox(height: 12)),
         // Video Title and Show More Button
-        _playerTitle(),
-        const SizedBox(height: 6),
+        SliverToBoxAdapter(child: _playerTitle()),
+        const SliverToBoxAdapter(child: SizedBox(height: 6)),
         // Action Buttons (Like, dislike, download, etc...)
-        _playerActions(),
-        GestureDetector(
-          onTap: () {
-            showComments = true;
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
-            child: VideoPlayerCommentsCollapsed(
-              comments: comments..sort((a, b) => b.likeCount!.compareTo(a.likeCount!)),
-              commentsAvailable: commentsAvailable,
+        SliverToBoxAdapter(child: _playerActions()),
+        SliverToBoxAdapter(
+          child: GestureDetector(
+            onTap: () {
+              showComments = true;
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12, right: 12),
+              child: VideoPlayerCommentsCollapsed(
+                comments: comments..sort((a, b) => b.likeCount!.compareTo(a.likeCount!)),
+                commentsAvailable: commentsAvailable,
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SliverToBoxAdapter(child: SizedBox(height: 12)),
         // Video Suggestions
-        VideoPlayerSuggestions(suggestions: relatedStreams, bottomPadding: widget.content.infoItem is PlaylistInfoItem)
+        VideoPlayerSuggestions(suggestions: relatedStreams),
+        SliverToBoxAdapter(child: SizedBox(height: widget.content.infoItem is PlaylistInfoItem ? kToolbarHeight+32 : 0))
       ],
     );
   }
@@ -211,9 +216,26 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(infoItem?.name ?? videoInfo?.name ?? '', style: bigTextStyle(context).copyWith(fontSize: 26), maxLines: 2, overflow: TextOverflow.ellipsis),
-              Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: smallTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.1, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
-              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(infoItem?.name ?? videoInfo?.name ?? '', style: textStyle(context), maxLines: 2, overflow: TextOverflow.ellipsis),
+                        Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: tinyTextStyle(context, opacity: 0.8).copyWith(letterSpacing: 0.1, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ],
+                    )
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDescription = true;
+                    },
+                    icon: Icon(Icons.expand_more, color: Theme.of(context).primaryColor)
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               // Channel Details
               CustomInkWell(
                 onTap: () {
@@ -224,7 +246,18 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
                       child: videoInfo != null
-                        ? SizedBox(
+                        ? Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 6,
+                                  offset: const Offset(0,0),
+                                  color: Theme.of(context).shadowColor.withOpacity(0.1)
+                                )
+                              ],
+                              border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.08), width: 1.5),
+                            ),
                             height: 40,
                             width: 40,
                             child: ClipRRect(
@@ -241,34 +274,29 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             infoItem?.uploaderName ?? videoInfo?.uploaderName ?? '',
-                            style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.w900),
+                            style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.normal),
                           ),
+                          const Spacer(),
                           Text('SUBSCRIBE',
-                            style: smallTextStyle(context).copyWith(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, letterSpacing: 1),
+                            style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w900, letterSpacing: 1),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
+                          const SizedBox(width: 4),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
                   ],
                 ),
               ),
             ],
           ),
-        ),
-        IconButton(
-          onPressed: () {
-            showDescription = true;
-          },
-          icon: Icon(Icons.expand_more, color: Theme.of(context).primaryColor)
         ),
         const SizedBox(width: 12),
       ],
@@ -280,8 +308,8 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
     VideoInfo? videoInfo = widget.content.videoDetails?.videoInfo;
     ContentProvider contentProvider = Provider.of(context);
     return Container(
-      margin: const EdgeInsets.only(top: 8),
-      height: 42,
+      margin: const EdgeInsets.only(top: 12),
+      height: 36,
       child: ListView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -292,7 +320,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
             builder: (context) {
               final hasVideo = contentProvider.favoriteVideos.any((element) => element.id == videoInfo?.id);
               return TextIconSlimButton(
-                icon: Icon(LineIcons.thumbsUp, color: hasVideo ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color, size: 20),
+                icon: Icon(LineIcons.thumbsUp, color: hasVideo ? Theme.of(context).primaryColor : Theme.of(context).iconTheme.color, size: 18),
                 text: hasVideo ? 'Liked' : 'Like',
                 onTap: () {
                   showSnackbar(customSnackBar: CustomSnackBar(icon: hasVideo ? LineIcons.trash : LineIcons.star, title: hasVideo ? 'Video removed from favorites' : 'Video added to favorites'));
@@ -305,19 +333,19 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
               );
             }
           ),
-          const SizedBox(width: 12),
-          // Like Button
+          const SizedBox(width: 8),
+          // Share Button
           TextIconSlimButton(
-            icon: const Icon(LineIcons.share),
+            icon: const Icon(LineIcons.share, size: 18),
             text: 'Share',
             onTap: () {
               Share.share(videoInfo!.url!);
             },
           ),
-          const SizedBox(width: 12),
-          // Like Button
+          const SizedBox(width: 8),
+          // Add to Playlist Button
           TextIconSlimButton(
-            icon: const Icon(Ionicons.add_outline),
+            icon: const Icon(Ionicons.add_outline, size: 18),
             text: 'Playlist',
             onTap: () {
               showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
@@ -325,8 +353,29 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
               });
             },
           ),
-          const SizedBox(width: 12),
-          // Like Button
+          // Popup Player Button
+          FutureBuilder<bool?>(
+            future: FlutterPip.isPictureInPictureSupported(),
+            builder: (context, snapshot) {
+              if (snapshot.data ?? false) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: TextIconSlimButton(
+                    icon: const Icon(LineIcons.video, size: 18),
+                    text: 'Popup Mode',
+                    onTap: () {
+                      final size = Provider.of<ContentProvider>(context, listen: false).playingContent?.videoPlayerController.videoPlayerController?.value.size;
+                      FlutterPip.enterPictureInPictureMode(pipRatio: size != null ? PipRatio(width: size.width.round(), height: size.height.round()) : null);
+                    },
+                  ),
+                );
+              } else {
+                return const SizedBox();
+              }
+            }
+          ),
+          const SizedBox(width: 8),
+          // Download Button
           Builder(
             builder: (context) {
               final downloading = downloadProvider.queue.any((element) => element.downloadInfo.url == videoInfo?.url);
@@ -338,7 +387,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                   final progress = snapshot.data;
                   final currentProgress = progress != null ? (progress*100).round().toString() : '';
                   return TextIconSlimButton(
-                    icon: Icon(LineIcons.alternateCloudDownload, color: Theme.of(context).iconTheme.color),
+                    icon: Icon(LineIcons.alternateCloudDownload, color: Theme.of(context).iconTheme.color, size: 18),
                     text: downloading ? 'Downloading... ${currentProgress.isNotEmpty ? '$currentProgress%' : ''}' : downloaded ? 'Downloaded' : 'Download',
                     onTap: () {
                       showModalBottomSheet(

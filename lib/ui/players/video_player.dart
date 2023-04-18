@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_pip/flutter_pip.dart';
 import 'package:flutter_pip/models/pip_ratio.dart';
 import 'package:flutter_pip/platform_channel/channel.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:newpipeextractor_dart/models/video.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/providers/content_provider.dart';
@@ -12,7 +12,6 @@ import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/players/video_player/collapsed.dart';
 import 'package:songtube/ui/players/video_player/expanded.dart';
 import 'package:songtube/ui/players/video_player/player_widget.dart';
-import 'package:songtube/ui/players/video_player/suggestions.dart';
 
 class VideoPlayer extends StatefulWidget {
   const VideoPlayer({super.key});
@@ -46,22 +45,40 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
     FlutterPip.enterPictureInPictureMode(pipRatio: size != null ? PipRatio(width: size.width.round(), height: size.height.round()) : null);
   }
 
+  // Fullscreen status
+  bool fullscreenEnabled = false;
+
   @override
   Widget build(BuildContext context) {
+
+    // Player Widget
     final player = VideoPlayerWidget(
       key: playerKey,
       content: content,
-      pipEnabled: false,
       onAspectRatioUpdate: (aspectRatio) {
         setState(() {
           
         });
       },
-      onEnterPip: () => enterPipMode()
+      onFullscreen: () {
+        setState(() {
+          fullscreenEnabled = !fullscreenEnabled;
+        });
+      },
     );
-    return Material(
-      color: Colors.transparent,
-      child: PipWidget(
+
+    // Portrait UI
+    Widget portrait() {
+      SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      ]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
+        SystemUiOverlay.bottom,
+        SystemUiOverlay.top,
+      ]);
+      ScreenBrightness().resetScreenBrightness();
+      return PipWidget(
         onSuspending: () {
           if (AppSettings.enableAutoPictureInPictureMode && !AppSettings.enableBackgroundPlayback) {
             enterPipMode();
@@ -111,16 +128,16 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
                         builder: (context, child) {
                           return Builder(
                             builder: (context) {
-                              const initialHeight = kToolbarHeight * 1.18;
+                              const initialHeight = kToolbarHeight * 1.3;
                               final initialWidth = initialHeight*aspectRatio;
                               final finalWidth =  MediaQuery.of(context).size.width-24;
                               final finalHeight = finalWidth/aspectRatio;
                               return AnimatedSize(
                                 duration: const Duration(milliseconds: 150),
                                 child: Container(
-                                  margin: const EdgeInsets.only(left: 11.5, right: 11.5).copyWith(
-                                    top: Tween<double>(begin: 11.5, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value,
-                                    bottom: Tween<double>(begin: 11.5, end: 0).animate(uiProvider.fwController.animationController).value
+                                  margin: const EdgeInsets.only(left: 11.5, right: 8).copyWith(
+                                    top: Tween<double>(begin: 9, end: MediaQuery.of(context).padding.top).animate(uiProvider.fwController.animationController).value,
+                                    bottom: Tween<double>(begin: 6, end: 0).animate(uiProvider.fwController.animationController).value
                                   ),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15),
@@ -177,7 +194,25 @@ class _VideoPlayerState extends State<VideoPlayer> with TickerProviderStateMixin
             ),
           ),
         ),
-      ),
+      );
+    }
+
+    // Fullscreen UI
+    Widget fullscreen() {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+      return player;
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: fullscreenEnabled
+        ? fullscreen()
+        : portrait(),
     );
+
   }
 }

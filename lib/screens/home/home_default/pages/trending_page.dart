@@ -29,11 +29,12 @@ class TrendingPage extends StatelessWidget {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 120,
+            height: 52,
             child: ListView.builder(
+              clipBehavior: Clip.none,
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.only(left: 12),
               scrollDirection: Axis.horizontal,
@@ -41,17 +42,25 @@ class TrendingPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final channel = contentProvider.channelSuggestions[index];
                 return Container(
-                  margin: const EdgeInsets.only(right: 6),
-                  height: 120,
-                  width: 100,
-                  child: Column(
+                  margin: const EdgeInsets.only(right: 12),
+                  padding: const EdgeInsets.only(left: 6, right: 12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(100),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 6,
+                        offset: const Offset(0,0),
+                        color: Theme.of(context).shadowColor.withOpacity(0.01)
+                      )
+                    ],
+                  ),
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ChannelImage(channelUrl: channel.url, heroId: channel.heroId, expand: true),
-                      const SizedBox(height: 8),
-                      Text(channel.name, style: tinyTextStyle(context).copyWith(fontWeight: FontWeight.w600), maxLines: 1, textAlign: TextAlign.center)
+                      ChannelImage(channelUrl: channel.url, heroId: channel.heroId, size: 40),
+                      const SizedBox(width: 8),
+                      Text(channel.name, style: tinyTextStyle(context).copyWith(fontWeight: FontWeight.w600), maxLines: 1, textAlign: TextAlign.center),
                     ],
                   ),
                 );
@@ -59,12 +68,7 @@ class TrendingPage extends StatelessWidget {
             ),
           ),
         ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
-            child: Text('Recent Videos', style: subtitleTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.4)),
-          ),
-        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
         SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {
             final video = contentProvider.trendingVideos![index];

@@ -211,7 +211,7 @@ class FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateMi
                           Builder(
                             builder: (context) {
                               return Padding(
-                                padding: EdgeInsets.only(bottom: (80 * navigationBarAnimationController.value) + (systemBottomPadding * (1 - floatingWidgetAnimationController.value))),
+                                padding: EdgeInsets.only(bottom: (82 * navigationBarAnimationController.value) + (systemBottomPadding * (1 - floatingWidgetAnimationController.value))),
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: (1 -floatingWidgetAnimationController.value) * widget.floatingWidgetConfig.padding.horizontal,

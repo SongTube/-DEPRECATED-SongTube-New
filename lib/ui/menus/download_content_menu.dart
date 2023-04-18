@@ -164,7 +164,7 @@ class _DownloadContentMenuState extends State<DownloadContentMenu> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(left: 12, right: 12, top: 10, bottom: 6),
+        margin: const EdgeInsets.only(right: 12, top: 10, bottom: 6),
         height: kToolbarHeight+16,
         child: Row(
           children: [
@@ -172,15 +172,14 @@ class _DownloadContentMenuState extends State<DownloadContentMenu> {
               aspectRatio: 1,
               child: Icon(icon, color: icon == LineIcons.trash ? Colors.red : Theme.of(context).primaryColor),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 6),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: subtitleTextStyle(context, bold: true)),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: smallTextStyle(context, opacity: 0.7), maxLines: 3)
+                  Text(subtitle, style: smallTextStyle(context, opacity: 0.8), maxLines: 3)
                 ],
               ),
             ),

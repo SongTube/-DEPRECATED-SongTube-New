@@ -28,13 +28,11 @@ class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({
     required this.content,
     required this.onAspectRatioUpdate,
-    required this.pipEnabled,
-    required this.onEnterPip,
+    required this.onFullscreen,
     super.key});
   final ContentWrapper content;
   final Function(double) onAspectRatioUpdate;
-  final bool pipEnabled;
-  final Function() onEnterPip;
+  final Function() onFullscreen;
   @override
   State<VideoPlayerWidget> createState() => VideoPlayerWidgetState();
 }
@@ -211,6 +209,11 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void didUpdateWidget(covariant VideoPlayerWidget oldWidget) {
     youtubeVideo = widget.content.videoDetails;
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   void loadVideo({Duration? position}) async {
@@ -546,26 +549,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 Align(
                   alignment: Alignment.topLeft,
                   child: VideoPlayerAppBar(
-                    audioOnly: false,
-                    currentQuality: currentQuality,
                     videoTitle: widget.content.videoDetails?.videoInfo.name ?? '',
-                    onChangeQuality: () {
-                      showModalBottomSheet(
-                        context: internalNavigatorKey.currentContext!,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => PlaybackQualitySheet(content: widget.content, currentQuality: currentQuality!, onChangeQuality: (quality) async {
-                          final position = controller?.value.position;
-                          controller?.removeListener(() { });
-                          await controller?.dispose();
-                          setState(() { controller = null; currentQuality = quality; });
-                          loadVideo(position: position);
-                        }));
-                      },
-                    onEnterPipMode: () {
-                      setState(() {
-                        hideControls = true;
-                      });
-                      widget.onEnterPip();
+                    onMinimize: () {
+                      Provider.of<UiProvider>(context, listen: false).fwController.close();
                     },
                   ),
                 ),
@@ -599,8 +585,18 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                           (dragPosition, _) => dragPosition),
                         builder: (context, snapshot) {
                           return VideoPlayerProgressBar(
-                            onAudioOnlySwitch: () {
-                              
+                            onPresetTap: () {
+                              showModalBottomSheet(
+                                context: internalNavigatorKey.currentContext!,
+                                isScrollControlled: MediaQuery.of(context).orientation == Orientation.portrait ? false : true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => PlaybackQualitySheet(content: widget.content, currentQuality: currentQuality!, onChangeQuality: (quality) async {
+                                  final position = controller?.value.position;
+                                  controller?.removeListener(() { });
+                                  await controller?.dispose();
+                                  setState(() { controller = null; currentQuality = quality; });
+                                  loadVideo(position: position);
+                              }));
                             },
                             audioOnly: false,
                             segments: widget.content.videoDetails?.segments,
@@ -611,10 +607,13 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                               setState(() => isSeeking = false);
                             },
                             onFullScreenTap: () {
-                              
+                              widget.onFullscreen();
                             },
                             onSeekStart: () {
                               setState(() => isSeeking = true);
+                            },
+                            onShowSegments: () {
+
                             },
                           );
                         }

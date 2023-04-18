@@ -28,24 +28,28 @@ class _MusicPageState extends State<MusicPage> with AutomaticKeepAliveClientMixi
       stream: audioHandler.mediaItem,
       builder: (context, snapshot) {
         final playerOpened = snapshot.data != null;
-        return ListView.builder(
-          padding: const EdgeInsets.only(top: 8).copyWith(bottom: playerOpened ? (kToolbarHeight*1.6)+24 : 24),
+        return CustomScrollView(
           physics: const BouncingScrollPhysics(),
-          itemCount: mediaProvider.songs.length,
-          itemBuilder: (context, index) {
-            final song = mediaProvider.songs[index];
-            return SongTile(
-              song: song,
-              onPlay: () async {
-                mediaProvider.currentPlaylistName = 'Music';
-                final queue = List<MediaItem>.generate(mediaProvider.songs.length, (index) {
-                  return mediaProvider.songs[index].mediaItem;
-                });
-                uiProvider.currentPlayer = CurrentPlayer.music;
-                mediaProvider.playSong(queue, index);
-              }
-            );
-          }
+          slivers: [
+            const SliverToBoxAdapter(child: SizedBox(height: 8)),
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final song = mediaProvider.songs[index];
+                return SongTile(
+                  song: song,
+                  onPlay: () async {
+                    mediaProvider.currentPlaylistName = 'Music';
+                    final queue = List<MediaItem>.generate(mediaProvider.songs.length, (index) {
+                      return mediaProvider.songs[index].mediaItem;
+                    });
+                    uiProvider.currentPlayer = CurrentPlayer.music;
+                    mediaProvider.playSong(queue, index);
+                  }
+                );
+              }, childCount: mediaProvider.songs.length),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: playerOpened ? (kToolbarHeight*1.6)+24 : 24))
+          ],
         );
       }
     );

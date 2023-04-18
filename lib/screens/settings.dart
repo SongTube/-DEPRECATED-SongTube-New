@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:provider/provider.dart';
-import 'package:roundcheckbox/roundcheckbox.dart';
-import 'package:songtube/providers/ui_provider.dart';
-import 'package:songtube/screens/settings/customization_settings.dart';
 import 'package:songtube/screens/settings/download_settings.dart';
 import 'package:songtube/screens/settings/general_settings.dart';
 import 'package:songtube/screens/settings/music_player_settings.dart.dart';
@@ -42,12 +34,11 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
         isScrollable: true,
         labelColor: Theme.of(context).textTheme.bodyText1!.color,
         unselectedLabelColor: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.8),
-        labelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.0),
-        unselectedLabelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+        labelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.4),
+        unselectedLabelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.normal, letterSpacing: 0.4),
         physics: const BouncingScrollPhysics(),
         indicatorSize: TabBarIndicatorSize.label,
-        indicatorColor: Theme.of(context).textTheme.bodyText1!.color,
-        indicator: RoundedTabIndicator(color: Theme.of(context).textTheme.bodyText1!.color!, height: 4, radius: 100, bottomMargin: 0),
+        indicator: RoundedTabIndicator(color: Theme.of(context).primaryColor, height: 3, radius: 100, bottomMargin: 0),
         tabs: const [
           // General Settings
           Tab(child: Text('General')),

@@ -60,7 +60,7 @@ class TextIconSlimButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(25),
       onTap: onTap,
       child: AnimatedContainer(
-        padding: const EdgeInsets.only(top: 4, bottom: 4, left: 12, right: 12),
+        padding: const EdgeInsets.only(left: 16, right: 16),
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
@@ -73,8 +73,8 @@ class TextIconSlimButton extends StatelessWidget {
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               child: (selected ?? false) ? selectedIcon ?? icon : icon),
-            const SizedBox(width: 6),
-            Text(text, style: tinyTextStyle(context, bold: true).copyWith(letterSpacing: 0.5))
+            const SizedBox(width: 8),
+            Text(text, style: tinyTextStyle(context).copyWith(letterSpacing: 0.4))
           ],
         ),
       ),

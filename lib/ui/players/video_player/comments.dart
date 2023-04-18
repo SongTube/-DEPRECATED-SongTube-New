@@ -61,11 +61,11 @@ class _VideoPlayerCommentsCollapsedState extends State<VideoPlayerCommentsCollap
                             children: [
                               Text(
                                 "Comments",
-                                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w900)
+                                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold)
                               ),
                               Text(
                                 "  •  See more",
-                                style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w900, color: Theme.of(context).primaryColor, fontSize: 11)
+                                style: tinyTextStyle(context).copyWith(fontWeight: FontWeight.normal, color: Theme.of(context).primaryColor)
                               ),
                             ],
                           ),
@@ -115,15 +115,12 @@ class _VideoPlayerCommentsCollapsedState extends State<VideoPlayerCommentsCollap
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.7)
-              ),
+              style: tinyTextStyle(context, opacity: 0.8),
               children: [
                 // Author name
                 TextSpan(
-                  text: '${widget.comments.first.author} • ',
-                  style: smallTextStyle(context).copyWith()
+                  text: '${widget.comments.first.author}  ',
+                  style: smallTextStyle(context)
                 ),
                 // Author message
                 TextSpan(
@@ -254,7 +251,7 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(comment.author ?? 'Unknown', style: smallTextStyle(context, bold: true)),
+                    Text(comment.author ?? 'Unknown', style: smallTextStyle(context, bold: false)),
                     const SizedBox(width: 12),
                     if (comment.pinned ?? false)
                     Row(
@@ -283,7 +280,7 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
                     children: [
                       Icon(LineIcons.thumbsUp, color: Theme.of(context).iconTheme.color, size: 18),
                       const SizedBox(width: 6),
-                      Text((comment.likeCount == -1 ? "" : "${NumberFormat.compact().format(comment.likeCount)} Likes"), style: tinyTextStyle(context, opacity: 0.7)),
+                      Text((comment.likeCount == -1 ? "" : "${NumberFormat.compact().format(comment.likeCount)} Likes"), style: tinyTextStyle(context, opacity: 0.8)),
                       if (comment.hearted ?? false)
                       Row(
                         mainAxisSize: MainAxisSize.min,
@@ -291,7 +288,7 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
                           const SizedBox(width: 12),
                           const Icon(Ionicons.heart, color: Colors.red, size: 18),
                           const SizedBox(width: 6),
-                          Text('Liked by author', style: tinyTextStyle(context, opacity: 0.7)),
+                          Text('Liked by author', style: tinyTextStyle(context, opacity: 0.8)),
                         ],
                       )
                     ],

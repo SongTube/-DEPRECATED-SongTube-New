@@ -96,7 +96,12 @@ class _PlaylistArtworkState extends State<PlaylistArtwork> {
     final artwork = widget.mediaSet.artwork ?? artworkFile(widget.mediaSet.songs.first.id);
     const fit = BoxFit.cover;
     if (artwork is File) {
-      return Image.file(artwork, fit: fit, width: double.infinity, height: double.infinity);
+      return Image.file(
+        artwork, fit: fit, width: double.infinity, height: double.infinity,
+        errorBuilder:(context, error, stackTrace) {
+          return Image.asset('assets/images/artworkPlaceholder_big.png', fit: BoxFit.cover);
+        },
+      );
     } else if (artwork is Uint8List) {
       return Image.memory(artwork, fit: fit, width: double.infinity, height: double.infinity);
     } else if (isURL(artwork)) {

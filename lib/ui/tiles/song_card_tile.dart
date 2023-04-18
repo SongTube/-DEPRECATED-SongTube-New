@@ -70,7 +70,7 @@ class _SongCardTileState extends State<SongCardTile> {
                     future: getArtwork(),
                     builder: (context, snapshot) {
                       return ImageFade(
-                        placeholder: const SizedBox(),
+                        placeholder: Image.asset('assets/images/artworkPlaceholder_big.png', fit: BoxFit.cover),
                         image: snapshot.hasData
                           ? FileImage(snapshot.data!)
                           : MemoryImage(kTransparentImage) as ImageProvider,
@@ -120,7 +120,7 @@ class _SongCardTileState extends State<SongCardTile> {
                                     maxLines: 1,
                                     overflow: TextOverflow.fade,
                                     softWrap: false,
-                                    style: tinyTextStyle(context).copyWith(color: (widget.song.palette!.text).withOpacity(0.6))
+                                    style: tinyTextStyle(context).copyWith(color: (widget.song.palette!.text).withOpacity(0.8))
                                   ),
                                 ],
                               ),

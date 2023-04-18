@@ -45,13 +45,6 @@ class StreamTileCollapsed extends StatelessWidget {
             height: 80,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 6,
-                  offset: const Offset(0,0),
-                  color: Theme.of(context).shadowColor.withOpacity(0.1)
-                )
-              ],
             ),
             child: Stack(
               alignment: Alignment.bottomRight,
@@ -79,7 +72,7 @@ class StreamTileCollapsed extends StatelessWidget {
                     ),
                     child: Text(
                       "${Duration(seconds: stream.duration!).inMinutes}:${Duration(seconds: stream.duration!).inSeconds.remainder(60).toString().padRight(2, "0")}",
-                      style: tinyTextStyle(context).copyWith(color: Colors.white)
+                      style: tinyTextStyle(context, bold: false).copyWith(color: Colors.white, letterSpacing: 0.4, fontSize: 10)
                     ),
                   ),
                 )
@@ -94,10 +87,10 @@ class StreamTileCollapsed extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(
                     left: 8, right: 8,
-                    top: 4, bottom: 4),
+                    top: 4, bottom: 0),
                   child: Text(
                     stream.name ?? '',
-                    style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
+                    style: smallTextStyle(context).copyWith(fontWeight: FontWeight.normal),
                     overflow: TextOverflow.clip,
                     maxLines: 2,
                   ),
@@ -106,7 +99,7 @@ class StreamTileCollapsed extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
                     "${stream.uploaderName}  ${NumberFormat.compact().format(stream.viewCount) != '-1' ? '•  ${NumberFormat.compact().format(stream.viewCount)} views' : ''}",
-                    style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
+                    style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.clip,
                     maxLines: 1,
                   ),
@@ -123,7 +116,7 @@ class StreamTileCollapsed extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 builder: (context) => InfoItemOptions(infoItem: stream));
             },
-            icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
+            icon: Icon(Icons.more_vert, size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8))
           )
         ],
       ),
@@ -149,16 +142,9 @@ class StreamTileExpanded extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+            margin: const EdgeInsets.only(bottom: 8, left: 12, right: 12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 6,
-                  offset: const Offset(0,0),
-                  color: Theme.of(context).shadowColor.withOpacity(0.1)
-                )
-              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
@@ -169,7 +155,7 @@ class StreamTileExpanded extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12),
+            padding: const EdgeInsets.only(left: 12, right: 4),
             child: _details(context),
           )
         ],
@@ -179,7 +165,6 @@ class StreamTileExpanded extends StatelessWidget {
 
   Widget _thumbnail(context) {
     return Stack(
-      fit: StackFit.expand,
       alignment: Alignment.bottomCenter,
       children: [
         CachedNetworkImage(
@@ -195,7 +180,7 @@ class StreamTileExpanded extends StatelessWidget {
         Align(
           alignment: Alignment.bottomRight,
           child: Container(
-            margin: const EdgeInsets.only(right: 12, bottom: 12),
+            margin: const EdgeInsets.only(right: 6, bottom: 6),
             padding: const EdgeInsets.all(3).copyWith(left: 8, right: 8),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.6),
@@ -203,7 +188,7 @@ class StreamTileExpanded extends StatelessWidget {
             ),
             child: Text(
               "${Duration(seconds: stream.duration!).inMinutes}:${Duration(seconds: stream.duration!).inSeconds.remainder(60).toString().padRight(2, "0")}",
-              style: tinyTextStyle(context).copyWith(color: Colors.white)
+              style: tinyTextStyle(context, bold: false).copyWith(color: Colors.white, letterSpacing: 0.4, fontSize: 10)
             )
           ),
         ),
@@ -228,13 +213,12 @@ class StreamTileExpanded extends StatelessWidget {
                 Text(
                   "${stream.name}",
                   maxLines: 2,
-                  style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
+                  style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w500),
                 ),
-                const SizedBox(height: 4),
                 Text(
-                  "${stream.uploaderName} ${stream.viewCount != -1 ? " • ${NumberFormat.compact().format(stream.viewCount)} views" : ""}"
-                      " ${stream.uploadDate == null ? "" : " • ${stream.uploadDate!}"}",
-                  style: tinyTextStyle(context, opacity: 0.6).copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w500),
+                  "${stream.viewCount != -1 ? "${NumberFormat.compact().format(stream.viewCount)} views" : ""}"
+                      " ${stream.uploadDate == null ? "" : " ${stream.uploadDate!}"}",
+                  style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w500),
                 )
               ],
             ),
@@ -248,7 +232,7 @@ class StreamTileExpanded extends StatelessWidget {
               backgroundColor: Colors.transparent,
               builder: (context) => InfoItemOptions(infoItem: stream));
           },
-          icon: Icon(Icons.more_vert, size: 18, color: Theme.of(context).iconTheme.color)
+          icon: Icon(Icons.more_vert, size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8))
         )
       ],
     );

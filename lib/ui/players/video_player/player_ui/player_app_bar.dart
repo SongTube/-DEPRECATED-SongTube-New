@@ -7,84 +7,35 @@ import 'package:songtube/ui/text_styles.dart';
 
 class VideoPlayerAppBar extends StatelessWidget {
   final String videoTitle;
-  final Function() onChangeQuality;
-  final Function() onEnterPipMode;
-  final VideoPlaybackQuality? currentQuality;
-  final bool audioOnly;
+  final Function() onMinimize;
   const VideoPlayerAppBar({
     required this.videoTitle,
-    required this.onChangeQuality,
-    required this.currentQuality,
-    required this.audioOnly,
-    required this.onEnterPipMode,
+    required this.onMinimize,
     Key? key
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(12),
+      margin: const EdgeInsets.all(12).copyWith(left: 0, top: 0),
       child: Row(
         children: [
           const SizedBox(width: 6),
+          IconButton(
+            onPressed: () {
+              onMinimize();
+            },
+            icon: const Icon(Icons.expand_more_rounded, size: 18, color: Colors.white)
+          ),
+          const SizedBox(width: 4),
           Expanded(
             child: Text(
-              videoTitle,
+              MediaQuery.of(context).orientation == Orientation.landscape ? videoTitle : '',
               style: smallTextStyle(context, bold: true).copyWith(color: Colors.white, fontSize: 14),
               maxLines: 1,
               overflow: TextOverflow.fade,
               softWrap: false,
             ),
           ),
-          if (!audioOnly)
-          const SizedBox(width: 12),
-          if (!audioOnly)
-          Builder(
-            builder: (context) {
-              if (isPictureInPictureSupported) {
-                return GestureDetector(
-                  onTap: onEnterPipMode,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    color: Colors.transparent,
-                    child: const Icon(
-                      Icons.picture_in_picture_alt_rounded,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                  ),
-                );
-              } else {
-                return Container(
-                  padding: const EdgeInsets.all(4),
-                  color: Colors.transparent,
-                  child: const Icon(
-                    Icons.picture_in_picture_alt_rounded,
-                    color: Colors.transparent,
-                    size: 18,
-                  ),
-                );
-              }
-            }
-          ),
-          if (!audioOnly)
-          const SizedBox(width: 12),
-          if (currentQuality != null)
-          GestureDetector(
-            onTap: () => onChangeQuality(),
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              color: Colors.transparent,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${currentQuality!.resolution}p', style: smallTextStyle(context, bold: true).copyWith(color: Colors.white, letterSpacing: 1)),
-                  if (currentQuality!.framerate > 30)
-                  Text(' • ${currentQuality!.framerate.round()}FPS', style: smallTextStyle(context, bold: true).copyWith(color: Colors.white, letterSpacing: 1))
-                ],
-              )
-            ),
-          ),
-          const SizedBox(width: 6),
           // Switch(
           //   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           //   activeThumbImage: const AssetImage('assets/images/playArrow.png'),

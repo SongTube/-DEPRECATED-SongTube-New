@@ -13,19 +13,30 @@ class VideoPlayerPlayPauseButton extends StatelessWidget {
     return InkWell(
       onTap: onPlayPause,
       borderRadius: BorderRadius.circular(100),
-      child: Ink(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: Colors.black.withOpacity(0.2)
+        ),
         padding: const EdgeInsets.all(16.0),
-        child: isPlaying
-          ? const Icon(
-              Icons.pause,
-              size: 32,
-              color: Colors.white,
-            )
-          : const Icon(
-              Icons.play_arrow,
-              size: 32,
-              color: Colors.white,
-            ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 100),
+          switchInCurve: Curves.ease,
+          switchOutCurve: Curves.ease,
+          child: isPlaying
+            ? const Icon(
+                Icons.pause,
+                size: 26,
+                color: Colors.white,
+                key: ValueKey('playerPauseButton'),
+              )
+            : const Icon(
+                Icons.play_arrow,
+                size: 26,
+                color: Colors.white,
+                key: ValueKey('playerPlayButton'),
+              ),
+        ),
       ),
     );
   }
