@@ -86,24 +86,28 @@ class _VideoPlayerProgressBarState extends State<VideoPlayerProgressBar> with Ti
                     }
                   ),
                   if (widget.segments != null && widget.segments!.isNotEmpty)
-                  Builder(
-                    builder: (context) {
-                      final currentSegmentText = isDragging && currentLabel != null ? currentLabel : currentSegment(widget.position.inSeconds.roundToDouble())!.title ?? '';
-                      return GestureDetector(
-                        onTap: widget.onShowSegments,
-                        child: Container(
-                          color: Colors.transparent,
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 100),
-                            child: Text(
-                              '>   $currentSegmentText',
-                              key: ValueKey(currentSegmentText),
-                              style: tinyTextStyle(context),
+                  Expanded(
+                    child: Builder(
+                      builder: (context) {
+                        final currentSegmentText = isDragging && currentLabel != null ? currentLabel : currentSegment(widget.position.inSeconds.roundToDouble())!.title ?? '';
+                        return GestureDetector(
+                          onTap: widget.onShowSegments,
+                          child: Container(
+                            color: Colors.transparent,
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 100),
+                              child: Text(
+                                '>   $currentSegmentText',
+                                key: ValueKey(currentSegmentText),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: tinyTextStyle(context),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }
+                        );
+                      }
+                    ),
                   )
                 ],
               ),
