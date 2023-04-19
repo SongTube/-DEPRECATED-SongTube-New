@@ -118,7 +118,7 @@ class AppSettings extends ChangeNotifier {
 
   // MusicPlayer Settings
   bool get enableMusicPlayerBlur {
-    return sharedPreferences.getBool(enableMusicPlayerBlurKey) ?? true;
+    return sharedPreferences.getBool(enableMusicPlayerBlurKey) ?? false;
   }
   set enableMusicPlayerBlur(bool value) {
     sharedPreferences.setBool(enableMusicPlayerBlurKey, value);
