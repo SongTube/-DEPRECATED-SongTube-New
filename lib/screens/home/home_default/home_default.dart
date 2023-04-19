@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/screens/home/home_default/pages/favorites_page.dart';
@@ -14,6 +15,7 @@ import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/nested_will_pop_scope.dart';
 import 'package:songtube/ui/rounded_tab_indicator.dart';
 import 'package:songtube/ui/search_suggestions.dart';
+import 'package:songtube/ui/sheets/search_filters.dart';
 import 'package:songtube/ui/text_styles.dart';
 
 class HomeDefault extends StatefulWidget {
@@ -104,7 +106,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
       children: [
         Expanded(
           child: Container(
-            margin: const EdgeInsets.only(left: 12, right: 12),
+            margin: const EdgeInsets.only(left: 12),
             height: kToolbarHeight,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
@@ -173,8 +175,16 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
             ),
           ),
         ),
-        const Icon(Iconsax.filter_edit, size: 18),
-        const SizedBox(width: 16),
+        IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: internalNavigatorKey.currentContext!,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => SearchFiltersSheet());
+          },
+          icon: Icon(Iconsax.filter_edit, size: 18, color: contentProvider.searchFilters.isNotEmpty ? Theme.of(context).primaryColor : null)),
+        const SizedBox(width: 4),
       ],
     );
   }

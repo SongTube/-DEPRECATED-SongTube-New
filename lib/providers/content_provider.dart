@@ -40,6 +40,9 @@ class ContentProvider extends ChangeNotifier {
     }
   }
 
+  // Search Filters
+  List<String> searchFilters = [];
+
   // Search Videos
   YoutubeSearch? searchContent;
   bool searchingContent = false;
@@ -48,7 +51,7 @@ class ContentProvider extends ChangeNotifier {
     searchingContent = true;
     notifyListeners();
     try {
-      searchContent = await SearchExtractor.searchYoutube(query, []);
+      searchContent = await SearchExtractor.searchYoutube(query, searchFilters);
       addStringtoSearchHistory(query);
     } catch (e) {
       if (kDebugMode) {
@@ -276,6 +279,11 @@ class ContentProvider extends ChangeNotifier {
     final searchHistory = getSearchHistory();
     searchHistory.removeAt(index);
     sharedPreferences.setStringList('searchHistory', searchHistory);
+    notifyListeners();
+  }
+
+  // Update State
+  void setState() {
     notifyListeners();
   }
 

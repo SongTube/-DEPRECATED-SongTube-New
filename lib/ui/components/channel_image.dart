@@ -21,7 +21,7 @@ class ChannelImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<File>(
-      future: ContentService.channelAvatarPictureFile(channelUrl!),
+      future: ContentService.channelAvatarPictureFile(channelUrl ?? ''),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return GestureDetector(
