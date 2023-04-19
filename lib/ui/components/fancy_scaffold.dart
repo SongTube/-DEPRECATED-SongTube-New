@@ -328,7 +328,7 @@ class FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateMi
                           });
                         }
                       },
-                      direction: DismissDirection.horizontal,
+                      direction: widget.floatingWidgetController!.isPanelClosed || widget.floatingWidgetController!.isPanelAnimating ? DismissDirection.horizontal : DismissDirection.none,
                       child: Container(
                         decoration: BoxDecoration(
                           color: ColorTween(end: Theme.of(context).scaffoldBackgroundColor, begin: Theme.of(context).cardColor).animate(floatingWidgetAnimationController).value,

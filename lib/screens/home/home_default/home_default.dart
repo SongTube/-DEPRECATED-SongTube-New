@@ -3,6 +3,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/providers/content_provider.dart';
+import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/screens/home/home_default/pages/favorites_page.dart';
 import 'package:songtube/screens/home/home_default/pages/search_page.dart';
 import 'package:songtube/screens/home/home_default/pages/subscriptions_page.dart';
@@ -37,6 +38,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
+    UiProvider uiProvider = Provider.of(context);
     if (tabController.length == 5 && (contentProvider.searchContent == null)) {
       tabController = TabController(length: 4, vsync: this);
     }
@@ -106,12 +108,12 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
             height: kToolbarHeight,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              color: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.05),
+              color: Theme.of(context).cardColor
             ),
             child: CustomInkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () {
-                setState(() {});
+                searchFocusNode.requestFocus();
               },
               child: Row(
                 children: [
