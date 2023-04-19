@@ -59,6 +59,9 @@ class ChannelImage extends StatelessWidget {
                     placeholder: MemoryImage(kTransparentImage),
                     image: FileImage(snapshot.data!),
                     fit: BoxFit.cover,
+                    imageErrorBuilder:(context, error, stackTrace) {
+                      return Image.memory(kTransparentImage);
+                    },
                     height: size ?? (expand ? 80 : 50),
                     width: size ?? (expand ? 80 : 50),
                   ),

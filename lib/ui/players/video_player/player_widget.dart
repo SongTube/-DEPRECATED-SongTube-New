@@ -13,6 +13,7 @@ import 'package:screen_brightness/screen_brightness.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/internal/models/playback_quality.dart';
 import 'package:songtube/main.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
@@ -226,7 +227,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       controller!.removeListener(() { });
     }
     // Choose video quality
-    currentQuality ??= widget.content.videoOptions!.last;
+    currentQuality ??= widget.content.videoOptions!.firstWhere((element) => element.resolution.contains(AppSettings.lastVideoQuality), orElse: () {
+      return widget.content.videoOptions!.last;
+    });
     controller = VideoPlayerController.network(
       videoDataSource: currentQuality!.videoUrl,
       audioDataSource: currentQuality!.audioUrl
@@ -594,6 +597,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                                   final position = controller?.value.position;
                                   controller?.removeListener(() { });
                                   await controller?.dispose();
+                                  AppSettings.lastVideoQuality = quality.resolution;
                                   setState(() { controller = null; currentQuality = quality; });
                                   loadVideo(position: position);
                               }));

@@ -165,6 +165,7 @@ class StreamTileExpanded extends StatelessWidget {
 
   Widget _thumbnail(context) {
     return Stack(
+      fit: StackFit.expand,
       alignment: Alignment.bottomCenter,
       children: [
         CachedNetworkImage(

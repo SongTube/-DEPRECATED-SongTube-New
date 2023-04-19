@@ -33,6 +33,9 @@ const enableBackgroundPlaybackKey = 'enableBackgroundPlayback';
 // Auto Picture in Picture mode
 const enableAutoPictureInPictureModeKey = 'enableAutoPictureInPictureMode';
 
+// Last video quality saved
+const lastVideoQualityKey = 'lastVideoQuality';
+
 class AppSettings extends ChangeNotifier {
 
   // Initialize App Settings
@@ -151,4 +154,11 @@ class AppSettings extends ChangeNotifier {
   static set enableAutoPictureInPictureMode(bool value) {
     sharedPreferences.setBool(enableAutoPictureInPictureModeKey, value);
   }
+
+  // Cached last video quality
+  static String get lastVideoQuality => sharedPreferences.getString(lastVideoQualityKey) ?? '720';
+  static set lastVideoQuality(String qualityString) {
+    sharedPreferences.setString(lastVideoQualityKey, qualityString);
+  }
+
 }
