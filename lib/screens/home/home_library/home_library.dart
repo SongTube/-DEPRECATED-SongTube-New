@@ -7,6 +7,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:songtube/internal/cache_utils.dart';
 import 'package:songtube/internal/http_server.dart';
 import 'package:songtube/screens/settings.dart';
+import 'package:songtube/screens/watch_history.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/ui_utils.dart';
@@ -52,7 +53,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
               height: 210,
               child: ListView.builder(
                 padding: const EdgeInsets.only(left: 4),
-                itemCount: CacheUtils.watchHistory.length,
+                itemCount: CacheUtils.watchHistory.length.clamp(0, 10),
                 physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
@@ -80,7 +81,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
                 title: Text('Watch History', style: subtitleTextStyle(context, bold: true)),
                 subtitle: Text('Look at which videos you have seen', style: smallTextStyle(context, opacity: 0.8)),
                 onTap: () {
-                  // Open watch history page
+                  UiUtils.pushRouteAsync(context, const WatchHistoryPage());
                   
                 },
               ),
