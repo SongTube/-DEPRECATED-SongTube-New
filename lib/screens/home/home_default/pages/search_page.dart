@@ -7,6 +7,7 @@ import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:songtube/ui/tiles/channel_tile.dart';
 import 'package:songtube/ui/tiles/shimmer_tile.dart';
 import 'package:songtube/ui/tiles/stream_tile.dart';
 
@@ -33,6 +34,23 @@ class SearchPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (contentProvider.searchContent!.searchChannels?.isNotEmpty ?? false)
+          ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(0),
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: contentProvider.searchContent!.searchChannels!.length,
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.all(12).copyWith(bottom: 0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20)
+                ),
+                child: ChannelTile(channel: contentProvider.searchContent!.searchChannels![index]));
+            },
+          ),
           ListView.builder(
             shrinkWrap: true,
             padding: const EdgeInsets.only(top: 12).copyWith(bottom: audioHandler.mediaItem.value != null ? (kToolbarHeight*1.6)+24 : 24),

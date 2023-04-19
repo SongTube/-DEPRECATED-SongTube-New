@@ -47,16 +47,19 @@ class ChannelTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                channel.name!,
-                style: textStyle(context),
+                channel.name ?? '',
+                style: subtitleTextStyle(context, bold: true),
+                maxLines: 2,
               ),
               Text(
-                "${NumberFormat().format(channel.subscriberCount)} Subs • ${channel.streamCount} videos",
-                style: smallTextStyle(context)
-              )
+                channel.subscriberCount != -1 ? "${NumberFormat().format(channel.subscriberCount)} Subs • " : '' '${channel.streamCount} videos',
+                style: smallTextStyle(context, opacity: 0.8)
+              ),
             ],
           ),
-        )
+        ),
+        const SizedBox(width: 12),
+        const Icon(Icons.arrow_forward_ios_rounded, size: 14),
       ],
     );
   }
