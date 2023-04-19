@@ -13,10 +13,11 @@ class MusicEqualizerSheet extends StatefulWidget {
   const MusicEqualizerSheet({
     required this.equalizerMap,
     required this.loudnessMap,
+    required this.songColor,
     Key? key }) : super(key: key);
   final dynamic equalizerMap;
   final dynamic loudnessMap;
-
+  final Color songColor;
   @override
   _MusicEqualizerSheetState createState() => _MusicEqualizerSheetState();
 }
@@ -36,8 +37,8 @@ class _MusicEqualizerSheetState extends State<MusicEqualizerSheet> {
 
   SliderThemeData sliderTheme() {
     return SliderThemeData(
-      thumbColor: Theme.of(context).primaryColor,
-      activeTrackColor: Theme.of(context).primaryColor,
+      thumbColor: widget.songColor,
+      activeTrackColor: widget.songColor,
       trackHeight: 5,
       thumbShape: const RoundSliderThumbShape(
         disabledThumbRadius: 6,
@@ -52,6 +53,10 @@ class _MusicEqualizerSheetState extends State<MusicEqualizerSheet> {
     return Container(
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.only(top: 16, bottom: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20)
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -62,16 +67,16 @@ class _MusicEqualizerSheetState extends State<MusicEqualizerSheet> {
             child: BottomSheetPhill()),
           const SizedBox(height: 6),
           Padding(
-            padding: const EdgeInsets.only(left: 8),
+            padding: const EdgeInsets.only(left: 12),
             child: Row(
               children: [
                 InkWell(
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Icon(Ionicons.arrow_back_outline, color: Theme.of(context).primaryColor),
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Ionicons.arrow_back_outline),
                   )
                 ),
                 Expanded(child: Text('Equalizer', style: textStyle(context))),
@@ -92,7 +97,8 @@ class _MusicEqualizerSheetState extends State<MusicEqualizerSheet> {
     return Column(
       children: [
         CheckboxListTile(
-          checkColor: Theme.of(context).primaryColor,
+          activeColor: Theme.of(context).iconTheme.color,
+          checkColor: widget.songColor,
           title: Text('Loudness Equalization Gain',
             style: subtitleTextStyle(context)),
           value: loudnessEqualization.enabled,
@@ -121,7 +127,8 @@ class _MusicEqualizerSheetState extends State<MusicEqualizerSheet> {
     return Column(
       children: [
         CheckboxListTile(
-          checkColor: Theme.of(context).primaryColor,
+          activeColor: Theme.of(context).iconTheme.color,
+          checkColor: widget.songColor,
           title: Text('Sliders',
             style: subtitleTextStyle(context)),
           value: equalizer.enabled,

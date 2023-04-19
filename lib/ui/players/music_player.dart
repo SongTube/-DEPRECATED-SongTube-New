@@ -250,7 +250,8 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 context: internalNavigatorKey.currentContext!,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
-                builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap));
+                builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap,
+                  songColor: song.palette?.vibrant ?? song.palette?.dominant ?? Theme.of(context).textTheme.bodyText1!.color!));
             },
             icon: Icon(Icons.graphic_eq_outlined, color: textColor)
           ),
