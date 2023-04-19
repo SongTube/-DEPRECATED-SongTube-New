@@ -105,7 +105,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
         builder: (context, child) {
           return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(uiProvider.fwController.animationController.value < 1 ? 30 : 0),
               color: Theme.of(context).cardColor,
               boxShadow: uiProvider.fwController.lockNotificationListener
               ? [BoxShadow(
