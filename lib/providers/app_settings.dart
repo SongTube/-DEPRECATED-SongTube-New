@@ -36,6 +36,9 @@ const enableAutoPictureInPictureModeKey = 'enableAutoPictureInPictureMode';
 // Last video quality saved
 const lastVideoQualityKey = 'lastVideoQuality';
 
+// Enable Material You Colors
+const enableMaterialYouColorsKey = 'enableMaterialYouColors';
+
 class AppSettings extends ChangeNotifier {
 
   // Initialize App Settings
@@ -159,6 +162,13 @@ class AppSettings extends ChangeNotifier {
   static String get lastVideoQuality => sharedPreferences.getString(lastVideoQualityKey) ?? '720';
   static set lastVideoQuality(String qualityString) {
     sharedPreferences.setString(lastVideoQualityKey, qualityString);
+  }
+
+  // Enable Material You Colors
+  bool get enableMaterialYou => sharedPreferences.getBool(enableMaterialYouColorsKey) ?? false;
+  set enableMaterialYou(bool value) {
+    sharedPreferences.setBool(enableMaterialYouColorsKey, value);
+    notifyListeners();
   }
 
 }
