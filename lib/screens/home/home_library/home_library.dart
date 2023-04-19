@@ -7,6 +7,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:songtube/internal/cache_utils.dart';
 import 'package:songtube/internal/http_server.dart';
 import 'package:songtube/screens/settings.dart';
+import 'package:songtube/ui/info_item_renderer.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/ui_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -48,36 +49,28 @@ class _HomeLibraryState extends State<HomeLibrary> {
           children: [
             if (CacheUtils.watchHistory.isNotEmpty)
             SizedBox(
-              height: 160,
+              height: 210,
               child: ListView.builder(
-                padding: const EdgeInsets.only(left: 12),
+                padding: const EdgeInsets.only(left: 4),
                 itemCount: CacheUtils.watchHistory.length,
                 physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
                   final video = CacheUtils.watchHistory[index];
                   return Padding(
-                    padding: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.only(right: 4),
                     child: AspectRatio(
-                      aspectRatio: 16/9,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(20)
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: ImageFade(
-                            fadeDuration: const Duration(milliseconds: 300),
-                            image: NetworkImage(video.thumbnails!.hqdefault),
-                            placeholder: Image.memory(kTransparentImage),
-                            fit: BoxFit.cover)),
-                      ),
+                      aspectRatio: 1.3,
+                      child: InfoItemRenderer(infoItem: video, expandItem: true)
                     ),
                   );
                 },
               ),
             ),
+            if (CacheUtils.watchHistory.isNotEmpty)
+            const SizedBox(height: 12),
+            if (CacheUtils.watchHistory.isNotEmpty)
+            Divider(height: 1, thickness: 1.5, color: Theme.of(context).dividerColor.withOpacity(0.08)),
             Padding(
               padding: const EdgeInsets.only(left: 12),
               child: ListTile(
