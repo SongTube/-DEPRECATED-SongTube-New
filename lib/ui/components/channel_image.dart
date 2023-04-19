@@ -29,47 +29,32 @@ class ChannelImage extends StatelessWidget {
       future: highQuality ? UiUtils.getAvatarUrl(channelName, channelUrl ?? '') : ContentService.channelAvatarPictureFile(channelUrl ?? ''),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return GestureDetector(
-            onTap: () {
-              // Navigator.push(context, TODO
-              //   BlurPageRoute(
-              //     blurStrength: Provider.of<PreferencesProvider>
-              //       (context, listen: false).enableBlurUI ? 20 : 0,
-              //     builder: (_) => 
-              //     YoutubeChannelPage(
-              //       url: infoItem.uploaderUrl,
-              //       name: infoItem.uploaderName,
-              //       lowResAvatar: snapshot.data,
-              //       heroTag: infoItem.uploaderUrl + infoItem.id,
-              // )));
-            },
-            child: Hero(
-              tag: "$channelUrl + $heroId",
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.08), width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 6,
-                      offset: const Offset(0,0),
-                      color: Theme.of(context).shadowColor.withOpacity(0.1)
-                    )
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: FadeInImage(
-                    fadeInDuration: const Duration(milliseconds: 300),
-                    placeholder: MemoryImage(kTransparentImage),
-                    image: FileImage(snapshot.data! is File ? snapshot.data! : File(snapshot.data!)),
-                    fit: BoxFit.cover,
-                    imageErrorBuilder:(context, error, stackTrace) {
-                      return Image.memory(kTransparentImage);
-                    },
-                    height: size ?? (expand ? 80 : 50),
-                    width: size ?? (expand ? 80 : 50),
-                  ),
+          return Hero(
+            tag: "$channelUrl + $heroId",
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.08), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 6,
+                    offset: const Offset(0,0),
+                    color: Theme.of(context).shadowColor.withOpacity(0.1)
+                  )
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: FadeInImage(
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  placeholder: MemoryImage(kTransparentImage),
+                  image: FileImage(snapshot.data! is File ? snapshot.data! : File(snapshot.data!)),
+                  fit: BoxFit.cover,
+                  imageErrorBuilder:(context, error, stackTrace) {
+                    return Image.memory(kTransparentImage);
+                  },
+                  height: size ?? (expand ? 80 : 50),
+                  width: size ?? (expand ? 80 : 50),
                 ),
               ),
             ),

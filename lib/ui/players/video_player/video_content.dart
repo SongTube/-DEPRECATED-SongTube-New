@@ -19,6 +19,8 @@ import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/download_provider.dart';
+import 'package:songtube/providers/ui_provider.dart';
+import 'package:songtube/screens/channel.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/components/text_icon_button.dart';
@@ -30,6 +32,7 @@ import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/sheets/snack_bar.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:collection/collection.dart';
+import 'package:songtube/ui/ui_utils.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class VideoPlayerContent extends StatefulWidget {
@@ -239,7 +242,13 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
               // Channel Details
               CustomInkWell(
                 onTap: () {
-                  
+                  UiProvider uiProvider = Provider.of(context, listen: false);
+                  uiProvider.fwController.close();
+                  UiUtils.pushRouteAsync(navigatorKey.currentState!.context, ChannelPage(infoItem: ChannelInfoItem(
+                    infoItem?.uploaderUrl ?? videoInfo?.uploaderUrl ?? '',
+                    infoItem?.uploaderName ?? videoInfo?.uploaderName ?? '',
+                    '', '', null, -1
+                  )));
                 },
                 child: Row(
                   children: [

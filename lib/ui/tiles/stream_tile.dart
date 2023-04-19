@@ -8,12 +8,14 @@ import 'package:provider/provider.dart';
 import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
+import 'package:songtube/screens/channel.dart';
 import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/sheets/info_item_options.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:songtube/ui/ui_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -219,7 +221,15 @@ class StreamTileExpanded extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ChannelImage(channelUrl: stream.uploaderUrl, heroId: stream.id!, channelName: stream.uploaderName ?? ''),
+        GestureDetector(
+          onTap: () {
+            UiUtils.pushRouteAsync(context, ChannelPage(infoItem: ChannelInfoItem(
+              stream.uploaderUrl,
+              stream.uploaderName,
+              '', '', null, -1
+            )));
+          },
+          child: ChannelImage(channelUrl: stream.uploaderUrl, heroId: stream.id!, channelName: stream.uploaderName ?? '')),
         const SizedBox(width: 12),
         Expanded(
           child: Padding(
