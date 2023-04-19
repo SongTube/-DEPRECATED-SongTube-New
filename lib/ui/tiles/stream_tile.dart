@@ -15,18 +15,21 @@ import 'package:songtube/ui/sheets/add_to_stream_playlist.dart';
 import 'package:songtube/ui/sheets/info_item_options.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class StreamTileCollapsed extends StatelessWidget {
   const StreamTileCollapsed({
     required this.stream,
     this.onTap,
     this.isEditable = true,
+    this.showChannelName = true,
     super.key});
   final StreamInfoItem stream;
   /// By default, onTap loads this video on the content provider, but
   /// if onTap is set, you can run override that default behavior
   final Function()? onTap;
   final bool isEditable;
+  final bool showChannelName;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
@@ -98,11 +101,25 @@ class StreamTileCollapsed extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
-                    "${stream.uploaderName}  ${NumberFormat.compact().format(stream.viewCount) != '-1' ? '•  ${NumberFormat.compact().format(stream.viewCount)} views' : ''}",
+                    "${showChannelName ? '${stream.uploaderName}  •  ' : ''}${NumberFormat.compact().format(stream.viewCount) != '-1' ? '${NumberFormat.compact().format(stream.viewCount)} views' : ''}",
                     style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.clip,
                     maxLines: 1,
                   ),
+                ),
+                Builder(
+                  builder: (context) {
+                    final DateTime? date = stream.date != null ? DateTime.parse(stream.date!) : null;
+                    return Container(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        date != null ? timeago.format(date, locale: 'en') : '',
+                        style: tinyTextStyle(context, opacity: 0.8).copyWith(fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.clip,
+                        maxLines: 1,
+                      ),
+                    );
+                  }
                 ),
               ],
             ),
@@ -202,7 +219,7 @@ class StreamTileExpanded extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ChannelImage(channelUrl: stream.uploaderUrl, heroId: stream.id!),
+        ChannelImage(channelUrl: stream.uploaderUrl, heroId: stream.id!, channelName: stream.uploaderName ?? ''),
         const SizedBox(width: 12),
         Expanded(
           child: Padding(

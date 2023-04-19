@@ -58,7 +58,7 @@ class TrendingPage extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ChannelImage(channelUrl: channel.url, heroId: channel.heroId, size: 40),
+                      ChannelImage(channelUrl: channel.url, heroId: channel.heroId, size: 40, channelName: channel.name),
                       const SizedBox(width: 8),
                       Text(channel.name, style: tinyTextStyle(context).copyWith(fontWeight: FontWeight.w600), maxLines: 1, textAlign: TextAlign.center),
                     ],

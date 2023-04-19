@@ -5,23 +5,28 @@ import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:newpipeextractor_dart/models/channel.dart';
 import 'package:songtube/services/content_service.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
+import 'package:songtube/ui/ui_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChannelImage extends StatelessWidget {
   const ChannelImage({
     required this.channelUrl,
     required this.heroId,
+    required this.channelName,
     this.expand = false,
+    this.highQuality = false,
     this.size,
     super.key});
   final String? channelUrl;
   final String heroId;
+  final String channelName;
   final bool expand;
   final double? size;
+  final bool highQuality;
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<File>(
-      future: ContentService.channelAvatarPictureFile(channelUrl ?? ''),
+    return FutureBuilder<dynamic>(
+      future: highQuality ? UiUtils.getAvatarUrl(channelName, channelUrl ?? '') : ContentService.channelAvatarPictureFile(channelUrl ?? ''),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return GestureDetector(
@@ -57,7 +62,7 @@ class ChannelImage extends StatelessWidget {
                   child: FadeInImage(
                     fadeInDuration: const Duration(milliseconds: 300),
                     placeholder: MemoryImage(kTransparentImage),
-                    image: FileImage(snapshot.data!),
+                    image: FileImage(snapshot.data! is File ? snapshot.data! : File(snapshot.data!)),
                     fit: BoxFit.cover,
                     imageErrorBuilder:(context, error, stackTrace) {
                       return Image.memory(kTransparentImage);

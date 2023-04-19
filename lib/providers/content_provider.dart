@@ -61,6 +61,15 @@ class ContentProvider extends ChangeNotifier {
     searchingContent = false;
     notifyListeners();
   }
+  void searchContentLoadNextPage() async {
+    if (searchingContent) {
+      return;
+    }
+    searchingContent = true;
+    await searchContent!.getNextPage();
+    searchingContent = false;
+    notifyListeners();
+  }
   void clearSearchContent() {
     searchContent = null;
     notifyListeners();
