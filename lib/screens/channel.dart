@@ -181,18 +181,10 @@ class _ChannelPageState extends State<ChannelPage> with TickerProviderStateMixin
               ],
             )
           ),
-          _tabs(),
-          Divider(height: 1, color: Theme.of(context).dividerColor),
+          //_tabs(),
+          //Divider(height: 1, color: Theme.of(context).dividerColor),
           Expanded(
-            child: TabBarView(
-              physics: const BouncingScrollPhysics(),
-              controller: tabController,
-              children: [
-                _videos(),
-                _playlists(),
-                _about()
-              ]
-            ),
+            child: _videos(),
           ),
         ],
       ),
