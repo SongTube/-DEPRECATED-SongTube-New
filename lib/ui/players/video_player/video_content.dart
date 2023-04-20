@@ -15,6 +15,7 @@ import 'package:newpipeextractor_dart/models/videoInfo.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:songtube/internal/models/channel_subscription.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
@@ -23,6 +24,7 @@ import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/screens/channel.dart';
 import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
+import 'package:songtube/ui/components/subscribe_text.dart';
 import 'package:songtube/ui/components/text_icon_button.dart';
 import 'package:songtube/ui/players/video_player/comments.dart';
 import 'package:songtube/ui/players/video_player/description.dart';
@@ -244,11 +246,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                 onTap: () {
                   UiProvider uiProvider = Provider.of(context, listen: false);
                   uiProvider.fwController.close();
-                  UiUtils.pushRouteAsync(navigatorKey.currentState!.context, ChannelPage(infoItem: ChannelInfoItem(
-                    infoItem?.uploaderUrl ?? videoInfo?.uploaderUrl ?? '',
-                    infoItem?.uploaderName ?? videoInfo?.uploaderName ?? '',
-                    '', '', null, -1
-                  )));
+                  UiUtils.pushRouteAsync(navigatorKey.currentState!.context, ChannelPage(infoItem: videoInfo!.getChannel()));
                 },
                 child: Row(
                   children: [
@@ -287,16 +285,18 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            infoItem?.uploaderName ?? videoInfo?.uploaderName ?? '',
-                            style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.normal),
+                          Expanded(
+                            child: Text(
+                              infoItem?.uploaderName ?? videoInfo?.uploaderName ?? '',
+                              style: subtitleTextStyle(context).copyWith(fontWeight: FontWeight.normal),
+                              maxLines: 1, overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          const Spacer(),
-                          Text('SUBSCRIBE',
-                            style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w900, letterSpacing: 1),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
+                          const SizedBox(width: 12),
+                          if (videoInfo != null)
+                          ChannelSubscribeText(channelName: videoInfo.uploaderName??'', channel: ChannelInfoItem(
+                            videoInfo.uploaderUrl??'', videoInfo.uploaderName??'', '', '', null, -1
+                          )),
                           const SizedBox(width: 4),
                         ],
                       ),

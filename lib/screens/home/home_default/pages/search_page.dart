@@ -49,19 +49,7 @@ class SearchPage extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: contentProvider.searchContent!.searchChannels!.length,
               itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    UiUtils.pushRouteAsync(context, ChannelPage(infoItem: contentProvider.searchContent!.searchChannels![index]));
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.all(12).copyWith(bottom: 0),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(20)
-                    ),
-                    child: ChannelTile(channel: contentProvider.searchContent!.searchChannels![index])),
-                );
+                return InfoItemRenderer(infoItem: contentProvider.searchContent!.searchChannels![index]);
               },
             ),
             ListView.builder(

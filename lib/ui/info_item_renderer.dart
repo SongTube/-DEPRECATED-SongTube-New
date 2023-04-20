@@ -18,7 +18,7 @@ class InfoItemRenderer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (infoItem is ChannelInfoItem) {
-      return ChannelTile(channel: infoItem);
+      return ChannelTile(channel: infoItem, size: ChannelTileSize.big);
     } else if (infoItem is StreamInfoItem) {
       if (expandItem) {
         return StreamTileExpanded(stream: infoItem);

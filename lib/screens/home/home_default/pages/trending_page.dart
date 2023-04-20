@@ -8,6 +8,7 @@ import 'package:songtube/screens/channel.dart';
 import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:songtube/ui/tiles/channel_tile.dart';
 import 'package:songtube/ui/tiles/shimmer_tile.dart';
 import 'package:songtube/ui/tiles/stream_tile.dart';
 import 'package:songtube/ui/ui_utils.dart';
@@ -43,37 +44,10 @@ class TrendingPage extends StatelessWidget {
               itemCount: contentProvider.channelSuggestions.length,
               itemBuilder: (context, index) {
                 final channel = contentProvider.channelSuggestions[index];
-                return GestureDetector(
-                  onTap: () {
-                    UiUtils.pushRouteAsync(context, ChannelPage(infoItem: ChannelInfoItem(
-                      channel.url,
-                      channel.name,
-                      '', '', null, -1
-                    )));
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 12),
-                    padding: const EdgeInsets.only(left: 6, right: 12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(100),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 6,
-                          offset: const Offset(0,0),
-                          color: Theme.of(context).shadowColor.withOpacity(0.01)
-                        )
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ChannelImage(channelUrl: channel.url, heroId: channel.heroId, size: 40, channelName: channel.name),
-                        const SizedBox(width: 8),
-                        Text(channel.name, style: tinyTextStyle(context).copyWith(fontWeight: FontWeight.w600), maxLines: 1, textAlign: TextAlign.center),
-                      ],
-                    ),
-                  ),
+                return ChannelTile(
+                  channel: ChannelInfoItem(channel.url, channel.name, '', '', null, -1),
+                  size: ChannelTileSize.small,
+                  forceHighQuality: true,
                 );
               },
             ),

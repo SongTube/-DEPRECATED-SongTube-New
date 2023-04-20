@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:newpipeextractor_dart/extractors/search.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/models/channel_subscription.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/channel_data.dart';
@@ -19,6 +21,7 @@ class ContentProvider extends ChangeNotifier {
   ContentProvider() {
     // Fetch Trending page for the Home Screen
     refreshTrendingPage();
+    loadChannelsFeed();
   }
 
   // Home Screen Trending page videos
@@ -270,6 +273,65 @@ class ContentProvider extends ChangeNotifier {
       newPlaylist.thumbnailUrl = null;
     }
     streamPlaylists = streamPlaylists..[index] = newPlaylist;
+  }
+
+  // --------------------
+  // Subscriptions Stuff
+  // --------------------
+  // Feed list
+  List<StreamInfoItem> channelsFeedList = [];
+  // Extract feed from the first 10 channels
+  // by channel subscription date order
+  Future<void> loadChannelsFeed() async {
+    // Clear current channels feed
+    channelsFeedList = [];
+    notifyListeners();
+    // Extract current subscriptions
+    if (channelSubscriptions.isNotEmpty) {
+      List<StreamInfoItem> videos = [];
+      // Take all uploads from the first 10 channels
+      int loopsDone = 0;
+      for (var channel in channelSubscriptions) {
+        if (loopsDone == 10) break;
+        List<StreamInfoItem> uploads = await ChannelExtractor
+          .getChannelUploads(channel.url);
+        videos.addAll(uploads);
+        loopsDone++;
+      }
+      // Sort by date (Default)
+      videos.sort((a, b) => DateTime.parse(a.date!).compareTo(DateTime.parse(b.date!)));
+      videos = videos.reversed.toList();
+      // Update our channels feed
+      channelsFeedList = videos;
+      notifyListeners();
+    }
+  }
+  List<ChannelSubscription> get channelSubscriptions {
+    String json = sharedPreferences.getString('subscriptions') ?? "";
+    return ChannelSubscription.fromJsonList(json);
+  }
+  set channelSubscriptions(List<ChannelSubscription> subscriptions) {
+    sharedPreferences.setString('subscriptions', ChannelSubscription.toJsonList(subscriptions));
+    notifyListeners();
+  }
+  void removeChannelSubscription(String channelUrl) {
+    var subscriptions = channelSubscriptions;
+    subscriptions.removeWhere((element) => element.url == channelUrl);
+    channelSubscriptions = subscriptions;
+    notifyListeners();
+  }
+  void addChannelSubscription(ChannelSubscription subscription) {
+    var subscriptions = channelSubscriptions;
+    subscriptions.add(subscription);
+    channelSubscriptions = subscriptions;
+    notifyListeners();
+  }
+  void enableChannelNotifications(String channelUrl) {
+    var subscriptions = channelSubscriptions;
+    int index = subscriptions.indexWhere((element) => element.url == channelUrl);
+    subscriptions[index].enableNotifications = !subscriptions[index].enableNotifications;
+    channelSubscriptions = subscriptions;
+    notifyListeners();
   }
 
   // Search History

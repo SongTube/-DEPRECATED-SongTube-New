@@ -6,6 +6,7 @@ import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:songtube/ui/components/channel_image.dart';
 import 'package:songtube/ui/components/infinite_scrolling_adapter.dart';
+import 'package:songtube/ui/components/subscribe_text.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
 import 'package:songtube/ui/rounded_tab_indicator.dart';
 import 'package:songtube/ui/text_styles.dart';
@@ -35,7 +36,7 @@ class _ChannelPageState extends State<ChannelPage> with TickerProviderStateMixin
   // Next page fetch running
   bool fetchingNextPage = false;
 
-  void loadChannel() async {
+  Future<void> loadChannel() async {
     channel = await widget.infoItem.getChannel;
     setState(() {});
   }
@@ -61,8 +62,7 @@ class _ChannelPageState extends State<ChannelPage> with TickerProviderStateMixin
 
   @override
   void initState() {
-    loadChannel();
-    loadChannelUploads();
+    loadChannel().then((_) => loadChannelUploads());
     super.initState();
   }
 
@@ -114,7 +114,7 @@ class _ChannelPageState extends State<ChannelPage> with TickerProviderStateMixin
                     fadeCurve: Curves.ease,
                     fit: BoxFit.cover,
                     image: channel != null
-                      ? NetworkImage(channel!.bannerUrl!) : null,
+                      ? NetworkImage(channel!.bannerUrl ?? '') : null,
                     placeholder: Container(color: Theme.of(context).scaffoldBackgroundColor),
                     errorBuilder:(context, child, exception) {
                       return Container(color: Theme.of(context).scaffoldBackgroundColor);
@@ -124,7 +124,7 @@ class _ChannelPageState extends State<ChannelPage> with TickerProviderStateMixin
                 // Backdrop
                 Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor.withOpacity(0.7),
+                    color: Theme.of(context).cardColor.withOpacity(0.8),
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20)
@@ -159,7 +159,7 @@ class _ChannelPageState extends State<ChannelPage> with TickerProviderStateMixin
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
@@ -169,7 +169,9 @@ class _ChannelPageState extends State<ChannelPage> with TickerProviderStateMixin
                                     const SizedBox(width: 2),
                                   ],
                                 ),
-                                Text('${channel != null ? '${ NumberFormat().format(channel!.subscriberCount)} Subs • ' : ''}${widget.infoItem.streamCount} videos', style: smallTextStyle(context, opacity: 0.8))
+                                Text('${channel != null ? '${ NumberFormat().format(channel!.subscriberCount)} Subs • ' : ''}${widget.infoItem.streamCount} videos', style: smallTextStyle(context, opacity: 0.8)),
+                                const SizedBox(height: 2),
+                                ChannelSubscribeText(channelName: widget.infoItem.name??'', channel: widget.infoItem)
                               ],
                             ),
                           ),
