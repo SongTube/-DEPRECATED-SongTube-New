@@ -36,13 +36,12 @@ class _VideoPlayerCollapsedState extends State<VideoPlayerCollapsed> {
               Text(
                 widget.content.infoItem is StreamInfoItem ? (widget.content.infoItem.name ?? '') : (widget.content.videoDetails?.videoInfo.name ?? ''),
                 style: smallTextStyle(context).copyWith(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.fade,
-                softWrap: false,
-                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
               Text(
                 widget.content.infoItem is StreamInfoItem ? (widget.content.infoItem.uploaderName ?? '') : (widget.content.videoDetails?.videoInfo.uploaderName ?? ''),
-                style: tinyTextStyle(context, opacity: 0.6),
+                style: tinyTextStyle(context, opacity: 0.8),
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 maxLines: 1,
@@ -53,7 +52,7 @@ class _VideoPlayerCollapsedState extends State<VideoPlayerCollapsed> {
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 400),
           child: IconButton(
-            icon: Icon((playerController?.value.isPlaying ?? false) ? Ionicons.pause_outline : Ionicons.play_outline, size: 22),
+            icon: Icon((playerController?.value.isPlaying ?? false) ? Ionicons.pause_outline : Ionicons.play_outline, size: 20),
             onPressed: () async {
               if ((playerController?.value.isPlaying ?? false)) {
                 await playerController?.pause();

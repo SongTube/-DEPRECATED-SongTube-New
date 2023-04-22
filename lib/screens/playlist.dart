@@ -133,10 +133,8 @@ class PlaylistScreen extends StatelessWidget {
         stream: audioHandler.mediaItem,
         builder: (context, snapshot) {
           final playerOpened = snapshot.data != null;
-          return AnimatedContainer(
+          return Container(
             color: Colors.transparent,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.ease,
             margin: EdgeInsets.only(bottom: playerOpened ? (kToolbarHeight * 1.6)+14 : 0),
             child: Row(
               mainAxisSize: MainAxisSize.min,

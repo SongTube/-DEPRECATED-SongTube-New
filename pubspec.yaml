@@ -45,6 +45,7 @@ dependencies:
   cached_network_image: ^3.2.2
   file_picker: ^5.2.0
   flutter_share: ^2.0.0
+  wakelock: ^0.6.2
 
   # Dart advanced Streams
   rxdart: any
@@ -122,6 +123,8 @@ dependencies:
   auto_animated: ^3.0.1
   grouped_list: ^5.1.2
   timeago: ^3.3.0
+  dynamic_color: ^1.6.3
+  #animated_theme_switcher: ^2.0.7
 
   # NewPipe Extractor
   newpipeextractor_dart:

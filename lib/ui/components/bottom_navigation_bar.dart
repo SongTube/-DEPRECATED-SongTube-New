@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:songtube/ui/text_styles.dart';
 
 class SongTubeNavigation extends StatefulWidget {
   final List<NavigationDestination> destinations;
@@ -32,19 +33,27 @@ class _SongTubeNavigationState extends State<SongTubeNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      elevation: 0,
-      labelBehavior: widget.labelBehavior,
-      backgroundColor: widget.backgroundColor,
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: (int tappedIndex) {
-        setState(() {
-          _selectedIndex = tappedIndex;
-        });
-
-        widget.onItemTap(tappedIndex);
-      },
-      destinations: widget.destinations,
+    return NavigationBarTheme(
+      data: NavigationBarThemeData(
+        labelTextStyle: MaterialStateTextStyle.resolveWith((states) {
+          return tinyTextStyle(context).copyWith(letterSpacing: 0.4);
+        }),
+        indicatorColor: Theme.of(context).primaryColor
+      ),
+      child: NavigationBar(
+        elevation: 0,
+        labelBehavior: widget.labelBehavior,
+        backgroundColor: widget.backgroundColor,
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (int tappedIndex) {
+          setState(() {
+            _selectedIndex = tappedIndex;
+          });
+    
+          widget.onItemTap(tappedIndex);
+        },
+        destinations: widget.destinations,
+      ),
     );
   }
 }

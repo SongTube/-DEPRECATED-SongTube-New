@@ -1,28 +1,14 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
-import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:newpipeextractor_dart/extractors/videos.dart';
-import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
-import 'package:provider/provider.dart';
 import 'package:songtube/internal/cache_utils.dart';
-import 'package:songtube/internal/enums/download_type.dart';
-import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/http_server.dart';
-import 'package:songtube/internal/models/audio_tags.dart';
-import 'package:songtube/internal/models/download/download_info.dart';
-import 'package:songtube/main.dart';
-import 'package:songtube/providers/content_provider.dart';
-import 'package:songtube/providers/download_provider.dart';
 import 'package:songtube/screens/settings.dart';
+import 'package:songtube/screens/watch_history.dart';
+import 'package:songtube/ui/info_item_renderer.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/ui_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -64,57 +50,55 @@ class _HomeLibraryState extends State<HomeLibrary> {
           children: [
             if (CacheUtils.watchHistory.isNotEmpty)
             SizedBox(
-              height: 160,
+              height: 210,
               child: ListView.builder(
-                padding: const EdgeInsets.only(left: 12),
-                itemCount: CacheUtils.watchHistory.length,
+                padding: const EdgeInsets.only(left: 4),
+                itemCount: CacheUtils.watchHistory.length.clamp(0, 10),
                 physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
                   final video = CacheUtils.watchHistory[index];
                   return Padding(
-                    padding: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.only(right: 4),
                     child: AspectRatio(
-                      aspectRatio: 16/9,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(20)
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: ImageFade(
-                            fadeDuration: const Duration(milliseconds: 300),
-                            image: NetworkImage(video.thumbnails!.hqdefault),
-                            placeholder: Image.memory(kTransparentImage),
-                            fit: BoxFit.cover)),
-                      ),
+                      aspectRatio: 1.3,
+                      child: InfoItemRenderer(infoItem: video, expandItem: true)
                     ),
                   );
                 },
               ),
             ),
-            ListTile(
-              leading: SizedBox(
-                height: double.infinity,
-                child: Icon(LineIcons.history, color: Theme.of(context).primaryColor)),
-              title: Text('Watch History', style: subtitleTextStyle(context, bold: true)),
-              subtitle: Text('Look at which videos you have seen', style: smallTextStyle(context)),
-              onTap: () {
-                // Open watch history page
-      
-              },
+            if (CacheUtils.watchHistory.isNotEmpty)
+            const SizedBox(height: 12),
+            if (CacheUtils.watchHistory.isNotEmpty)
+            Divider(height: 1, thickness: 1.5, color: Theme.of(context).dividerColor.withOpacity(0.08)),
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: ListTile(
+                leading: SizedBox(
+                  height: double.infinity,
+                  child: Icon(LineIcons.history, color: Theme.of(context).primaryColor)),
+                title: Text('Watch History', style: subtitleTextStyle(context, bold: true)),
+                subtitle: Text('Look at which videos you have seen', style: smallTextStyle(context, opacity: 0.8)),
+                onTap: () {
+                  UiUtils.pushRouteAsync(context, const WatchHistoryPage());
+                  
+                },
+              ),
             ),
-            ListTile(
-              leading: SizedBox(
-                height: double.infinity,
-                child: Icon(Iconsax.save_2, color: Theme.of(context).primaryColor)),
-              title: Text('Backup & Restore', style: subtitleTextStyle(context, bold: true)),
-              subtitle: Text('Save or resture all of your local data', style: smallTextStyle(context)),
-              onTap: () {
-                // Open backup or restore sheet
-      
-              },
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: ListTile(
+                leading: SizedBox(
+                  height: double.infinity,
+                  child: Icon(Iconsax.save_2, color: Theme.of(context).primaryColor)),
+                title: Text('Backup & Restore', style: subtitleTextStyle(context, bold: true)),
+                subtitle: Text('Save or resture all of your local data', style: smallTextStyle(context, opacity: 0.8)),
+                onTap: () {
+                  // Open backup or restore sheet
+                  
+                },
+              ),
             ),
             GestureDetector(
               onLongPress: () {
@@ -123,14 +107,14 @@ class _HomeLibraryState extends State<HomeLibrary> {
               },
               child: Container(
                 margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20)
                 ),
                 child: CheckboxListTile(
-                  title: Text('SongTube Link', style: textStyle(context, bold: true)),
-                  subtitle: Text('Allow SongTube browser extension to detect this device, long press to learn more', style: smallTextStyle(context)),
+                  title: Text('SongTube Link', style: subtitleTextStyle(context, bold: true)),
+                  subtitle: Text('Allow SongTube browser extension to detect this device, long press to learn more', style: smallTextStyle(context, opacity: 0.8)),
                   value: linkServer != null,
                   activeColor: Theme.of(context).primaryColor,
                   onChanged: (value) async {
@@ -144,26 +128,29 @@ class _HomeLibraryState extends State<HomeLibrary> {
                 ),
               ),
             ),
-            ListTile(
-              onTap: () {
-                launchUrl(Uri.parse("https://paypal.me/artixo"));
-              },
-              leading: const SizedBox(
-                height: double.infinity,
-                child: Icon(
-                  EvaIcons.heart,
-                  color: Colors.red,
-                  size: 24,
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: ListTile(
+                onTap: () {
+                  launchUrl(Uri.parse("https://paypal.me/artixo"));
+                },
+                leading: const SizedBox(
+                  height: double.infinity,
+                  child: Icon(
+                    EvaIcons.heart,
+                    color: Colors.red,
+                    size: 24,
+                  ),
                 ),
-              ),
-              title: Text(
-                'Donate',
-                textAlign: TextAlign.start,
-                style: subtitleTextStyle(context, bold: true)
-              ),
-              subtitle: Text(
-                "Support Development!",
-                style: smallTextStyle(context)
+                title: Text(
+                  'Donate',
+                  textAlign: TextAlign.start,
+                  style: subtitleTextStyle(context, bold: true)
+                ),
+                subtitle: Text(
+                  "Support Development!",
+                  style: smallTextStyle(context, opacity: 0.8)
+                ),
               ),
             ),
             _socialIcons(),
@@ -177,7 +164,7 @@ class _HomeLibraryState extends State<HomeLibrary> {
     return ListTile(
       title: Padding(
         padding: const EdgeInsets.only(left: 12),
-        child: Text('Social Links', style: subtitleTextStyle(context, bold: true, opacity: 0.7)),
+        child: Text('Social Links', style: subtitleTextStyle(context, bold: true)),
       ),
       contentPadding: EdgeInsets.zero,
       subtitle: Container(

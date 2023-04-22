@@ -13,6 +13,7 @@ import 'package:screen_brightness/screen_brightness.dart';
 import 'package:songtube/internal/models/content_wrapper.dart';
 import 'package:songtube/internal/models/playback_quality.dart';
 import 'package:songtube/main.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
@@ -28,13 +29,11 @@ class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({
     required this.content,
     required this.onAspectRatioUpdate,
-    required this.pipEnabled,
-    required this.onEnterPip,
+    required this.onFullscreen,
     super.key});
   final ContentWrapper content;
   final Function(double) onAspectRatioUpdate;
-  final bool pipEnabled;
-  final Function() onEnterPip;
+  final Function() onFullscreen;
   @override
   State<VideoPlayerWidget> createState() => VideoPlayerWidgetState();
 }
@@ -213,6 +212,11 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.didUpdateWidget(oldWidget);
   }
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   void loadVideo({Duration? position}) async {
     Future.delayed(const Duration(seconds: 2), () {
       setState(() => hideControls = true);
@@ -223,7 +227,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       controller!.removeListener(() { });
     }
     // Choose video quality
-    currentQuality ??= widget.content.videoOptions!.last;
+    currentQuality ??= widget.content.videoOptions!.firstWhere((element) => element.resolution.contains(AppSettings.lastVideoQuality), orElse: () {
+      return widget.content.videoOptions!.last;
+    });
     controller = VideoPlayerController.network(
       videoDataSource: currentQuality!.videoUrl,
       audioDataSource: currentQuality!.audioUrl
@@ -546,26 +552,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 Align(
                   alignment: Alignment.topLeft,
                   child: VideoPlayerAppBar(
-                    audioOnly: false,
-                    currentQuality: currentQuality,
                     videoTitle: widget.content.videoDetails?.videoInfo.name ?? '',
-                    onChangeQuality: () {
-                      showModalBottomSheet(
-                        context: internalNavigatorKey.currentContext!,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => PlaybackQualitySheet(content: widget.content, currentQuality: currentQuality!, onChangeQuality: (quality) async {
-                          final position = controller?.value.position;
-                          controller?.removeListener(() { });
-                          await controller?.dispose();
-                          setState(() { controller = null; currentQuality = quality; });
-                          loadVideo(position: position);
-                        }));
-                      },
-                    onEnterPipMode: () {
-                      setState(() {
-                        hideControls = true;
-                      });
-                      widget.onEnterPip();
+                    onMinimize: () {
+                      Provider.of<UiProvider>(context, listen: false).fwController.close();
                     },
                   ),
                 ),
@@ -599,8 +588,19 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                           (dragPosition, _) => dragPosition),
                         builder: (context, snapshot) {
                           return VideoPlayerProgressBar(
-                            onAudioOnlySwitch: () {
-                              
+                            onPresetTap: () {
+                              showModalBottomSheet(
+                                context: internalNavigatorKey.currentContext!,
+                                isScrollControlled: MediaQuery.of(context).orientation == Orientation.portrait ? false : true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => PlaybackQualitySheet(content: widget.content, currentQuality: currentQuality!, onChangeQuality: (quality) async {
+                                  final position = controller?.value.position;
+                                  controller?.removeListener(() { });
+                                  await controller?.dispose();
+                                  AppSettings.lastVideoQuality = quality.resolution;
+                                  setState(() { controller = null; currentQuality = quality; });
+                                  loadVideo(position: position);
+                              }));
                             },
                             audioOnly: false,
                             segments: widget.content.videoDetails?.segments,
@@ -611,10 +611,13 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                               setState(() => isSeeking = false);
                             },
                             onFullScreenTap: () {
-                              
+                              widget.onFullscreen();
                             },
                             onSeekStart: () {
                               setState(() => isSeeking = true);
+                            },
+                            onShowSegments: () {
+
                             },
                           );
                         }

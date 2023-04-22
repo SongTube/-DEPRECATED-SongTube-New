@@ -71,15 +71,14 @@ class _AlbumCardTileState extends State<AlbumCardTile> {
                 child: FutureBuilder<File>(
                   future: AlbumUtils.getAlbumImageFromSong(widget.album.mediaItems.first),
                   builder: (context, snapshot) {
-                    Widget shimmer() => const ShimmerContainer(height: double.infinity, width: double.infinity);
                     return ImageFade(
-                      placeholder: shimmer(),
+                      placeholder: Image.asset('assets/images/artworkPlaceholder_big.png', fit: BoxFit.cover),
                       image: snapshot.hasData
                         ? FileImage(snapshot.data!)
                         : MemoryImage(kTransparentImage) as ImageProvider,
                       fit: BoxFit.cover,
                       errorBuilder: (context, child, exception) {
-                        return shimmer();
+                        return Image.asset('assets/images/artworkPlaceholder_big.png', fit: BoxFit.cover);
                       },
                     );
                   }
@@ -126,7 +125,7 @@ class _AlbumCardTileState extends State<AlbumCardTile> {
                                   maxLines: 1,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
-                                  style: tinyTextStyle(context).copyWith(color: (widget.album.mediaItems.first.palette!.text).withOpacity(0.6))
+                                  style: tinyTextStyle(context).copyWith(color: (widget.album.mediaItems.first.palette!.text).withOpacity(0.8))
                                 ),
                               ],
                             ),

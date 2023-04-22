@@ -105,7 +105,7 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
         builder: (context, child) {
           return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(uiProvider.fwController.animationController.value < 1 ? 30 : 0),
               color: Theme.of(context).cardColor,
               boxShadow: uiProvider.fwController.lockNotificationListener
               ? [BoxShadow(
@@ -250,7 +250,8 @@ class _MusicPlayerState extends State<MusicPlayer> with TickerProviderStateMixin
                 context: internalNavigatorKey.currentContext!,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
-                builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap));
+                builder: (context) => MusicEqualizerSheet(equalizerMap: equalizerMap, loudnessMap: loudnessMap,
+                  songColor: song.palette?.vibrant ?? song.palette?.dominant ?? Theme.of(context).textTheme.bodyText1!.color!));
             },
             icon: Icon(Icons.graphic_eq_outlined, color: textColor)
           ),

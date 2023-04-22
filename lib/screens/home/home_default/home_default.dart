@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
+import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/screens/home/home_default/pages/favorites_page.dart';
 import 'package:songtube/screens/home/home_default/pages/search_page.dart';
 import 'package:songtube/screens/home/home_default/pages/subscriptions_page.dart';
@@ -13,6 +15,7 @@ import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/nested_will_pop_scope.dart';
 import 'package:songtube/ui/rounded_tab_indicator.dart';
 import 'package:songtube/ui/search_suggestions.dart';
+import 'package:songtube/ui/sheets/search_filters.dart';
 import 'package:songtube/ui/text_styles.dart';
 
 class HomeDefault extends StatefulWidget {
@@ -37,6 +40,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
+    UiProvider uiProvider = Provider.of(context);
     if (tabController.length == 5 && (contentProvider.searchContent == null)) {
       tabController = TabController(length: 4, vsync: this);
     }
@@ -66,7 +70,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
               height: kToolbarHeight-8,
               child: _appBar()),
             _tabs(),
-            Divider(height: 1, color: Theme.of(context).dividerColor),
+            Divider(height: 1.5, color: Theme.of(context).dividerColor.withOpacity(0.08), thickness: 1.5),
             Expanded(
               child: Stack(
                 children: [
@@ -102,16 +106,16 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
       children: [
         Expanded(
           child: Container(
-            margin: const EdgeInsets.only(left: 12, right: 12),
+            margin: const EdgeInsets.only(left: 12),
             height: kToolbarHeight,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              color: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.05),
+              color: Theme.of(context).cardColor
             ),
             child: CustomInkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () {
-                setState(() {});
+                searchFocusNode.requestFocus();
               },
               child: Row(
                 children: [
@@ -171,8 +175,16 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
             ),
           ),
         ),
-        const Icon(Iconsax.filter_edit, size: 18),
-        const SizedBox(width: 16),
+        IconButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: internalNavigatorKey.currentContext!,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => SearchFiltersSheet());
+          },
+          icon: Icon(Iconsax.filter_edit, size: 18, color: contentProvider.searchFilters.isNotEmpty ? Theme.of(context).primaryColor : null)),
+        const SizedBox(width: 4),
       ],
     );
   }
@@ -191,12 +203,11 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
         isScrollable: true,
         labelColor: Theme.of(context).textTheme.bodyText1!.color,
         unselectedLabelColor: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.8),
-        labelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.0),
-        unselectedLabelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.0),
+        labelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.4),
+        unselectedLabelStyle: smallTextStyle(context).copyWith(fontWeight: FontWeight.normal, letterSpacing: 0.4),
         physics: const BouncingScrollPhysics(),
         indicatorSize: TabBarIndicatorSize.label,
-        indicatorColor: Theme.of(context).textTheme.bodyText1!.color,
-        indicator: RoundedTabIndicator(color: Theme.of(context).textTheme.bodyText1!.color!, height: 4, radius: 100, bottomMargin: 0),
+        indicator: RoundedTabIndicator(color: Theme.of(context).primaryColor, height: 3, radius: 100, bottomMargin: 0),
         tabs: [
           if (contentProvider.searchContent != null || contentProvider.searchingContent)
           const Tab(child: Text('Search')),
