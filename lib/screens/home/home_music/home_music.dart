@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/screens/home/home_music/pages/albums_page.dart';
 import 'package:songtube/screens/home/home_music/pages/artists_page.dart';
@@ -25,7 +26,7 @@ class HomeMusic extends StatefulWidget {
 class _HomeMusicState extends State<HomeMusic> with TickerProviderStateMixin {
 
   // TabBar Controller
-  late TabController tabController = TabController(length: 5, vsync: this);
+  late TabController tabController = TabController(length: 5, vsync: this, initialIndex: AppSettings.defaultLandingMusicPage);
 
   MediaItem? latestEvent;
 
