@@ -34,68 +34,50 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
   late TextEditingController searchController = TextEditingController()..addListener(() {
     setState(() {});
   });
-  // SearchBar Focus node
-  FocusNode searchFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
-    UiProvider uiProvider = Provider.of(context);
     if (tabController.length == 5 && (contentProvider.searchContent == null)) {
       tabController = TabController(length: 4, vsync: this);
     }
     if (tabController.length == 4 && (contentProvider.searchContent != null || contentProvider.searchingContent)) {
       tabController = TabController(length: 5, vsync: this);
     }
-    return NestedWillPopScope(
-      onWillPop: () {
-        if (contentProvider.searchContent != null) {
-          contentProvider.clearSearchContent();
-          return Future.value(false);
-        }
-        if (searchFocusNode.hasFocus) {
-          FocusScope.of(context).unfocus();
-          setState(() {});
-          return Future.value(false);
-        } else {
-          return Future.value(true);
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Column(
-          children: [
-            SizedBox(height: MediaQuery.of(context).padding.top+8),
-            SizedBox(
-              height: kToolbarHeight-8,
-              child: _appBar()),
-            _tabs(),
-            Divider(height: 1.5, color: Theme.of(context).dividerColor.withOpacity(0.08), thickness: 1.5),
-            Expanded(
-              child: Stack(
-                children: [
-                  // HomeScreen Body
-                  _body(),
-                  // Search Body, which goes on top to show search history and suggestions
-                  // when the search bar is focused
-                  ShowUpTransition(
-                    forward: searchFocusNode.hasFocus,
-                    child: SearchSuggestions(
-                      searchQuery: searchController.text,
-                      onSearch: (suggestion) {
-                        FocusScope.of(context).unfocus();
-                        setState(() {
-                          searchController.text = suggestion;
-                        });
-                        contentProvider.searchContentFor(suggestion);
-                      },
-                    ),
-                  )
-                ],
-              )
-            ),
-          ],
-        ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
+        children: [
+          SizedBox(height: MediaQuery.of(context).padding.top+8),
+          SizedBox(
+            height: kToolbarHeight-8,
+            child: _appBar()),
+          _tabs(),
+          Divider(height: 1.5, color: Theme.of(context).dividerColor.withOpacity(0.08), thickness: 1.5),
+          Expanded(
+            child: Stack(
+              children: [
+                // HomeScreen Body
+                _body(),
+                // Search Body, which goes on top to show search history and suggestions
+                // when the search bar is focused
+                ShowUpTransition(
+                  forward: contentProvider.searchFocusNode.hasFocus,
+                  child: SearchSuggestions(
+                    searchQuery: searchController.text,
+                    onSearch: (suggestion) {
+                      FocusScope.of(context).unfocus();
+                      setState(() {
+                        searchController.text = suggestion;
+                      });
+                      contentProvider.searchContentFor(suggestion);
+                    },
+                  ),
+                )
+              ],
+            )
+          ),
+        ],
       ),
     );
   }
@@ -115,7 +97,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
             child: CustomInkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () {
-                searchFocusNode.requestFocus();
+                contentProvider.searchFocusNode.requestFocus();
               },
               child: Row(
                 children: [
@@ -143,7 +125,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
                             Expanded(
                               child: TextField(
                                 enabled: true,
-                                focusNode: searchFocusNode,
+                                focusNode: contentProvider.searchFocusNode,
                                 controller: searchController,
                                 style: smallTextStyle(context).copyWith(fontWeight: FontWeight.w500),
                                 decoration: InputDecoration.collapsed(
@@ -160,7 +142,7 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
                             CustomInkWell(
                               onTap: () {
                                 searchController.clear();
-                                searchFocusNode.requestFocus();
+                                contentProvider.searchFocusNode.requestFocus();
                                 setState(() {});
                               },
                               child: Icon(Icons.clear, color: Theme.of(context).iconTheme.color, size: 18),

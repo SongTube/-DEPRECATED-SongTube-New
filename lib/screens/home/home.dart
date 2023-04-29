@@ -10,16 +10,19 @@ import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/providers/media_provider.dart';
+import 'package:songtube/providers/ui_provider.dart';
 import 'package:songtube/screens/home/home_default/home_default.dart';
 import 'package:songtube/screens/home/home_downloads/home_downloads.dart';
 import 'package:songtube/screens/home/home_library/home_library.dart';
 import 'package:songtube/screens/home/home_music/home_music.dart';
 import 'package:songtube/ui/components/bottom_navigation_bar.dart';
 import 'package:songtube/ui/components/fancy_scaffold.dart';
+import 'package:songtube/ui/components/nested_will_pop_scope.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -118,6 +121,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         systemNavigationBarColor: Theme.of(context).cardColor
       )
     );
+    final ContentProvider contentProvider = Provider.of(context);
+    final UiProvider uiProvider = Provider.of(context);
     return FancyScaffold(
       body: PageTransitionSwitcher(
         transitionBuilder: (
@@ -133,7 +138,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           );
         },
         duration: const Duration(milliseconds: 300),
-        child: screens[bottomNavigationBarIndex]
+        child: NestedWillPopScope(
+          onWillPop: () {
+            if (uiProvider.fwController.isPanelOpen) {
+              uiProvider.fwController.close();
+              return Future.value(false);
+            } else {
+              if (uiProvider.onAltRoute) {
+                return Future.value(true);
+              } else {
+                if (contentProvider.searchContent != null) {
+                  contentProvider.clearSearchContent();
+                  return Future.value(false);
+                }
+                if (contentProvider.searchFocusNode.hasFocus) {
+                  contentProvider.searchFocusNode.unfocus();
+                  setState(() {});
+                  return Future.value(false);
+                } else {
+                  return Future.value(true);
+                }
+              }
+            }
+          },
+          child: screens[bottomNavigationBarIndex])
       ),
       bottomNavigationBar: SongTubeNavigation(
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,

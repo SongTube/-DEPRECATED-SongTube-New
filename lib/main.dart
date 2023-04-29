@@ -160,7 +160,7 @@ class _SongTubeState extends State<SongTube> {
                         body: NestedWillPopScope(
                           onWillPop: () async {
                             if (navigatorKey.currentState?.canPop() ?? false) {
-                              navigatorKey.currentState?.pop();
+                              navigatorKey.currentState?.maybePop();
                               return false;
                             }
                             return true;
