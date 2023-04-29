@@ -98,6 +98,18 @@ class _GeneralSettingsState extends State<GeneralSettings> {
             );
           })
         ),
+        // Lock Navigation Bar so it doesnt hide
+        const SizedBox(height: 12),
+        SettingTileCheckbox(
+          title: 'Lock Navigation Bar',
+          subtitle: 'Locks the navigation bar from hiding and showing automatically on scroll',
+          leadingIcon: LineIcons.lock,
+          value: AppSettings.lockNavigationBar,
+          onChange: (value) {
+            AppSettings.lockNavigationBar = value;
+            setState(() {});
+          }
+        ),
         // Automatic Picture-in-Picture mode
         const SizedBox(height: 12),
         SettingTileCheckbox(

@@ -39,6 +39,9 @@ const lastVideoQualityKey = 'lastVideoQuality';
 // Enable Material You Colors
 const enableMaterialYouColorsKey = 'enableMaterialYouColors';
 
+// Lock Navigation Bar from hiding
+const lockNavigationBarKey = 'lockNavigationBar';
+
 class AppSettings extends ChangeNotifier {
 
   // Initialize App Settings
@@ -169,6 +172,12 @@ class AppSettings extends ChangeNotifier {
   set enableMaterialYou(bool value) {
     sharedPreferences.setBool(enableMaterialYouColorsKey, value);
     notifyListeners();
+  }
+
+  // Lock Bottom Navigation Bar so it doesnt hides on scroll
+  static bool get lockNavigationBar => sharedPreferences.getBool('lockNavigationBar') ?? false;
+  static set lockNavigationBar(bool value) {
+    sharedPreferences.setBool(lockNavigationBarKey, value);
   }
 
 }
