@@ -18,10 +18,12 @@ class ChannelTile extends StatefulWidget {
     required this.channel,
     required this.size,
     this.forceHighQuality = false,
+    this.disablePaddings = false,
     super.key});
   final ChannelInfoItem channel;
   final ChannelTileSize size;
   final bool forceHighQuality;
+  final bool disablePaddings;
   @override
   State<ChannelTile> createState() => _ChannelTileState();
 }
@@ -50,8 +52,8 @@ class _ChannelTileState extends State<ChannelTile> {
 
   Widget _big() {
     return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.all(12),
+      padding: widget.disablePaddings ? null : const EdgeInsets.all(12),
+      margin: widget.disablePaddings ? null : const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20)

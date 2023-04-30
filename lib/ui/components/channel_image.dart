@@ -66,8 +66,8 @@ class ChannelImage extends StatelessWidget {
           );
         } else {
           return ShimmerContainer(
-            height: expand ? 80 : 50,
-            width: expand ? 80 : 50,
+            height: size ?? (expand ? 80 : 50),
+            width: size ?? (expand ? 80 : 50),
             borderRadius: BorderRadius.circular(100),
           );
         }
