@@ -49,7 +49,7 @@ class DownloadItem {
     // Return built download item
     return DownloadItem(downloadInfo: info,
       downloadPath: directory,
-      downloadFile: File('${directory.path}/$fileName.${info.audioStream.formatSuffix}'),
+      downloadFile: File('${directory.path}/${MediaUtils.removeToxicSymbols(fileName)}.${info.audioStream.formatSuffix}'),
       onDownloadCancelled: (_) {},
       onDownloadCompleted: (_, __) {}
     );
@@ -64,7 +64,7 @@ class DownloadItem {
   Function(String id) onDownloadCancelled;
 
   // Download Related Stuff
-  final BehaviorSubject<double?> downloadProgress = BehaviorSubject.seeded(0);
+  final BehaviorSubject<double?> downloadProgress = BehaviorSubject.seeded(null);
   final BehaviorSubject<String?> downloadStatus = BehaviorSubject.seeded('queued');
 
   // Conversion Related Stuff
@@ -104,8 +104,8 @@ class DownloadItem {
   // Anything we need to run to process the download must check if canceled is true
   // and stop this function as soon as possible
   Future<void> initDownload() async {
-    downloadStatus.add('Initializing...');
     resetStreams();
+    downloadStatus.add('Initializing...');
     // ---------------------
     // Download Instructions
     // --------------------- 
@@ -113,7 +113,7 @@ class DownloadItem {
     if (downloadInfo.downloadType == DownloadType.audio && (downloadInfo.segmentTracks?.isEmpty ?? true)) {
       // Download Audio Stream, we don't need the resulting file because its gonna
       // be written directly into the given output
-      final result = await _downloadStream(downloadInfo.audioStream, context: 'Downloading', output: downloadFile);
+      final result = await _downloadStream(downloadInfo.audioStream, context: 'Downloading...', output: downloadFile);
       // If download result is null, cancel download
       if (result == null) {
         onDownloadCancelled(id);
@@ -147,7 +147,7 @@ class DownloadItem {
     ///[Audio with AudioSegments]
     if (downloadInfo.downloadType == DownloadType.audio && (downloadInfo.segmentTracks?.isNotEmpty ?? false)) {
       // Download full audio file
-      final audioFile = await _downloadStream(downloadInfo.audioStream, context: 'Downloading');
+      final audioFile = await _downloadStream(downloadInfo.audioStream, context: 'Downloading...');
       // If download result is null, cancel download
       if (audioFile == null) {
         onDownloadCancelled(id);
@@ -194,9 +194,9 @@ class DownloadItem {
     ///[Video with no cuts]
     if (downloadInfo.downloadType == DownloadType.video) {
       // Download Video
-      final videoFile = await _downloadStream(downloadInfo.videoStream, context: 'Downloading Video');
+      final videoFile = await _downloadStream(downloadInfo.videoStream, context: 'Downloading Video...');
       // Download Audio
-      final audioFile = await _downloadStream(downloadInfo.audioStream, context: 'Downloading Audio');
+      final audioFile = await _downloadStream(downloadInfo.audioStream, context: 'Downloading Audio...');
       // Check if both our files were downloaded, if not the case, cancel download
       if (videoFile == null || audioFile == null) {
         onDownloadCancelled(id);
@@ -267,6 +267,7 @@ class DownloadItem {
     }
     await ioSink.flush();
     await ioSink.close();
+    downloadProgress.add(null);
     return download;
   }
 
