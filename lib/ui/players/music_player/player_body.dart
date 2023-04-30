@@ -70,6 +70,10 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
   double? dragValue;
   bool dragging = false;
 
+  // Repeat & Shuffle status
+  bool onRepeat = false;
+  bool onShuffle = false;
+
   @override
   void initState() {
     audioHandler.mediaItem.listen((event) {
@@ -239,13 +243,26 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
       children: <Widget>[
         // Repeat Button
         const SizedBox(width: 16),
-        IconButton(
-          icon: Icon(
-            Ionicons.repeat_outline,
-            size: 16,
-            color: textColor.withOpacity(0.6)
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.ease,
+          decoration: BoxDecoration(
+            color: onRepeat ? dominantColor.withOpacity(0.2) : null,
+            borderRadius: BorderRadius.circular(100)
           ),
-          onPressed: () => audioHandler.skipToNext()
+          child: IconButton(
+            icon: Icon(
+              Ionicons.repeat_outline,
+              size: 16,
+              color: textColor.withOpacity(0.6)
+            ),
+            onPressed: () {
+              setState(() {
+                onRepeat = !onRepeat;
+              });
+              audioHandler.setRepeatMode(onRepeat ? AudioServiceRepeatMode.one : AudioServiceRepeatMode.none);
+            }
+          ),
         ),
         const Spacer(),
         // Previous button
@@ -296,13 +313,26 @@ class _ExpandedPlayerBodyState extends State<ExpandedPlayerBody> {
         ),
         // Shuffle Button
         const Spacer(),
-        IconButton(
-          icon: Icon(
-            Ionicons.shuffle_outline,
-            size: 16,
-            color: textColor.withOpacity(0.6)
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.ease,
+          decoration: BoxDecoration(
+            color: onShuffle ? dominantColor.withOpacity(0.2) : null,
+            borderRadius: BorderRadius.circular(100)
           ),
-          onPressed: () => audioHandler.skipToNext()
+          child: IconButton(
+            icon: Icon(
+              Ionicons.shuffle_outline,
+              size: 16,
+              color: textColor.withOpacity(0.6)
+            ),
+            onPressed: () {
+              setState(() {
+                onShuffle = !onShuffle;
+              });
+              audioHandler.setShuffleMode(onShuffle ? AudioServiceShuffleMode.all : AudioServiceShuffleMode.none);
+            }
+          ),
         ),
         const SizedBox(width: 16)
       ],
