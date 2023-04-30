@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/models/backup_model.dart';
 import 'package:songtube/internal/music_brainz.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';

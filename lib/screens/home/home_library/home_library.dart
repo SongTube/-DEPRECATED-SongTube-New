@@ -6,9 +6,12 @@ import 'package:image_fade/image_fade.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:songtube/internal/cache_utils.dart';
 import 'package:songtube/internal/http_server.dart';
+import 'package:songtube/internal/models/backup_model.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/screens/settings.dart';
 import 'package:songtube/screens/watch_history.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
+import 'package:songtube/ui/sheets/backup_restore.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/ui_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -94,9 +97,11 @@ class _HomeLibraryState extends State<HomeLibrary> {
                   child: Icon(Iconsax.save_2, color: Theme.of(context).primaryColor)),
                 title: Text('Backup & Restore', style: subtitleTextStyle(context, bold: true)),
                 subtitle: Text('Save or resture all of your local data', style: smallTextStyle(context, opacity: 0.8)),
-                onTap: () {
-                  // Open backup or restore sheet
-                  
+                onTap: () async {
+                  await showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
+                    return const BackupRestoreSheet();
+                  });
+                  setState(() {});
                 },
               ),
             ),
