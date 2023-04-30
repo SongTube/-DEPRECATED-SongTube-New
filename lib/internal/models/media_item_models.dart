@@ -56,11 +56,12 @@ class MediaItemArtist {
     required this.mediaItems
   });
 
-  MediaSet toMediaSet() {
+  MediaSet toMediaSet({bool? isArtist}) {
     return MediaSet(
       artwork: mediaItems.first.artworkPath,
       name: artistName,
-      songs: mediaItems
+      songs: mediaItems,
+      isArtist: isArtist ?? false
     );
   }
 

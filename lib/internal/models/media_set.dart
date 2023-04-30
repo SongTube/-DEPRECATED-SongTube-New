@@ -8,7 +8,8 @@ class MediaSet<T extends Object>  {
     this.author,
     this.artwork,
     this.favorite,
-    required this.songs
+    required this.songs,
+    this.isArtist = false
   });
 
   // Id
@@ -28,5 +29,8 @@ class MediaSet<T extends Object>  {
 
   // Set Songs
   final List<SongItem> songs;
+
+  // Is this media set an Artist
+  final bool isArtist;
 
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/internal/music_brainz.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/models/song_item.dart';
@@ -104,7 +105,6 @@ class _SongTubeState extends State<SongTube> {
         builder: (context) {
           return DynamicColorBuilder(
             builder: (lightScheme, darkScheme) {
-    
               List<Locale> supportedLocales = [];
               for (var element in supportedLanguages) {
                 supportedLocales.add(Locale(element.languageCode, ''));
