@@ -3,6 +3,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:songtube/internal/models/backup_model.dart';
 import 'package:songtube/ui/sheet_phill.dart';
+import 'package:songtube/ui/sheets/snack_bar.dart';
 import 'package:songtube/ui/text_styles.dart';
 
 class BackupRestoreSheet extends StatelessWidget {
@@ -51,8 +52,11 @@ class BackupRestoreSheet extends StatelessWidget {
             title: 'Backup',
             subtitle: 'Backup all of your local data into a single file that can be used to restore later',
             icon: Iconsax.save_2,
-            onTap: () {
-              BackupModel.generateBackup(context);
+            onTap: () async {
+              await BackupModel.generateBackup(context);
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+              showSnackbar(customSnackBar: const CustomSnackBar(icon: Iconsax.save_2, title: 'Backup created'));
             }
           ),
           // Restore
@@ -60,8 +64,11 @@ class BackupRestoreSheet extends StatelessWidget {
             title: 'Restore',
             subtitle: 'Restore all your data from a backup file',
             icon: Iconsax.refresh_left_square,
-            onTap: () {
-              BackupModel.restoreBackup(context);
+            onTap: () async {
+              await BackupModel.restoreBackup(context);
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+              showSnackbar(customSnackBar: const CustomSnackBar(icon: Iconsax.refresh_left_square, title: 'Backup restored'));
             }
           ),
         ],
