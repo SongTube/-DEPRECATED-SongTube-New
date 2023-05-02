@@ -3,11 +3,14 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_fade/image_fade.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
 import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/media_playlist.dart';
 import 'package:songtube/internal/models/media_set.dart';
+import 'package:songtube/internal/music_brainz.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:validators/validators.dart';
 
 class PlaylistArtwork extends StatefulWidget {
@@ -51,7 +54,7 @@ class _PlaylistArtworkState extends State<PlaylistArtwork> {
   @override
   Widget build(BuildContext context) {
 
-    Widget _body() {
+    Widget body() {
       return ImageFiltered(
         imageFilter: ImageFilter.blur(sigmaX: widget.enableBlur ? 15 : 0, sigmaY: widget.enableBlur ? 15 : 0),
         child: Container(
@@ -85,16 +88,33 @@ class _PlaylistArtworkState extends State<PlaylistArtwork> {
     if (widget.enableHeroAnimation) {
       return Hero(
         tag: widget.mediaSet.id ?? UniqueKey(),
-        child: _body()
+        child: body()
       );
     } else {
-      return _body();
+      return body();
     }
   }
 
   Widget _image() {
     final artwork = widget.mediaSet.artwork ?? artworkFile(widget.mediaSet.songs.first.id);
     const fit = BoxFit.cover;
+    if (widget.mediaSet.isArtist) {
+      return FutureBuilder<String?>(
+        future: MusicBrainzAPI.getArtistImage(widget.mediaSet.name.trim()),
+        builder: (context, snapshot) {
+          return ImageFade(
+            placeholder: Image.asset('assets/images/artworkPlaceholder_big.png', fit: fit, width: double.infinity, height: double.infinity),
+            image: snapshot.hasData && snapshot.data != null
+              ? NetworkImage(snapshot.data!)
+              : MemoryImage(kTransparentImage) as ImageProvider,
+            fit: BoxFit.cover,
+            errorBuilder: (context, child, exception) {
+              return Image.asset('assets/images/artworkPlaceholder_big.png', fit: fit, width: double.infinity, height: double.infinity);
+            },
+          );
+        }
+      );
+    }
     if (artwork is File) {
       return Image.file(
         artwork, fit: fit, width: double.infinity, height: double.infinity,

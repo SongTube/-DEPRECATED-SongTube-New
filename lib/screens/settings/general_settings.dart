@@ -98,6 +98,39 @@ class _GeneralSettingsState extends State<GeneralSettings> {
             );
           })
         ),
+        const SizedBox(height: 12),
+        // Default landing page for Music Screen
+        SettingTileDropdown(
+          title: 'Landing Music Page',
+          subtitle: 'Change the default landing page for the Music Page',
+          leadingIcon: LineIcons.music,
+          currentValue: landingMusicPageName(AppSettings.defaultLandingMusicPage),
+          onChange: (name) {
+            if (name == null) {
+              return;
+            }
+            AppSettings.defaultLandingMusicPage = landingMusicPageNameToIndex(name);
+            setState(() {});
+          },
+          items: List.generate(5, (index) {
+            return DropdownMenuItem(
+              value: landingMusicPageName(index),
+              child: Text(landingMusicPageName(index)),
+            );
+          })
+        ),
+        // Lock Navigation Bar so it doesnt hide
+        const SizedBox(height: 12),
+        SettingTileCheckbox(
+          title: 'Lock Navigation Bar',
+          subtitle: 'Locks the navigation bar from hiding and showing automatically on scroll',
+          leadingIcon: LineIcons.lock,
+          value: AppSettings.lockNavigationBar,
+          onChange: (value) {
+            AppSettings.lockNavigationBar = value;
+            setState(() {});
+          }
+        ),
         // Automatic Picture-in-Picture mode
         const SizedBox(height: 12),
         SettingTileCheckbox(
@@ -147,6 +180,42 @@ class _GeneralSettingsState extends State<GeneralSettings> {
         return 2;
       case 'Library':
         return 3;
+      default:
+        return 0;
+    }
+  }
+
+  // Get landing page name from index for Music Screen
+  String landingMusicPageName(int index) {
+    switch (index) {
+      case 0:
+        return 'Recents';
+      case 1:
+        return 'Music';
+      case 2:
+        return 'Playlist';
+      case 3:
+        return 'Album';
+      case 4:
+        return 'Artist';
+      default:
+        return 'Recents';
+    }
+  }
+
+  // Transform landing page name to index for Music Page
+  int landingMusicPageNameToIndex(String name) {
+    switch (name) {
+      case 'Recents':
+        return 0;
+      case 'Music':
+        return 1;
+      case 'Playlist':
+        return 2;
+      case 'Album':
+        return 3;
+      case 'Artist':
+        return 4;
       default:
         return 0;
     }

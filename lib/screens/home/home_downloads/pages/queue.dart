@@ -39,11 +39,14 @@ class _DownloadsQueuePageState extends State<DownloadsQueuePage> {
   Widget _body() {
     DownloadProvider downloadProvider = Provider.of(context);
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 8).copyWith(bottom: 24),
+      padding: const EdgeInsets.only(top: 12).copyWith(bottom: 24),
       itemCount: downloadProvider.queue.length,
       itemBuilder: (context, index) {
         final item = downloadProvider.queue[index];
-        return DownloadQueueTile(item: item);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: DownloadQueueTile(item: item),
+        );
       },
     );
   }

@@ -21,6 +21,7 @@ class UiUtils {
     final navbarAnimationValue = uiProvider.fwController.navbarAnimationController.value;
     final navbarScrollStatus = uiProvider.fwController.navbarScrolledDown;
     uiProvider.fwController.lockNotificationListener = true;
+    uiProvider.onAltRoute = true;
     // Set FancyScaffold position variables so that the MediaPlayer
     // removes the bottom padding with animation
     uiProvider.fwController.navbarAnimationController.animateTo(0);
@@ -35,6 +36,7 @@ class UiUtils {
     uiProvider.fwController.navbarScrolledDown = navbarScrollStatus;
     uiProvider.fwController.navbarAnimationController.animateTo(navbarAnimationValue);
     uiProvider.fwController.lockNotificationListener = false;
+    uiProvider.onAltRoute = false;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarIconBrightness: Theme.of(context).brightness,
       statusBarIconBrightness: Theme.of(context).brightness,

@@ -59,4 +59,7 @@ class UiProvider extends ChangeNotifier {
   FloatingWidgetController fwController =
     FloatingWidgetController();
 
+  // Indicate if we are on another route different than home
+  bool onAltRoute = false;
+
 }

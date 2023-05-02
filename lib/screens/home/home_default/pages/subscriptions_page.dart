@@ -3,8 +3,10 @@ import 'package:ionicons/ionicons.dart';
 import 'package:newpipeextractor_dart/models/infoItems/channel.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/global.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
+import 'package:songtube/ui/sheets/channel_suggestions.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/tiles/channel_tile.dart';
 
@@ -25,7 +27,11 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
 
   // Open Channel Suggestions Sheet
   void openSuggestions() {
-
+    showModalBottomSheet(
+      context: internalNavigatorKey.currentContext!,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const ChannelSuggestions());
   }
 
   @override

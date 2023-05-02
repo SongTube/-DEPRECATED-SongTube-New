@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:songtube/internal/global.dart';
 
 enum ArtworkQuality { small, normal, large, original }
+
+String? get artistUserToken => sharedPreferences.getString('artistUserToken');
 
 class MusicBrainzAPI {
 
@@ -165,6 +170,42 @@ class MusicBrainzAPI {
         }
       });
       return thumbnails;
+    }
+  }
+
+  // Retrieve artist image
+  static Future<String?> getArtistImage(String name) async {
+    final client = http.Client();
+    final key = 'artistImage$name';
+    final imageUrl = sharedPreferences.getString(key);
+    // Check if image exist
+    if (imageUrl != null) {
+      return imageUrl;
+    } else {
+      // Check user token
+      if (artistUserToken == null) {
+        final tokenResponse = await client.get(Uri.parse('https://open.spotify.com/get_access_token?reason=transport&productType=web_player'));
+        if (tokenResponse.statusCode == 200) {
+          final map = jsonDecode(tokenResponse.body);
+          sharedPreferences.setString('artistUserToken', map['accessToken']);
+        }
+      }
+      // Retrieve image
+      final imageResponse = await client.get(
+        Uri.parse('https://api.spotify.com/v1/search?type=artist&q=$name&decorate_restrictions=false&best_match=true&include_external=audio&limit=1'),
+        headers: {
+          'Authorization': 'Bearer $artistUserToken' 
+        }
+      );
+      if (imageResponse.statusCode == 200) {
+        // Extract and save artist image url
+        final map = jsonDecode(imageResponse.body);
+        final url = map['best_match']['items'][0]['images'][0]['url'];
+        sharedPreferences.setString(key, url);
+        return url;
+      } else {
+        return null;
+      }
     }
   }
 

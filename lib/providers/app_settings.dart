@@ -17,6 +17,7 @@ const enableMusicPlayerBlurKey = 'enablePlayerBlurKey';
 const musicPlayerBackdropOpacityKey = 'musicPlayerBlurOpacity';
 const musicPlayerBlurStrenghtKey = 'musicPlayerBlurStrenght';
 const musicPlayerArtworkZoomKey = 'musicPlayerArtworkZoom';
+const musicPlayerLandingPage = 'musicPlayerLandingPage';
 
 // Home Screen Settings
 const defaultLandingPageKey = 'defaultLandingPage';
@@ -39,6 +40,9 @@ const lastVideoQualityKey = 'lastVideoQuality';
 // Enable Material You Colors
 const enableMaterialYouColorsKey = 'enableMaterialYouColors';
 
+// Lock Navigation Bar from hiding
+const lockNavigationBarKey = 'lockNavigationBar';
+
 class AppSettings extends ChangeNotifier {
 
   // Initialize App Settings
@@ -60,6 +64,12 @@ class AppSettings extends ChangeNotifier {
   static int get defaultLandingPage => sharedPreferences.getInt(defaultLandingPageKey) ?? 0;
   static set defaultLandingPage(int value) {
     sharedPreferences.setInt(defaultLandingPageKey, value);
+  }
+
+  // Landing Music Page
+  static int get defaultLandingMusicPage => sharedPreferences.getInt(musicPlayerLandingPage) ?? 0;
+  static set defaultLandingMusicPage(int value) {
+    sharedPreferences.setInt(musicPlayerLandingPage, value);
   }
 
   // Downloads Settings
@@ -169,6 +179,12 @@ class AppSettings extends ChangeNotifier {
   set enableMaterialYou(bool value) {
     sharedPreferences.setBool(enableMaterialYouColorsKey, value);
     notifyListeners();
+  }
+
+  // Lock Bottom Navigation Bar so it doesnt hides on scroll
+  static bool get lockNavigationBar => sharedPreferences.getBool('lockNavigationBar') ?? false;
+  static set lockNavigationBar(bool value) {
+    sharedPreferences.setBool(lockNavigationBarKey, value);
   }
 
 }
