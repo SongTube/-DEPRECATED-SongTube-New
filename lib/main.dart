@@ -1,10 +1,12 @@
 import 'package:animations/animations.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:receive_intent/receive_intent.dart' as intent;
 import 'package:songtube/internal/models/backup_model.dart';
 import 'package:songtube/internal/music_brainz.dart';
 import 'package:songtube/providers/app_settings.dart';
@@ -40,6 +42,16 @@ void main() async {
   // Initialize App Settings
   await AppSettings.initSettings();
 
+  // Check for an init intent
+  intent.Intent? initIntent;
+  try {
+    initIntent = await intent.ReceiveIntent.getInitialIntent();
+  } catch (e) {
+    if (kDebugMode) {
+      print(e.toString());
+    }
+  }
+
   // Set System UI Mode
   if ((deviceInfo.version.sdkInt ?? 28) >= 29 && false) {
     SystemChrome.setEnabledSystemUIMode(
@@ -54,12 +66,12 @@ void main() async {
   }
 
   // Run App
-  runApp(const SongTube());
+  runApp(SongTube(initIntent: initIntent));
 }
 
 class SongTube extends StatefulWidget {
-  const SongTube({Key? key}) : super(key: key);
-
+  const SongTube({this.initIntent, Key? key}) : super(key: key);
+  final intent.Intent? initIntent;
   static void setLocale(BuildContext context, Locale newLocale) {
     var state = context.findAncestorStateOfType<_SongTubeState>();
     state!.setLocale(newLocale);
@@ -169,14 +181,16 @@ class _SongTubeState extends State<SongTube> {
                           child: Navigator(
                             key: navigatorKey,
                             onGenerateRoute: (settings) {
-                              Widget widget;
+                              Widget routeWidget;
                               // Manage your route names here
                               switch (settings.name) {
                                 case 'intro':
-                                  widget = const IntroScreen();
+                                  routeWidget = const IntroScreen();
                                   break;
                                 case 'home':
-                                  widget = const HomeScreen();
+                                  routeWidget = HomeScreen(
+                                    initIntent: widget.initIntent,
+                                  );
                                   break;
                                 default:
                                   throw Exception('Invalid route: ${settings.name}');
@@ -198,7 +212,7 @@ class _SongTubeState extends State<SongTube> {
                                   );
                                 },
                                 pageBuilder: (context, animation, secondaryAnimation) {
-                                  return widget;
+                                  return routeWidget;
                                 }
                               );
                             },

@@ -54,6 +54,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   String? currentBrightnessPercentage;
   int tapId = 0;
   VideoPlaybackQuality? currentQuality;
+  bool lockPlayer = true;
 
   // Reverse and Forward Animation
   bool showReverse = false;
@@ -226,6 +227,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     });
     finishedPlaying = false;
     showAutoplay = false;
+    lockPlayer = true;
     if (controller != null) {
       controller!.removeListener(() { });
     }
@@ -242,6 +244,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         await controller?.seekTo(position);
       }
       await controller?.play();
+      lockPlayer = false;
       setState(() {isPlaying = true; buffering = false;});
       setState(() { showControls = false; showBackdrop = false; });
       widget.onAspectRatioUpdate(controller?.value.aspectRatio ?? 16/9);
@@ -261,15 +264,17 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         setState(() => buffering = false);
       }
       // AutoPlay Logic
-      final autoplayCondition = controller != null && controller?.value.position.inSeconds == controller?.value.duration.inSeconds;
-      if (autoplayCondition) {
-        if (!finishedPlaying) {
-          finishedPlaying = true;
-          controller?.pause();
-          setState(() {
-            showAutoplay = true;
-          });
-          runAutoplay();
+      if (!lockPlayer) {
+        final autoplayCondition = controller != null && controller?.value.position.inSeconds == controller?.value.duration.inSeconds;
+        if (autoplayCondition) {
+          if (!finishedPlaying) {
+            finishedPlaying = true;
+            controller?.pause();
+            setState(() {
+              showAutoplay = true;
+            });
+            runAutoplay();
+          }
         }
       }
 

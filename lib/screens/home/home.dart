@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -9,7 +11,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
+import 'package:newpipeextractor_dart/utils/url.dart';
 import 'package:provider/provider.dart';
+import 'package:receive_intent/receive_intent.dart' as intent;
 import 'package:songtube/main.dart';
 import 'package:songtube/providers/app_settings.dart';
 import 'package:songtube/internal/global.dart';
@@ -25,8 +29,10 @@ import 'package:songtube/ui/components/fancy_scaffold.dart';
 import 'package:songtube/ui/components/nested_will_pop_scope.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
+  const HomeScreen({
+    this.initIntent,
+    Key? key}) : super(key: key);
+  final intent.Intent? initIntent;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -35,6 +41,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   // Bottom Navigation Bar Current Index
   int bottomNavigationBarIndex = AppSettings.defaultLandingPage;
+
+  // Intent Listener
+  StreamSubscription? _sub;
 
   final List<Widget> screens = const [
     HomeDefault(),
@@ -47,12 +56,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _sub = intent.ReceiveIntent.receivedIntentStream.listen(processIntent, onError: (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      processIntent(widget.initIntent);
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _sub?.cancel();
     super.dispose();
+  }
+
+  void processIntent(intent.Intent? intent) async {
+    ContentProvider contentProvider = Provider.of(context, listen: false);
+    UiProvider uiProvider = Provider.of(context, listen: false);
+    final url = intent?.extra?['android.intent.extra.TEXT'];
+    if (url != null) {
+      final video = await YoutubeId.getIdFromStreamUrl(url);
+      final playlist = await YoutubeId.getIdFromPlaylistUrl(url);
+      if (video != null || playlist != null) {
+        await contentProvider.loadVideoPlayer(url);
+        uiProvider.currentPlayer = CurrentPlayer.video;
+        uiProvider.fwController.open();
+      }
+    }
   }
 
   @override

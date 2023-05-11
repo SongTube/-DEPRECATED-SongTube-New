@@ -47,6 +47,7 @@ dependencies:
   flutter_share: ^2.0.0
   wakelock: ^0.6.2
   pick_or_save: ^2.2.4
+  receive_intent: ^0.2.3
 
   # Dart advanced Streams
   rxdart: any
