@@ -8,7 +8,8 @@ import 'package:video_player/video_player.dart';
 class ContentWrapper {
 
   ContentWrapper({
-    required this.infoItem
+    required this.infoItem,
+    this.previousUrl,
   });
 
   // Video/Playlist InfoItem
@@ -37,6 +38,9 @@ class ContentWrapper {
   // Youtube Video Suggestions Controller
   VideoSuggestionsController videoSuggestionsController = VideoSuggestionsController();
 
+  // Previous ContentWrapper video url
+  String? previousUrl;
+
   Future<void> loadWrapper() async {
     if (infoItem is StreamInfoItem) {
       try {
@@ -50,8 +54,13 @@ class ContentWrapper {
           playlistDetails = await ContentService.fetchPlaylistFromInfoItem(infoItem);
           await playlistDetails!.getStreams();
         }
-        videoDetails = await ContentService.fetchVideoFromInfoItem(playlistDetails!.streams!.first);
-        selectedPlaylistIndex = 0;
+        if (previousUrl != playlistDetails?.streams?.first.url) {
+          videoDetails = await ContentService.fetchVideoFromInfoItem(playlistDetails!.streams!.first);
+          selectedPlaylistIndex = 0;
+        } else {
+          videoDetails = await ContentService.fetchVideoFromInfoItem(playlistDetails!.streams![1]);
+          selectedPlaylistIndex = 1;
+        }
       } catch (e) {
         errorMessage = e.toString();
       }

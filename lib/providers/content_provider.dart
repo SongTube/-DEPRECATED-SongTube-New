@@ -107,7 +107,7 @@ class ContentProvider extends ChangeNotifier {
   }
 
   // Load the video player with provided InfoItem
-  Future<void> loadVideoPlayer(dynamic infoItem) async {
+  Future<void> loadVideoPlayer(dynamic infoItem, {String? previousUrl}) async {
     if (infoItem == null) {
       return;
     }
@@ -116,7 +116,7 @@ class ContentProvider extends ChangeNotifier {
     // Check wheter this InfoItem is a Stream/Playlist and load accordingly
     // if a String was provided, most probably it is a URL, we can also load from that
     if (infoItem is StreamInfoItem || infoItem is PlaylistInfoItem) {
-      playingContent = ContentWrapper(infoItem: infoItem);
+      playingContent = ContentWrapper(infoItem: infoItem, previousUrl: previousUrl);
       if (infoItem is StreamInfoItem) {
         saveToHistory(infoItem);
       }

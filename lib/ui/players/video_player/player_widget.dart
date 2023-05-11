@@ -309,7 +309,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void playNext() {
     final contentProvider = Provider.of<ContentProvider>(context, listen: false);
     if (widget.content.infoItem is StreamInfoItem) {
-      contentProvider.loadVideoPlayer(contentProvider.playingContent!.videoSuggestionsController.relatedStreams?.first);
+      contentProvider.loadVideoPlayer(
+        contentProvider.playingContent!.videoSuggestionsController.relatedStreams?.first,
+        previousUrl: contentProvider.playingContent?.infoItem.url);
     } else {
       contentProvider.loadNextPlaylistVideo();
     }
