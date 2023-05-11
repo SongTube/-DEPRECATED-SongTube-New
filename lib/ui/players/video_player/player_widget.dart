@@ -125,6 +125,9 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       });
       if (controller?.value.isPlaying ?? false) {
         Future.delayed(const Duration(seconds: 5), () {
+          if (!(controller?.value.isPlaying ?? true)) {
+            return;
+          }
           if (currentId == tapId && mounted && showControls == true && !isSeeking) {
             setState(() {
               showControls = false;
@@ -570,6 +573,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                       } else {
                         await controller?.play();
                         isPlaying = true;
+                        showControlsHandler();
                       }
                       setState(() {});
                     },
