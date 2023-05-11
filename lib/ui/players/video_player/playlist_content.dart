@@ -68,78 +68,82 @@ class _VideoPlayerPlaylistContentState extends State<VideoPlayerPlaylistContent>
       child: Column(
         children: [
           // Playlist Details
-          SizedBox(
-            height: kToolbarHeight*1.5-16,
-            child: Column(
-              children: [
-                AnimatedBuilder(
-                  animation: panelController!.animationController,
-                  builder: (context, snapshot) {
-                    return BottomSheetPhill(
-                      color: ColorTween(begin: Colors.white.withOpacity(0.6), end: Colors.grey.withOpacity(0.2)).animate(panelController!.animationController).value,
-                    );
-                  }
-                ),
-                const SizedBox(height: 8),
-                // Next to play
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnimatedBuilder(
-                      animation: panelController!.animationController,
-                      builder: (context, snapshot) {
-                        final iconColor = ColorTween(begin: Colors.white, end: Theme.of(context).iconTheme.color).animate(panelController!.animationController).value;
-                        return Icon(Ionicons.list, color: iconColor);
-                      }
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: AnimatedBuilder(
+          GestureDetector(
+            onTap: panelController?.open,
+            child: Container(
+              height: kToolbarHeight*1.5-16,
+              color: Colors.transparent,
+              child: Column(
+                children: [
+                  AnimatedBuilder(
+                    animation: panelController!.animationController,
+                    builder: (context, snapshot) {
+                      return BottomSheetPhill(
+                        color: ColorTween(begin: Colors.white.withOpacity(0.6), end: Colors.grey.withOpacity(0.2)).animate(panelController!.animationController).value,
+                      );
+                    }
+                  ),
+                  const SizedBox(height: 8),
+                  // Next to play
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedBuilder(
                         animation: panelController!.animationController,
-                        builder: (context, child) {
-                          final textColor = ColorTween(begin: Colors.white, end: Theme.of(context).textTheme.bodyText1!.color).animate(panelController!.animationController).value;
-                          final subTextColor = ColorTween(begin: Colors.white.withOpacity(0.6), end: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.7)).animate(panelController!.animationController).value;
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(widget.content.playlistDetails == null ? 'Loading playlist...' : hasNextVideo ? 'Next: ${nextVideo.name}' : 'Playlist reached the end', maxLines: 1, style: smallTextStyle(context, bold: true).copyWith(color: textColor), overflow: TextOverflow.ellipsis),
-                              Text('${(widget.content.infoItem as PlaylistInfoItem).name}', maxLines: 1, style: tinyTextStyle(context, opacity: 0.7).copyWith(color: subTextColor), overflow: TextOverflow.ellipsis),
-                            ],
-                          );
-                        },
+                        builder: (context, snapshot) {
+                          final iconColor = ColorTween(begin: Colors.white, end: Theme.of(context).iconTheme.color).animate(panelController!.animationController).value;
+                          return Icon(Ionicons.list, color: iconColor);
+                        }
                       ),
-                    ),
-                    SizedBox(
-                      height: kToolbarHeight*1.5-46,
-                      child: IconButton(
-                        onPressed: () {
-                          final containsPlaylist = contentProvider.streamPlaylists.any((element) => element.name == widget.content.playlistDetails?.name);
-                          if (containsPlaylist) {
-                            contentProvider.streamPlaylistRemove(widget.content.playlistDetails!.name!);
-                          } else {
-                            contentProvider.streamPlaylistCreate(widget.content.playlistDetails!.name!, widget.content.playlistDetails!.uploaderName!, widget.content.playlistDetails!.streams!);
-                          }
-                        },
-                        icon: AnimatedBuilder(
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: AnimatedBuilder(
                           animation: panelController!.animationController,
-                          builder: (context, snapshot) {
-                            final containsPlaylist = contentProvider.streamPlaylists.any((element) => element.name == widget.content.playlistDetails?.name);
-                            final color = containsPlaylist
-                              ? ColorTween(begin: Colors.white, end: Colors.red).animate(panelController!.animationController).value
-                              : ColorTween(begin: Colors.white.withOpacity(0.6), end: Theme.of(context).iconTheme.color).animate(panelController!.animationController).value;
-                            return AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              child: Icon(containsPlaylist ? Ionicons.heart : Ionicons.heart_outline, key: ValueKey(containsPlaylist), size: 20, color: color));
-                          }
-                        )
+                          builder: (context, child) {
+                            final textColor = ColorTween(begin: Colors.white, end: Theme.of(context).textTheme.bodyText1!.color).animate(panelController!.animationController).value;
+                            final subTextColor = ColorTween(begin: Colors.white.withOpacity(0.6), end: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.7)).animate(panelController!.animationController).value;
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(widget.content.playlistDetails == null ? 'Loading playlist...' : hasNextVideo ? 'Next: ${nextVideo.name}' : 'Playlist reached the end', maxLines: 1, style: smallTextStyle(context, bold: true).copyWith(color: textColor), overflow: TextOverflow.ellipsis),
+                                Text('${(widget.content.infoItem as PlaylistInfoItem).name}', maxLines: 1, style: tinyTextStyle(context, opacity: 0.7).copyWith(color: subTextColor), overflow: TextOverflow.ellipsis),
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ),
-              ],
+                      SizedBox(
+                        height: kToolbarHeight*1.5-46,
+                        child: IconButton(
+                          onPressed: () {
+                            final containsPlaylist = contentProvider.streamPlaylists.any((element) => element.name == widget.content.playlistDetails?.name);
+                            if (containsPlaylist) {
+                              contentProvider.streamPlaylistRemove(widget.content.playlistDetails!.name!);
+                            } else {
+                              contentProvider.streamPlaylistCreate(widget.content.playlistDetails!.name!, widget.content.playlistDetails!.uploaderName!, widget.content.playlistDetails!.streams!);
+                            }
+                          },
+                          icon: AnimatedBuilder(
+                            animation: panelController!.animationController,
+                            builder: (context, snapshot) {
+                              final containsPlaylist = contentProvider.streamPlaylists.any((element) => element.name == widget.content.playlistDetails?.name);
+                              final color = containsPlaylist
+                                ? ColorTween(begin: Colors.white, end: Colors.red).animate(panelController!.animationController).value
+                                : ColorTween(begin: Colors.white.withOpacity(0.6), end: Theme.of(context).iconTheme.color).animate(panelController!.animationController).value;
+                              return AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: Icon(containsPlaylist ? Ionicons.heart : Ionicons.heart_outline, key: ValueKey(containsPlaylist), size: 20, color: color));
+                            }
+                          )
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           // Playlist Videos
