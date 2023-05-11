@@ -229,12 +229,13 @@ class DownloadItem {
     // Try fetch content-length
     int contentLengthTries = 0;
     if (streamToDownload.size == null) {
-      while (contentLengthTries < 4) {
-        streamToDownload.size = await MediaUtils.getContentSize(streamToDownload.url);
+      while (contentLengthTries <= 4) {
+        streamToDownload.size = await MediaUtils.getContentSize(streamToDownload.url, timeout: 3*(contentLengthTries+1));
         if (streamToDownload.size != null) {
           break;
         } else {
-          print('content size null, retrying...');
+          contentLengthTries +=1;
+          print('content size null after ${3*(contentLengthTries+1)} seconds, retrying...');
         }
       }
     }

@@ -275,9 +275,9 @@ class MediaUtils {
     .codeUnitAt(Random().nextInt(_letters.length))
   ));
 
-  static Future<int?> getContentSize(String url) async {
+  static Future<int?> getContentSize(String url, {int? timeout}) async {
     try {
-      var response = await head(Uri.parse(url), headers: const {}).timeout(const Duration(seconds: 3));
+      var response = await head(Uri.parse(url), headers: const {}).timeout(Duration(seconds: timeout ?? 3));
       final size = int.tryParse(response.headers['content-length']!);
       return size;
     } catch (_) {}
