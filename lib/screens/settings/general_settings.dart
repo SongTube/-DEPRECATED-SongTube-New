@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -76,6 +77,18 @@ class _GeneralSettingsState extends State<GeneralSettings> {
           onChange: (_) => updateThemeMode(),
           value: uiProvider.themeMode == ThemeMode.dark,
           enabled: uiProvider.themeMode != ThemeMode.system,
+        ),
+        const SizedBox(height: 12),
+        // Enable/Disable Watch History
+        SettingTileCheckbox(
+          leadingIcon: Iconsax.video_play,
+          title: 'Pause Watch History',
+          subtitle: 'While paused, videos are not saved into the watch history list',
+          onChange: (_) {
+            AppSettings.enableWatchHistory = !AppSettings.enableWatchHistory;
+            setState(() {});
+          },
+          value: !AppSettings.enableWatchHistory,
         ),
         const SizedBox(height: 12),
         // Default landing page
