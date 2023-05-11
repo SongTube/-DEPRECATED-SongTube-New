@@ -228,7 +228,7 @@ class _VideoPlayerContentState extends State<VideoPlayerContent> with TickerProv
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(infoItem?.name ?? videoInfo?.name ?? '', style: textStyle(context), maxLines: 2, overflow: TextOverflow.ellipsis),
-                        Text((views.contains('-1') ? "" : ("$views  •  ${timeago.format(DateTime.parse(date), locale: 'en')}")), style: tinyTextStyle(context, opacity: 0.8).copyWith(letterSpacing: 0.1, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text((views.contains('-1') ? "" : ("$views  •  ${date.isNotEmpty ? timeago.format(DateTime.parse(date), locale: 'en') : ''}")), style: tinyTextStyle(context, opacity: 0.8).copyWith(letterSpacing: 0.1, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
                       ],
                     )
                   ),
