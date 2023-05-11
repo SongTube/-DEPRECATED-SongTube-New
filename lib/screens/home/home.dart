@@ -167,17 +167,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           if (uiProvider.onAltRoute) {
             return Future.value(true);
           } else {
-            if (contentProvider.searchContent != null) {
-              contentProvider.clearSearchContent();
-              return Future.value(false);
-            }
             if (contentProvider.searchFocusNode.hasFocus) {
               contentProvider.searchFocusNode.unfocus();
               contentProvider.setState();
               return Future.value(false);
-            } else {
-              return Future.value(true);
             }
+            if (contentProvider.searchContent != null) {
+              contentProvider.clearSearchContent();
+              return Future.value(false);
+            }
+            return Future.value(true);
           }
         }
       },
