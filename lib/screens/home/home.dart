@@ -158,77 +158,78 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
     final ContentProvider contentProvider = Provider.of(context);
     final UiProvider uiProvider = Provider.of(context);
-    return FancyScaffold(
-      body: PageTransitionSwitcher(
-        transitionBuilder: (
-          Widget child,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          return FadeThroughTransition(
-            fillColor: Colors.transparent,
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            child: child,
-          );
-        },
-        duration: const Duration(milliseconds: 300),
-        child: NestedWillPopScope(
-          onWillPop: () {
-            if (uiProvider.fwController.isPanelOpen) {
-              uiProvider.fwController.close();
+    return NestedWillPopScope(
+      onWillPop: () {
+        if (uiProvider.fwController.isPanelOpen) {
+          uiProvider.fwController.close();
+          return Future.value(false);
+        } else {
+          if (uiProvider.onAltRoute) {
+            return Future.value(true);
+          } else {
+            if (contentProvider.searchContent != null) {
+              contentProvider.clearSearchContent();
+              return Future.value(false);
+            }
+            if (contentProvider.searchFocusNode.hasFocus) {
+              contentProvider.searchFocusNode.unfocus();
+              contentProvider.setState();
               return Future.value(false);
             } else {
-              if (uiProvider.onAltRoute) {
-                return Future.value(true);
-              } else {
-                if (contentProvider.searchContent != null) {
-                  contentProvider.clearSearchContent();
-                  return Future.value(false);
-                }
-                if (contentProvider.searchFocusNode.hasFocus) {
-                  contentProvider.searchFocusNode.unfocus();
-                  setState(() {});
-                  return Future.value(false);
-                } else {
-                  return Future.value(true);
-                }
-              }
+              return Future.value(true);
             }
+          }
+        }
+      },
+      child: FancyScaffold(
+        body: PageTransitionSwitcher(
+          transitionBuilder: (
+            Widget child,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) {
+            return FadeThroughTransition(
+              fillColor: Colors.transparent,
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+              child: child,
+            );
           },
-          child: screens[bottomNavigationBarIndex])
-      ),
-      bottomNavigationBar: SongTubeNavigation(
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        selectedIndex: bottomNavigationBarIndex,
-        backgroundColor: Theme.of(context).cardColor,
-        onItemTap: (int tappedIndex) {
-          setState(() {
-            bottomNavigationBarIndex = tappedIndex;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Ionicons.home_outline),
-            selectedIcon: Icon(Ionicons.home, color: Colors.white),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Ionicons.musical_note_outline),
-            selectedIcon: Icon(Ionicons.musical_note, color: Colors.white),
-            label: 'Music',
-          ),
-          NavigationDestination(
-            icon: Icon(Ionicons.cloud_download_outline),
-            selectedIcon: Icon(Ionicons.cloud_download, color: Colors.white),
-            label: 'Downloads',
-          ),
-          NavigationDestination(
-            icon: Icon(Ionicons.library_outline),
-            selectedIcon: Icon(Ionicons.library, color: Colors.white),
-            label: 'Library',
-          ),
-        ],
+          duration: const Duration(milliseconds: 300),
+          child: screens[bottomNavigationBarIndex]
+        ),
+        bottomNavigationBar: SongTubeNavigation(
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          selectedIndex: bottomNavigationBarIndex,
+          backgroundColor: Theme.of(context).cardColor,
+          onItemTap: (int tappedIndex) {
+            setState(() {
+              bottomNavigationBarIndex = tappedIndex;
+            });
+          },
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Ionicons.home_outline),
+              selectedIcon: Icon(Ionicons.home, color: Colors.white),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Ionicons.musical_note_outline),
+              selectedIcon: Icon(Ionicons.musical_note, color: Colors.white),
+              label: 'Music',
+            ),
+            NavigationDestination(
+              icon: Icon(Ionicons.cloud_download_outline),
+              selectedIcon: Icon(Ionicons.cloud_download, color: Colors.white),
+              label: 'Downloads',
+            ),
+            NavigationDestination(
+              icon: Icon(Ionicons.library_outline),
+              selectedIcon: Icon(Ionicons.library, color: Colors.white),
+              label: 'Library',
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -83,6 +83,9 @@ class SongTube extends StatefulWidget {
 
 class _SongTubeState extends State<SongTube> {
 
+  // Intent
+  intent.Intent? get initIntent => widget.initIntent;
+
   // Language
   Locale? _locale;
   void setLocale(Locale locale) {
@@ -181,15 +184,15 @@ class _SongTubeState extends State<SongTube> {
                           child: Navigator(
                             key: navigatorKey,
                             onGenerateRoute: (settings) {
-                              Widget routeWidget;
+                              Widget widget;
                               // Manage your route names here
                               switch (settings.name) {
                                 case 'intro':
-                                  routeWidget = const IntroScreen();
+                                  widget = const IntroScreen();
                                   break;
                                 case 'home':
-                                  routeWidget = HomeScreen(
-                                    initIntent: widget.initIntent,
+                                  widget = HomeScreen(
+                                    initIntent: initIntent
                                   );
                                   break;
                                 default:
@@ -212,7 +215,7 @@ class _SongTubeState extends State<SongTube> {
                                   );
                                 },
                                 pageBuilder: (context, animation, secondaryAnimation) {
-                                  return routeWidget;
+                                  return widget;
                                 }
                               );
                             },
