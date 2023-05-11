@@ -29,6 +29,13 @@ class PlaylistTileCollapsed extends StatelessWidget {
         contentProvider.loadVideoPlayer(playlist);
         uiProvider.fwController.open();
       } : () {},
+      onLongPress: () {
+        showModalBottomSheet(
+          context: internalNavigatorKey.currentContext!,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => InfoItemOptions(infoItem: playlist));
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,6 +156,13 @@ class PlaylistTileExpanded extends StatelessWidget {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(playlist);
         uiProvider.fwController.open();
+      },
+      onLongPress: () {
+        showModalBottomSheet(
+          context: internalNavigatorKey.currentContext!,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => InfoItemOptions(infoItem: playlist));
       },
       child: Column(
         children: [

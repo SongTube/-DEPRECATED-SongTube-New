@@ -42,6 +42,13 @@ class StreamTileCollapsed extends StatelessWidget {
         contentProvider.loadVideoPlayer(stream);
         uiProvider.fwController.open();
       } :() {},
+      onLongPress: () {
+        showModalBottomSheet(
+          context: internalNavigatorKey.currentContext!,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => InfoItemOptions(infoItem: stream));
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,6 +164,13 @@ class StreamTileExpanded extends StatelessWidget {
         uiProvider.currentPlayer = CurrentPlayer.video;
         contentProvider.loadVideoPlayer(stream);
         uiProvider.fwController.open();
+      },
+      onLongPress: () {
+        showModalBottomSheet(
+          context: internalNavigatorKey.currentContext!,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => InfoItemOptions(infoItem: stream));
       },
       child: Column(
         children: [
