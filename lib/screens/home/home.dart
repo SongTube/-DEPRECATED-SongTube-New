@@ -111,6 +111,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             );
           }
         }
+        ContentProvider contentProvider = Provider.of(context, listen: false);
+        contentProvider.setState();
         break;
       case AppLifecycleState.inactive:
         if (kDebugMode) {

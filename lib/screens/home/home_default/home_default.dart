@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:newpipeextractor_dart/utils/url.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
@@ -25,7 +27,7 @@ class HomeDefault extends StatefulWidget {
   State<HomeDefault> createState() => _HomeDefaultState();
 }
 
-class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin {
+class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin, WidgetsBindingObserver {
 
   // TabBar Controller
   late TabController tabController = TabController(length: 4, vsync: this);
@@ -34,6 +36,18 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
   late TextEditingController searchController = TextEditingController()..addListener(() {
     setState(() {});
   });
+
+  // Youtube Link Check
+  Future<String?> clipboardLink() async {
+    final link = await Clipboard.getData(Clipboard.kTextPlain);
+    final video = await YoutubeId.getIdFromStreamUrl(link?.text ?? '');
+    final playlist = await YoutubeId.getIdFromPlaylistUrl(link?.text ?? '');
+    if (video != null || playlist != null) {
+      return link!.text;
+    } else {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +161,24 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
                               },
                               child: Icon(Icons.clear, color: Theme.of(context).iconTheme.color, size: 18),
                             ),
+                            FutureBuilder<String?>(
+                              future: clipboardLink(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData && snapshot.data != null) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(left: 12),
+                                    child: CustomInkWell(
+                                      onTap: () {
+                                        contentProvider.loadVideoPlayer(snapshot.data);
+                                      },
+                                      child: Icon(Icons.link_rounded, color: Theme.of(context).primaryColor, size: 18),
+                                    ),
+                                  );
+                                } else {
+                                  return const SizedBox();
+                                }
+                              },
+                            )
                           ],
                         ),
                       ),
