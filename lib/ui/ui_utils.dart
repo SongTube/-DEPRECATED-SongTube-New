@@ -11,6 +11,7 @@ import 'package:songtube/main.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:songtube/providers/ui_provider.dart';
+import 'package:songtube/ui/sheets/info_item_options.dart';
 
 class UiUtils {
   
@@ -109,6 +110,15 @@ class UiUtils {
       replyPort.send(avatarUrl);
       break;
     }
+  }
+
+  // Show options for any info item
+  static void showInfoItemOptions(dynamic infoItem, {Function()? onDelete}) {
+    showModalBottomSheet(
+      context: internalNavigatorKey.currentContext!,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => InfoItemOptions(infoItem: infoItem, onDelete: onDelete));
   }
 
 }

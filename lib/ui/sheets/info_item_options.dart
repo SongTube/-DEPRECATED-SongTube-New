@@ -15,8 +15,10 @@ import 'package:songtube/ui/text_styles.dart';
 class InfoItemOptions extends StatelessWidget {
   const InfoItemOptions({
     required this.infoItem,
+    this.onDelete,
     super.key});
   final dynamic infoItem;
+  final Function()? onDelete;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
@@ -106,6 +108,11 @@ class InfoItemOptions extends StatelessWidget {
               );
             }
           ),
+          if (onDelete != null)
+          _optionTile(context, title: 'Delete', subtitle: 'Removes this video from this list', icon: LineIcons.trash, onTap: () {
+            Navigator.pop(context);
+            onDelete!();
+          })
         ],
       ),
     );
@@ -121,7 +128,7 @@ class InfoItemOptions extends StatelessWidget {
           children: [
             AspectRatio(
               aspectRatio: 1,
-              child: Icon(icon, color: icon == LineIcons.trash ? Colors.red : Theme.of(context).primaryColor),
+              child: Icon(icon, color: Theme.of(context).primaryColor),
             ),
             const SizedBox(width: 16),
             Expanded(

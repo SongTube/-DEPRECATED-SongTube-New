@@ -25,6 +25,7 @@ class StreamTileCollapsed extends StatelessWidget {
     this.onTap,
     this.isEditable = true,
     this.showChannelName = true,
+    this.onDelete,
     super.key});
   final StreamInfoItem stream;
   /// By default, onTap loads this video on the content provider, but
@@ -32,6 +33,7 @@ class StreamTileCollapsed extends StatelessWidget {
   final Function()? onTap;
   final bool isEditable;
   final bool showChannelName;
+  final Function()? onDelete;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
@@ -43,11 +45,7 @@ class StreamTileCollapsed extends StatelessWidget {
         uiProvider.fwController.open();
       } :() {},
       onLongPress: () {
-        showModalBottomSheet(
-          context: internalNavigatorKey.currentContext!,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (context) => InfoItemOptions(infoItem: stream));
+        UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -136,11 +134,7 @@ class StreamTileCollapsed extends StatelessWidget {
           if (isEditable)
           IconButton(
             onPressed: () {
-              showModalBottomSheet(
-                context: internalNavigatorKey.currentContext!,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => InfoItemOptions(infoItem: stream));
+              UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
             },
             icon: Icon(Icons.more_vert, size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8))
           )
@@ -153,8 +147,10 @@ class StreamTileCollapsed extends StatelessWidget {
 class StreamTileExpanded extends StatelessWidget {
   const StreamTileExpanded({
     required this.stream,
+    this.onDelete,
     super.key});
   final StreamInfoItem stream;
+  final Function()? onDelete;
   @override
   Widget build(BuildContext context) {
     ContentProvider contentProvider = Provider.of(context);
@@ -166,11 +162,7 @@ class StreamTileExpanded extends StatelessWidget {
         uiProvider.fwController.open();
       },
       onLongPress: () {
-        showModalBottomSheet(
-          context: internalNavigatorKey.currentContext!,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (context) => InfoItemOptions(infoItem: stream));
+        UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
       },
       child: Column(
         children: [
@@ -266,11 +258,7 @@ class StreamTileExpanded extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            showModalBottomSheet(
-              context: internalNavigatorKey.currentContext!,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              builder: (context) => InfoItemOptions(infoItem: stream));
+            UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
           },
           icon: Icon(Icons.more_vert, size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8))
         )

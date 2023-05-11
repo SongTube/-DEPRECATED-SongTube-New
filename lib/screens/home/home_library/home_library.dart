@@ -83,9 +83,9 @@ class _HomeLibraryState extends State<HomeLibrary> {
                   child: Icon(LineIcons.history, color: Theme.of(context).primaryColor)),
                 title: Text('Watch History', style: subtitleTextStyle(context, bold: true)),
                 subtitle: Text('Look at which videos you have seen', style: smallTextStyle(context, opacity: 0.8)),
-                onTap: () {
-                  UiUtils.pushRouteAsync(context, const WatchHistoryPage());
-                  
+                onTap: () async {
+                  await UiUtils.pushRouteAsync(context, const WatchHistoryPage());
+                  setState(() {});
                 },
               ),
             ),

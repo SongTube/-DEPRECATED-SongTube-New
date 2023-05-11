@@ -166,7 +166,7 @@ class ContentProvider extends ChangeNotifier {
   }
 
   // Save video to Watch History
-  Future<void> saveToHistory(StreamInfoItem video) async {
+  static Future<void> saveToHistory(StreamInfoItem video) async {
     if (AppSettings.enableWatchHistory) {
       String? json = sharedPreferences.getString('watchHistory');
       if (json == null) {
@@ -188,6 +188,24 @@ class ContentProvider extends ChangeNotifier {
         } else {
           history.insert(0, video);
         }
+        map = history.map((e) => e.toMap()).toList();
+        sharedPreferences.setString('watchHistory', jsonEncode(map));
+      }
+    }
+  }
+  // Remove video from Watch History
+  static Future<void> removeFromHistory(StreamInfoItem video) async {
+    String? json = sharedPreferences.getString('watchHistory');
+    if (json != null) {
+      List<StreamInfoItem> history = [];
+      var map = jsonDecode(json);
+      if (map.isNotEmpty) {
+        map.forEach((element) {
+          history.add(StreamInfoItem.fromMap(element));
+        });
+      }
+      if (history.indexWhere((element) => element.url == video.url) != -1) {
+        history.removeAt(history.indexWhere((element) => video.url == element.url));
         map = history.map((e) => e.toMap()).toList();
         sharedPreferences.setString('watchHistory', jsonEncode(map));
       }

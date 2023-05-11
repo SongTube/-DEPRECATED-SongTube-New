@@ -11,19 +11,21 @@ class InfoItemRenderer extends StatelessWidget {
     required this.infoItem,
     this.expandItem = false,
     this.editable = true,
+    this.onDelete,
     super.key});
   final dynamic infoItem;
   final bool expandItem;
   final bool editable;
+  final Function()? onDelete;
   @override
   Widget build(BuildContext context) {
     if (infoItem is ChannelInfoItem) {
       return ChannelTile(channel: infoItem, size: ChannelTileSize.big);
     } else if (infoItem is StreamInfoItem) {
       if (expandItem) {
-        return StreamTileExpanded(stream: infoItem);
+        return StreamTileExpanded(stream: infoItem, onDelete: onDelete);
       } else {
-        return StreamTileCollapsed(stream: infoItem);
+        return StreamTileCollapsed(stream: infoItem, onDelete: onDelete);
       }
     } else if (infoItem is PlaylistInfoItem) {
       if (expandItem) {
