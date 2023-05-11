@@ -39,11 +39,19 @@ class _HomeDefaultState extends State<HomeDefault> with TickerProviderStateMixin
 
   // Youtube Link Check
   Future<String?> clipboardLink() async {
-    final link = await Clipboard.getData(Clipboard.kTextPlain);
-    final video = await YoutubeId.getIdFromStreamUrl(link?.text ?? '');
-    final playlist = await YoutubeId.getIdFromPlaylistUrl(link?.text ?? '');
-    if (video != null || playlist != null) {
-      return link!.text;
+    final link = (await Clipboard.getData(Clipboard.kTextPlain))?.text;
+    if (link != null) {
+      if (link.isNotEmpty) {
+        final video = await YoutubeId.getIdFromStreamUrl(link);
+        final playlist = await YoutubeId.getIdFromPlaylistUrl(link);
+        if (video != null || playlist != null) {
+          return link;
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
