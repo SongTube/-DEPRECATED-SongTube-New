@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:newpipeextractor_dart/newpipeextractor_dart.dart';
 import 'package:songtube/internal/cache_utils.dart';
+import 'package:songtube/internal/global.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/providers/content_provider.dart';
 import 'package:songtube/ui/info_item_renderer.dart';
+import 'package:songtube/ui/sheets/common_sheet.dart';
 import 'package:songtube/ui/text_styles.dart';
 
 class WatchHistoryPage extends StatefulWidget {
@@ -16,7 +19,7 @@ class WatchHistoryPage extends StatefulWidget {
 
 class _WatchHistoryPageState extends State<WatchHistoryPage> {
 
-  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   // Remove Item
   void removeItem(dynamic infoItem) async {
@@ -51,6 +54,49 @@ class _WatchHistoryPageState extends State<WatchHistoryPage> {
                     style: textStyle(context)
                   ),
                 ),
+                IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
+                      return CommonSheet(
+                        title: 'Clear Watch History',
+                        body: Text('You\'re about to delete all your watch history videos, this action cannot be undone, proceed?', style: subtitleTextStyle(context, opacity: 0.8)),
+                        actions: [
+                          // Cancel Button
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 12, right: 12),
+                              child: Text('Cancel', style: smallTextStyle(context)),
+                            )
+                          ),
+                          // Delete button
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: BorderRadius.circular(100)
+                            ),
+                            child: TextButton(
+                              onPressed: () {
+                                sharedPreferences.remove('watchHistory');
+                                setState(() {
+                                  listKey = GlobalKey<AnimatedListState>();
+                                });
+                                Navigator.pop(context);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 12, right: 12),
+                                child: Text('Delete', style: smallTextStyle(context).copyWith(color: Colors.white)),
+                              )
+                            ),
+                          ),
+                        ],
+                      );
+                    });
+                  },
+                  icon: const Icon(Iconsax.video_remove),
+                )
               ],
             ),
           ),
