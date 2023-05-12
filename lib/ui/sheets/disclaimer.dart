@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:songtube/ui/sheets/common_sheet.dart';
 import 'package:songtube/ui/text_styles.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class DisclaimerSheet extends StatelessWidget {
   const DisclaimerSheet({super.key});
@@ -28,7 +27,6 @@ class DisclaimerSheet extends StatelessWidget {
           ),
           child: TextButton(
             onPressed: () async {
-              launchUrlString("https://t.me/songtubechannel");
               Navigator.pop(context);
             },
             child: Padding(
