@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.1+10
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
@@ -48,6 +48,7 @@ dependencies:
   wakelock: ^0.6.2
   pick_or_save: ^2.2.4
   receive_intent: ^0.2.3
+  flutter_widget_from_html_core: ^0.10.0
 
   # Dart advanced Streams
   rxdart: any
@@ -63,7 +64,9 @@ dependencies:
 
   # Audio Tagger, Music Data Extractor
   audio_tagger:
-    path: ../Projects/audio_tagger
+    git:
+      url: https://github.com/SongTube/audio_tagger
+      ref: main
 
   # CrossFade Images
   image_fade:
@@ -120,6 +123,12 @@ dependencies:
   # ID Generator
   uuid: ^3.0.6
 
+  # Picture in Picture
+  flutter_pip:
+    git:
+      url: https://github.com/SongTube/flutter_pip
+      ref: main
+
   # Aditional UI Stuff I'm too lazy to do myself
   roundcheckbox: ^2.0.4+1
   auto_animated: ^3.0.1
@@ -136,7 +145,9 @@ dependencies:
 
   # FFmpeg
   flutter_ffmpeg:
-    path: ../Projects/flutter-ffmpeg
+    git:
+      url: https://github.com/SongTube/flutter-ffmpeg
+      ref: master
 
 dev_dependencies:
   flutter_test:
