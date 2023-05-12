@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/artwork_manager.dart';
 import 'package:songtube/internal/global.dart';
@@ -15,12 +16,14 @@ import 'package:songtube/internal/media_utils.dart';
 import 'package:songtube/internal/models/audio_tags.dart';
 import 'package:songtube/internal/models/music_brainz_record.dart';
 import 'package:songtube/internal/models/song_item.dart';
+import 'package:songtube/main.dart';
 import 'package:songtube/pages/music_brainz_search.dart';
 import 'package:songtube/providers/media_provider.dart';
 import 'package:songtube/services/music_brainz_service.dart';
 import 'package:songtube/ui/animations/blue_page_route.dart';
 import 'package:songtube/ui/components/custom_snackbar.dart';
 import 'package:songtube/ui/components/text_icon_button.dart';
+import 'package:songtube/ui/sheets/common_sheet.dart';
 import 'package:songtube/ui/text_styles.dart';
 import 'package:songtube/ui/tiles/text_field_tile.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -54,7 +57,55 @@ class _ID3EditorState extends State<ID3Editor> {
   @override
   void initState() {
     loadTagsControllers();
+    checkPermissions();
     super.initState();
+  }
+
+  // Check for all file access permissions
+  void checkPermissions() async {
+    final status = await Permission.manageExternalStorage.status;
+    if (status.isDenied || status.isPermanentlyDenied) {
+      // Show Bottom Sheet
+      showModalBottomSheet(context: internalNavigatorKey.currentContext!, backgroundColor: Colors.transparent, isScrollControlled: true, builder: (context) {
+        return CommonSheet(
+          title: 'Permissions required',
+          body: Text('All file access permission is required for SongTube to edit any song on your device', style: subtitleTextStyle(context, opacity: 0.8)),
+          actions: [
+            // Cancel Button
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 12, right: 12),
+                child: Text('Cancel', style: smallTextStyle(context)),
+              )
+            ),
+            // Delete button
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(100)
+              ),
+              child: TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final result = await Permission.manageExternalStorage.request();
+                  if (result.isDenied || result.isPermanentlyDenied) {
+                    Navigator.pop(context);
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 12),
+                  child: Text('Grant', style: smallTextStyle(context).copyWith(color: Colors.white)),
+                )
+              ),
+            ),
+          ],
+        );
+      });
+    }
   }
 
   @override
