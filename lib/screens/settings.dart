@@ -3,6 +3,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:songtube/screens/settings/download_settings.dart';
 import 'package:songtube/screens/settings/general_settings.dart';
 import 'package:songtube/screens/settings/music_player_settings.dart.dart';
+import 'package:songtube/screens/settings/pages_settings.dart';
 import 'package:songtube/ui/rounded_tab_indicator.dart';
 import 'package:songtube/ui/text_styles.dart';
 
@@ -16,11 +17,11 @@ class ConfigurationScreen extends StatefulWidget {
 class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerProviderStateMixin {
 
   // TabBar Controller
-  late TabController tabController = TabController(length: 3, vsync: this);
+  late TabController tabController = TabController(length: 4, vsync: this);
 
   final List<Widget> pages = const [
     GeneralSettings(),
-    // CustomizationSettings(),
+    PagesSettings(),
     DownloadSettings(),
     MusicPlayerSettings()
   ];
@@ -43,7 +44,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> with TickerPr
           // General Settings
           Tab(child: Text('General')),
           // Customization Settings
-          // Tab(child: Text('Customization')),
+          Tab(child: Text('Pages')),
           // Download Settings
           Tab(child: Text('Downloads')),
           // Music Player Settings
