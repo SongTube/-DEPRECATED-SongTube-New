@@ -83,8 +83,7 @@ class StreamTileCollapsed extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.6),
                         borderRadius: BorderRadius.circular(100)),
-                    child: Text(
-                      Text(UiUtils.timeFormatter(stream.duration!),
+                    child: Text(UiUtils.timeFormatter(stream.duration!),
                         style: tinyTextStyle(context, bold: false)
                             .copyWith(color: Colors.white, letterSpacing: 0.4, fontSize: 10)),
                   ),
@@ -259,7 +258,7 @@ class StreamTileExpanded extends StatelessWidget {
               UiUtils.showInfoItemOptions(stream, onDelete: onDelete);
             },
             icon: Icon(Icons.more_vert,
-                size: 20, color: Theme.of(context).iconTheme.color)!.withOpacity(0.8))
+                size: 20, color: Theme.of(context).iconTheme.color!.withOpacity(0.8)))
       ],
     );
   }
