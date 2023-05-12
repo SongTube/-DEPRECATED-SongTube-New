@@ -50,3 +50,6 @@ late AudioHandler audioHandler;
 
 // Support for PictureInPicture
 late bool isPictureInPictureSupported;
+
+// First run
+bool get appFirstRun => sharedPreferences.getBool('appFirstRun') ?? true;

@@ -27,6 +27,8 @@ import 'package:songtube/screens/home/home_music/home_music.dart';
 import 'package:songtube/ui/components/bottom_navigation_bar.dart';
 import 'package:songtube/ui/components/fancy_scaffold.dart';
 import 'package:songtube/ui/components/nested_will_pop_scope.dart';
+import 'package:songtube/ui/sheets/disclaimer.dart';
+import 'package:songtube/ui/sheets/join_telegram.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -61,7 +63,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print(e.toString());
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      // Check first run
+      if (appFirstRun) {
+        // Show Disclaimer
+        await showModalBottomSheet(
+          context: internalNavigatorKey.currentContext!,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const DisclaimerSheet());
+        // Show join telegram
+        await showModalBottomSheet(
+          context: internalNavigatorKey.currentContext!,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const JoinTelegramSheet());
+        await sharedPreferences.setBool('appFirstRun', false);
+      }
       processIntent(widget.initIntent);
     });
   }
