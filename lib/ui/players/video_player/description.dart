@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
@@ -66,12 +67,17 @@ class VideoPlayerDescription extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
-                  child: LinkifyText(text: info.description!, style: smallTextStyle(context, opacity: 0.8),
-                    onTimestampTap: (duration) {
-                      onSeek(duration);
-                    },
-                    onLinkTap: (link) {
-                      launchUrlString(link);
+                  child: HtmlWidget(
+                    info.description!,
+                    textStyle: smallTextStyle(context, opacity: 0.8),
+                    onTapUrl: (url) {
+                      if (url.contains('&t=')) {
+                        final seconds = url.split('&t=').last;
+                        onSeek(Duration(seconds: int.parse(seconds)));
+                      } else {
+                        launchUrlString(url);
+                      }
+                      return true;
                     },
                   ),
                 ),

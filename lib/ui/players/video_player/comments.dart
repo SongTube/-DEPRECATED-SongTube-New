@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:collection/collection.dart';
 import 'package:image_fade/image_fade.dart';
@@ -16,6 +17,7 @@ import 'package:songtube/ui/components/custom_inkwell.dart';
 import 'package:songtube/ui/components/linkify_text.dart';
 import 'package:songtube/ui/components/shimmer_container.dart';
 import 'package:songtube/ui/text_styles.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class VideoPlayerCommentsCollapsed extends StatefulWidget {
   const VideoPlayerCommentsCollapsed({
@@ -263,9 +265,18 @@ class VideoPlayerCommentsExpanded extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 2),
-                LinkifyText(
-                  text: comment.commentText!,
-                  onTimestampTap: onSeek,
+                HtmlWidget(
+                  comment.commentText!,
+                  textStyle: smallTextStyle(context, opacity: 0.8),
+                  onTapUrl: (url) {
+                    if (url.contains('&t=')) {
+                      final seconds = url.split('&t=').last;
+                      onSeek(Duration(seconds: int.parse(seconds)));
+                    } else {
+                      launchUrlString(url);
+                    }
+                    return true;
+                  },
                 ),
                 const SizedBox(height: 8),
                 // Like count
